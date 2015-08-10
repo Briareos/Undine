@@ -1,0 +1,35 @@
+security:
+    providers:
+        in_memory:
+            memory: ~
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        api:
+            anonymous: ~
+            request_matcher: undine.api_request_matcher
+            context: main
+        main:
+            anonymous: ~
+            form_login:
+                login_path:             web-login
+                check_path:             web-login_check
+                username_parameter:     email
+                password_parameter:     password
+                csrf_parameter:         token
+                csrf_provider:          security.csrf.token_manager
+                intention:              authenticate
+                post_only:              true
+                default_target_path:    /
+            remember_me:
+                key:                    %secret%
+                name:                   WEBREMEMBERME
+                secure:                 false
+                httponly:               true
+                remember_me_parameter:  rememberMe
+    access_control:
+        - { path: ^/api($|/), roles: IS_AUTHENTICATED_REMEMBERED }
+        - { path: ^/login(_check)?$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/, roles: IS_AUTHENTICATED_REMEMBERED }
+

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd" xmlns:gedmo="http://gediminasm.org/schemas/orm/doctrine-extensions-mapping">
+    <entity repository-class="Delphi\EntityRepository\UserRepository" name="Delphi\Model\User" change-tracking-policy="DEFERRED_EXPLICIT">
+        <indexes>
+            <index columns="email"/>
+        </indexes>
+        <id name="id" type="integer">
+            <generator strategy="AUTO"/>
+        </id>
+        <field name="email" type="string" length="255"/>
+        <field name="bio" type="text" nullable="true"/>
+        <field name="password" type="string" length="255" nullable="true"/>
+        <field name="createdAt" type="datetime">
+            <gedmo:timestampable on="create"/>
+        </field>
+        <field name="lastActiveAt" type="datetime" nullable="true"/>
+        <field name="lastLoginAt" type="datetime" nullable="true"/>
+        <field name="firstName" type="string" length="255" nullable="true"/>
+        <field name="lastName" type="string" length="255" nullable="true"/>
+        <field name="role" type="string" length="255"/>
+        <many-to-one target-entity="Delphi\Model\Organization" field="organization" inversed-by="users">
+            <join-column nullable="false"/>
+        </many-to-one>
+        <one-to-many target-entity="Delphi\Model\Approval" field="approvals" mapped-by="user"/>
+        <one-to-many target-entity="Delphi\Model\Endorsement" field="sentEndorsements" mapped-by="sender"/>
+        <one-to-many target-entity="Delphi\Model\OAuthToken" field="oauthTokens" mapped-by="user"/>
+        <one-to-many target-entity="Delphi\Model\EndorsementReport" mapped-by="creator" field="endorsementReports"/>
+        <many-to-many target-entity="Delphi\Model\Endorsement" field="receivedEndorsements" mapped-by="receivers"/>
+    </entity>
+</doctrine-mapping>
