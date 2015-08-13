@@ -25,6 +25,7 @@
         "knplabs/knp-menu-bundle": "^2.0.0",
         "doctrine/doctrine-migrations-bundle": "^1.0.1",
         "league/fractal": "^0.12.0",
+        "omnipay/stripe": "^2.2.1"
     },
     "require-dev": {
         "sensio/generator-bundle": "^2.5.3",
