@@ -97,10 +97,11 @@ function reloadComponent(component) {
 
 
 function watchDev() {
+    watch('./dashboard/image/**/*', gulp.series(reloadComponent.bind(null, 'html')));
     watch('./dashboard/style/**/*', gulp.series(buildDashboardCssDev, reloadComponent.bind(null, 'css')));
     watch('./dashboard/app/**/*.html', gulp.series(reloadComponent.bind(null, 'html')));
     watch('./dashboard/app/**/*.js', gulp.series(buildDashboardIndexDev, reloadComponent.bind(null, 'html')));
-    watch('./dashboard/Resources/views/dashboard/dev.html.twig', gulp.series(reloadComponent.bind(null, 'html')));
+    watch('./app/Resources/views/dashboard/dev.html.twig', gulp.series(reloadComponent.bind(null, 'html')));
 }
 
 gulp.task('default',

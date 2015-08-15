@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <base href="/dashboard/">
+    <base href="{{ path('web-dashboard') }}/">
     <meta charset="UTF-8">
     <title>Document</title>
 
@@ -32,8 +32,6 @@
 <div class="logo-test"></div>
 
 <ui-view></ui-view>
-
-{{ include('live-reload.html.twig') }}
 
 <script>
     angular.bootstrap(document.body, ['undine.dashboard'], {strictDi: true});

@@ -3,40 +3,30 @@ angular.module('undine.dashboard')
         $urlRouterProvider.otherwise('/');
         $locationProvider.html5Mode(true);
         $stateProvider
-            .state('endorse', {
+            .state('dashboard', {
                 abstract: true,
                 url: '/',
-                templateUrl: 'layout/endorse.html'
+                templateUrl: 'app/layout/dashboard.html'
             })
-            .state('endorse.feed', {
+            .state('dashboard.dashboard', {
                 url: '',
-                controller: 'FeedController',
-                templateUrl: 'page/feed/feed.html'
+                controller: 'DashboardController',
+                templateUrl: 'app/page/dashboard/dashboard.html'
             })
-            .state('endorse.statistic', {
-                url: 'statistic',
-                controller: 'StatisticController',
-                templateUrl: 'page/statistic/statistic.html'
+            .state('dashboard.module', {
+                url: 'module',
+                controller: 'ModuleController',
+                templateUrl: 'app/page/module/module.html'
             })
-            .state('endorse.profileView', {
-                url: 'profile/:uid',
+            .state('dashboard.backup', {
+                url: 'backup',
+                controller: 'BackupController',
+                templateUrl: 'app/page/backup/backup.html'
+            })
+            .state('dashboard.account', {
+                url: 'account',
                 controller: 'ProfileController',
-                templateUrl: 'page/profile/profile.html',
-                resolve: {
-                    User: function (UserRepository, $stateParams) {
-                        return UserRepository.getByUid($stateParams.uid);
-                    }
-                }
-            })
-            .state('endorse.profile', {
-                url: 'profile',
-                controller: 'ProfileController',
-                templateUrl: 'page/profile/profile.html',
-                resolve: {
-                    User: function (Session) {
-                        return Session.user;
-                    }
-                }
+                templateUrl: 'app/page/profile/profile.html'
             })
         ;
     });
