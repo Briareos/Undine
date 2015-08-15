@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <base href="/dashboard/">
+    <meta charset="UTF-8">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="bower_components/semantic-ui/dist/semantic.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/angularjs/angular.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="bower_components/semantic-ui/dist/semantic.js"></script>
+
+    <script src="app/app.js"></script>
+    <script src="app/run.js"></script>
+    <script src="app/states.js"></script>
+    {% glob '/dashboard/app/' pattern='{^.+\/.+\.js$}' %}
+    <script src="app/{{ glob_path }}"></script>
+    {% endglob %}
+
+    {% if app.environment == 'dev' %}
+        <script>
+            {# Let the templates load from the disk. #}
+            angular.module('undine.dashboard.template', []);
+        </script>
+    {% endif %}
+
+</head>
+<body>
+
+<div class="logo-test"></div>
+
+<ui-view></ui-view>
+
+<script>
+    {# Let the templates load from the disk. #}
+    angular.module('undine.dashboard.template', []);
+    angular.bootstrap(document.body, ['undine.dashboard']);
+</script>
+
+</body>
+</html>

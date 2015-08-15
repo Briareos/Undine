@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ef4a85bddbfeeefd975764da2576bbeb",
+    "hash": "7a3c4c0a33f5135e01431c5af9642ac0",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -1896,6 +1896,43 @@
                 "psr-3"
             ],
             "time": "2012-12-21 11:40:51"
+        },
+        {
+            "name": "semantic/ui",
+            "version": "2.0.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Semantic-Org/Semantic-UI.git",
+                "reference": "bd48a09acc01d1f8d6c600616ebd10fce87b32d4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Semantic-Org/Semantic-UI/zipball/bd48a09acc01d1f8d6c600616ebd10fce87b32d4",
+                "reference": "bd48a09acc01d1f8d6c600616ebd10fce87b32d4",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jack Lukic",
+                    "email": "jacklukic@gmail.com",
+                    "homepage": "http://www.jacklukic.com",
+                    "role": "Creator"
+                }
+            ],
+            "description": "Semantic empowers designers and developers by creating a shared vocabulary for UI.",
+            "homepage": "http://www.semantic-ui.com",
+            "keywords": [
+                "css",
+                "framework",
+                "semantic",
+                "ui"
+            ],
+            "time": "2015-08-10 18:37:43"
         },
         {
             "name": "sensio/distribution-bundle",

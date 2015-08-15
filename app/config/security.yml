@@ -29,7 +29,7 @@ security:
                 httponly:               true
                 remember_me_parameter:  rememberMe
     access_control:
-        - { path: ^/api($|/), roles: IS_AUTHENTICATED_REMEMBERED }
-        - { path: ^/login(_check)?$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/, roles: IS_AUTHENTICATED_REMEMBERED }
+#        - { path: ^/api($|/), roles: IS_AUTHENTICATED_REMEMBERED }
+#        - { path: ^/login(_check)?$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+#        - { path: ^/, roles: IS_AUTHENTICATED_REMEMBERED }
 

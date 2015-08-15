@@ -1,0 +1,73 @@
+<script>
+    'use strict';
+    (function () {
+        var attempts = 1;
+        var loadingCss = 0;
+
+        function createWebSocket() {
+            //noinspection JSClosureCompilerSyntax
+            var ws = new WebSocket('ws://localhost:48263');
+
+            ws.onopen = function () {
+                attempts = 1;
+            };
+
+            ws.onmessage = function (event) {
+                if (event.data === 'css') {
+                    [].slice.call(document.getElementsByTagName('link')).forEach(function (link) {
+                        if (link.rel !== 'stylesheet') {
+                            return;
+                        }
+                        if (link.getAttribute('href').match(/^(https?:)?\/\//)) {
+                            // Ignore absolute URLs; let's say they are external.
+                            return;
+                        }
+                        //noinspection JSClosureCompilerSyntax
+                        link.setAttribute('href', link.getAttribute('href').replace(/(\?\d+)?$/, '?' + new Date().getTime()));
+                        loadingCss++;
+                        var interval = setInterval(function () {
+                            if (!link.sheet.cssRules.length) {
+                                return;
+                            }
+                            // This style has fully loaded.
+                            loadingCss--;
+                            clearInterval(interval);
+
+                            if (loadingCss !== 0) {
+                                // Wait for all the styles to load.
+                                return;
+                            }
+                            // Force redraw.
+                            document.body.style.display = 'none';
+                            document.body.style.display = '';
+                        }, 100);
+                    })
+                } else if (event.data === 'html') {
+                    window.location.reload();
+                }
+            };
+
+            ws.onclose = function () {
+                var time = generateInterval(attempts);
+
+                setTimeout(function () {
+                    attempts++;
+                    createWebSocket();
+                }, time)
+            }
+        }
+
+        function generateInterval(k) {
+            var maxInterval = (Math.pow(2, k) - 1) * 1000;
+
+            if (maxInterval > 30 * 1000) {
+                maxInterval = 30 * 1000; // If the generated interval is more than 30 seconds, truncate it down to 30 seconds.
+            }
+
+            // generate the interval to a random number between 0 and the maxInterval determined from above
+            return Math.random() * maxInterval;
+        }
+
+        createWebSocket();
+    })();
+</script>

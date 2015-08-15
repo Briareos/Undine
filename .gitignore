@@ -4,8 +4,10 @@
 /var/SymfonyRequirements.php
 /var/cache/*
 /var/logs/*
+/var/tmp/*
 !var/cache/.gitkeep
 !var/logs/.gitkeep
+!var/tmp/.gitkeep
 /build/
 /vendor/
 /bin/*
@@ -13,3 +15,8 @@
 !bin/symfony_requirements
 /composer.phar
 /.idea/
+/web/css/
+/web/js/
+/web/image/
+/node_modules/
+/dashboard/bower_components/

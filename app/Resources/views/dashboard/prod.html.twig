@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <base href="/dashboard/">
+    <meta charset="UTF-8">
+    <title>Document</title>
+
+    {#{% revstylesheet 'web/style.css' %}#}
+    <link rel="stylesheet" href="bower_components/semantic-ui/dist/semantic.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    {#{% endrevstylesheet %}#}
+
+    {#{% revjavascript 'web/vendor.js' %}#}
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/angularjs/angular.min.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script src="bower_components/semantic-ui/dist/semantic.min.js"></script>
+    {#{% endrevjavascript %}#}
+
+    {#{% revjavascript 'web/dashboard.js' %}#}
+    {% glob  'dashboard/app/js/*/**/*.js' %}
+    <script src="app/{{ glob_path }}"></script>
+    {% endglob %}
+    <script src="app/app.js"></script>
+    <script src="app/run.js"></script>
+    <script src="app/states.js"></script>
+    {#{% endrevjavascript %}#}
+
+</head>
+<body>
+
+<div class="logo-test"></div>
+
+<ui-view></ui-view>
+
+{{ include('live-reload.html.twig') }}
+
+<script>
+    angular.bootstrap(document.body, ['undine.dashboard'], {strictDi: true});
+</script>
+
+</body>
+</html>
