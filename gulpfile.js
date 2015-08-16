@@ -55,8 +55,6 @@ function buildDashboardImage() {
         .pipe(gulp.dest('./var/tmp'));
 }
 
-gulp.task('t', gulp.series(clean, buildDashboardImage));
-
 function buildDashboardCssDev() {
     return gulp.src('./dashboard/style/dashboard.scss')
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.init()))
@@ -82,21 +80,6 @@ function buildDashboardCss() {
         .pipe(gulp.dest('./web/css'))
         .pipe(rev.manifest('rev-css.json'))
         .pipe(gulp.dest('./var/tmp'));
-}
-
-function buildDashboardTemplate() {
-    //return gulp.src('./dashboard/app/**/*.html')
-    //    .pipe(minifyHtml())
-    //    .pipe(ngTemplate({
-    //        filename: 'template.js',
-    //        module: 'undine.dashboard.template',
-    //        standalone: true
-    //    }))
-    //    .pipe(minifyJs())
-    //    .pipe(rev())
-    //    .pipe(gulp.dest('./web/js'))
-    //    .pipe(rev.manifest('rev-template.json'))
-    //    .pipe(gulp.dest('./var/tmp'));
 }
 
 function buildDashboardJs() {
@@ -132,7 +115,6 @@ function buildDashboardJs() {
         .pipe(concat('app.js'))
         .pipe(minifyJs())
         .pipe(localFilter.restore)
-        .pipe(debug({title:'all'}))
         .pipe(concat('dashboard.js'))
         .pipe(rev())
         .pipe(gulp.dest('./web/js'))
