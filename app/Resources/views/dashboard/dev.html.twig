@@ -31,10 +31,10 @@
 {{ include('live-reload.html.twig') }}
 
 <script>
-    {# Dirty fix - when visiting /dashboard# it flips out. Must be the router component. Remove once it's fixed. #}
+    {# Dirty fix - when visiting /dashboard# it flips out. Must be the router component, but it's probably related to the <base> tag not being a substring of the current URL. Remove once it's fixed. #}
     if (window.location.href.indexOf('#') !== -1) {
         // Strip the hashbang and ensure trailing slash.
-        history.replaceState("", document.title, window.location.pathname.replace(/\/$/, '') + '/' + window.location.search);
+        history.replaceState('', document.title, window.location.pathname.replace(/\/$/, '') + '/' + window.location.search);
     }
 
     {# Let the templates load from the disk. #}
