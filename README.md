@@ -1,5 +1,7 @@
 ### Development setup
 
+This development setup guide is geared toward the [Legend](https://github.com/Briareos/Legend) vagrant machine.
+
 #### Add Server
 
 - Go to: `Settings > Build, Execution, Deployment > Deployment > Add`
@@ -8,12 +10,13 @@
     - Name: "Undine"
     - Method: FTP (insecure and fastest)
     - Connection:
-        - FTP host: localhost
-        - Port: 21
-    	- Root Path: /home/vagrant/www/undine
-    	- Username: vagrant
-    	- Password: vagrant
-    	- Save password: true
+        - FTP host: `localhost`
+        - Port: `21`
+    	- Root Path: `/home/vagrant/www/undine`
+    	- Username: `vagrant`
+    	- Password: `vagrant`
+    	- Save password: `true`
+    	- Check "passive mode"
     	- Web Server Root URL: http://undine.dev.localhost (for valid SSL certificates)
     - Mappings:
     	- Deployment path: /
