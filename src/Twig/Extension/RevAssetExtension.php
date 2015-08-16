@@ -4,7 +4,6 @@ namespace Undine\Twig\Extension;
 
 class RevAssetExtension extends \Twig_Extension
 {
-
     /**
      * @var string
      */
@@ -17,7 +16,6 @@ class RevAssetExtension extends \Twig_Extension
     {
         $this->manifestPath = $manifestPath;
     }
-
 
     /**
      * {@inheritdoc}
