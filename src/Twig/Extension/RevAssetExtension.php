@@ -2,6 +2,27 @@
 
 namespace Undine\Twig\Extension;
 
+/**
+ * The gulp build process revisions (ie. renames) files to file_name-{file_hash}.js
+ * Twig should be aware of this change, so gulp dumps the changes it has done to a
+ * manifest file in a temporary directory (eg. var/tmp) for twig to pick them up.
+ *
+ * The manifest files are structured like so:
+ *  {
+ *      "app.js": "app-a1b2c3d4e5f6.js"
+ *  }
+ *
+ * Because of some gulp-rev project limitations, it is NOT dumped into a single manifest
+ * with full paths, although it would be desirable:
+ *  {
+ *      "js/app.js": "js/app-a1b2c3d4e5f6.js",
+ *      "css/app.css": "js/app-a1b2c3d4e5f6.js"
+ *  }
+ *
+ * Hence the need for the "$manifestCollection" parameter in the 'rev_asset' function.
+ *
+ * See gulpfile.js for available assets and manifest collections.
+ */
 class RevAssetExtension extends \Twig_Extension
 {
     /**
@@ -35,6 +56,13 @@ class RevAssetExtension extends \Twig_Extension
         ];
     }
 
+    /**
+     * @param string $assetName          Asset name, eg. "style.css". See gulpfile.js for available assets.
+     * @param string $manifestCollection Manifest collection, eg. "rev-styles.css". See gulpfile.js for available collections.
+     *
+     * @return mixed
+     * @throws \Undine\Functions\Exception\JsonParseException
+     */
     public function getRevAsset($assetName, $manifestCollection)
     {
         $fileName = $this->manifestPath.'/'.$manifestCollection;
