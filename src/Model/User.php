@@ -3,9 +3,13 @@
 namespace Undine\Model;
 
 use Symfony\Component\Security\Core\User\UserInterface;
+use Undine\Uid\UidInterface;
+use Undine\Uid\UidTrait;
 
-class User implements UserInterface
+class User implements UserInterface, UidInterface
 {
+    use UidTrait;
+
     /**
      * @var int
      */
