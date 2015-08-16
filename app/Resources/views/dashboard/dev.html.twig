@@ -7,6 +7,10 @@
     <title>Document</title>
 
     <link rel="stylesheet" href="bower_components/semantic-ui/dist/semantic.css">
+    {# The dashboard.css file is dynamically built by gulp. A server rule maps all assets like
+    /dashboard/*.{js|css|html} to the /dashboard/ directory (relative to the project directory),
+    and assets like /image/*.{jpg|png} to the /dashboard/image/ directory (for relative CSS
+    assets to work. An alternative is to rewrite CSS routes on build time. #}
     <link rel="stylesheet" href="/css/dashboard.css">
 
     <script src="bower_components/jquery/dist/jquery.js"></script>
