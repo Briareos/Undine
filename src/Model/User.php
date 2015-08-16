@@ -37,6 +37,14 @@ class User implements UserInterface
     private $createdAt;
 
     /**
+     * @param string $email
+     */
+    public function __construct($email)
+    {
+        $this->email = $email;
+    }
+
+    /**
      * @return int
      */
     public function getId()
@@ -44,55 +52,86 @@ class User implements UserInterface
         return $this->id;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getRoles()
     {
         return ['ROLE_USER'];
     }
 
     /**
-     * Returns the password used to authenticate the user.
-     *
-     * This should be the encoded password. On authentication, a plain-text
-     * password will be salted, encoded, and then compared to this value.
-     *
-     * @return string The password
+     * {@inheritdoc}
      */
     public function getPassword()
     {
-        // TODO: Implement getPassword() method.
+        return $this->password;
     }
 
     /**
-     * Returns the salt that was originally used to encode the password.
-     *
-     * This can return null if the password was not encoded using a salt.
-     *
-     * @return string|null The salt
+     * {@inheritdoc}
      */
     public function getSalt()
     {
-        // TODO: Implement getSalt() method.
+        return null;
     }
 
     /**
-     * Returns the username used to authenticate the user.
-     *
-     * @return string The username
+     * {@inheritdoc}
      */
     public function getUsername()
     {
-        // TODO: Implement getUsername() method.
+        return $this->email;
     }
 
     /**
-     * Removes sensitive data from the user.
-     *
-     * This is important if, at any given point, sensitive information like
-     * the plain-text password is stored on this object.
+     * {@inheritdoc}
      */
     public function eraseCredentials()
     {
-        // TODO: Implement eraseCredentials() method.
     }
 
+    /**
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param string $email
+     *
+     * @return $this
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getLastLoginAt()
+    {
+        return $this->lastLoginAt;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getLastActiveAt()
+    {
+        return $this->lastActiveAt;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
 }

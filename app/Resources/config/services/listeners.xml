@@ -6,7 +6,7 @@
 
     <services>
 
-        <service id="delphi.listener.user_activity" class="Undine\EventListener\UserActivityListener">
+        <service id="undine.listener.user_activity" class="Undine\EventListener\UserActivityListener">
             <argument type="service" id="security.token_storage"/>
             <argument type="service" id="doctrine.orm.default_entity_manager"/>
             <argument type="service" id="current_time"/>
