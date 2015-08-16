@@ -177,7 +177,6 @@ gulp.task('build',
         buildDashboardImage,
         gulp.parallel(
             buildDashboardCss,
-            buildDashboardTemplate,
             buildDashboardJs,
             buildDashboardIndex
         )
