@@ -5,14 +5,17 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+
         <service id="undine.twig.token_parser.glob" class="Undine\Twig\TokenParser\Glob">
             <argument>%kernel.root_dir%/..</argument>
             <tag name="twig.token_parser"/>
         </service>
+
         <service id="undine.twig.extension.rev_asset" class="Undine\Twig\Extension\RevAssetExtension">
             <argument>%kernel.root_dir%/../var/tmp</argument>
             <tag name="twig.extension"/>
         </service>
+
     </services>
 
 </container>

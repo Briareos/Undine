@@ -1,0 +1,15 @@
+{% extends 'web/layout.html.twig' %}
+
+{% block body %}
+
+    Frontpage!
+
+    {% if app.user %}
+        <a href="{{ logout_url('web') }}">Log out</a>
+    {% endif %}
+
+    {% if app.debug %}
+        <a href="{{ path('admin-home') }}">Admin panel</a>
+    {% endif %}
+
+{% endblock %}

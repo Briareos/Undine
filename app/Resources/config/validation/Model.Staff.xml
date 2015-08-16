@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping http://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+
+    <class name="Undine\Model\Staff">
+
+        <constraint name="Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity">
+            <option name="fields">
+                <value>email</value>
+            </option>
+            <option name="message">Staff member with the specified email address already exists.</option>
+        </constraint>
+
+        <property name="email">
+            <constraint name="NotBlank"/>
+            <constraint name="Email"/>
+        </property>
+
+        <property name="password">
+            <constraint name="NotBlank">
+                <option name="message">The password can not be blank.</option>
+            </constraint>
+        </property>
+
+    </class>
+
+</constraint-mapping>

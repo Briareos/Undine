@@ -1,8 +1,13 @@
+app-admin:
+    resource:   "@AppBundle/Controller/Admin/"
+    type:       annotation
+    prefix:     /admin
+
 app-web:
-    resource: "@AppBundle/Controller/Web/"
-    type:     annotation
+    resource:   "@AppBundle/Controller/Web/"
+    type:       annotation
 
 app-api:
-    resource: "@AppBundle/Controller/Api/"
-    type:     annotation
-    prefix:   /api
+    resource:   "@AppBundle/Controller/Api/"
+    type:       annotation
+    prefix:     /api

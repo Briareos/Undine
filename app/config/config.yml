@@ -65,3 +65,13 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
+
+# Doctrine Extensions (Gedmo) Configuration
+stof_doctrine_extensions:
+    orm:
+        default:
+            timestampable: true
+
+sensio_framework_extra:
+    request:
+        auto_convert: false

@@ -1,11 +1,49 @@
 security:
+    encoders:
+        Undine\Model\User:
+            algorithm: bcrypt
+            cost:      12
+        Undine\Model\Staff:
+            algorithm: bcrypt
+            cost:      15
     providers:
-        in_memory:
-            memory: ~
+        user_provider:
+            entity:
+                class: Undine\Model\User
+                property: email
+        staff_provider:
+            entity:
+                class: Undine\Model\Staff
+                property: email
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        admin:
+            pattern: ^/admin($|/)
+            anonymous: ~
+            provider: staff_provider
+            form_login:
+                check_path:             admin-login_check
+                username_parameter:     email
+                password_parameter:     password
+                csrf_provider:          security.csrf.token_manager
+                csrf_parameter:         token
+                intention:              authenticate
+                post_only:              true
+                login_path:             admin-login
+                default_target_path:    admin-home
+            remember_me:
+                key:                    %secret%
+                name:                   ADMINREMEMBERME
+                secure:                 false
+                httponly:               true
+                remember_me_parameter:  rememberMe
+            logout:
+                csrf_token_generator: security.csrf.token_manager
+                csrf_parameter:       token
+                csrf_token_id:        logout
+                path:                 admin-logout
         api:
             anonymous: ~
             request_matcher: undine.api_request_matcher
@@ -29,6 +67,8 @@ security:
                 httponly:               true
                 remember_me_parameter:  rememberMe
     access_control:
+        - { path: ^/admin/login(_check)?$, roles: IS_AUTHENTICATED_ANONYMOUSLY } # requires_channel: https
+        - { path: ^/admin($|/), roles: ROLE_ADMIN } # requires_channel: https
 #        - { path: ^/api($|/), roles: IS_AUTHENTICATED_REMEMBERED }
 #        - { path: ^/login(_check)?$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 #        - { path: ^/, roles: IS_AUTHENTICATED_REMEMBERED }

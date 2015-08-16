@@ -1,0 +1,57 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block body %}
+    <style>
+        body {
+            background-color: #DADADA;
+        }
+        body > .grid {
+            height: 100%;
+        }
+        .column {
+            max-width: 450px;
+        }
+    </style>
+    <div class="ui middle aligned center aligned grid">
+        <div class="column">
+            <h2 class="ui header">
+                Administration panel
+            </h2>
+
+            {% if error %}
+                <div class="ui error message">
+                    {{ error.message }}
+                </div>
+            {% endif %}
+
+            <form action="{{ path('admin-login_check') }}" method="post" class="ui large form">
+                <div class="ui segment">
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="user icon"></i>
+                            <input type="email" name="email" placeholder="Email" autofocus
+                                   value="{% if lastUsername %}{{ lastUsername }}{% elseif app.debug %}admin@example.com{% endif %}">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="lock icon"></i>
+                            <input type="password" name="password" placeholder="Password"
+                                   value="{% if app.debug %}admin{% endif %}">
+                        </div>
+                    </div>
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <input name="rememberMe" id="rememberMe" type="checkbox" class="hidden">
+                            <label for="rememberMe">
+                                Remember me
+                            </label>
+                        </div>
+                    </div>
+                    <input name="token" type="hidden" value="{{ csrfToken }}"/>
+                    <button type="submit" class="ui fluid large submit button">Log in</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
