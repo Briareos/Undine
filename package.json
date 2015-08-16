@@ -1,8 +1,11 @@
 {
   "devDependencies": {
+    "del": "^1.2.1",
     "gulp": "git://github.com/gulpjs/gulp.git#4.0",
     "gulp-angular-templatecache": "^1.6.0",
+    "gulp-autoprefixer": "^2.3.1",
     "gulp-concat": "^2.5.2",
+    "gulp-filter": "^3.0.0",
     "gulp-glob-html": "^0.2.0",
     "gulp-if": "^1.2.5",
     "gulp-imagemin": "^2.3.0",

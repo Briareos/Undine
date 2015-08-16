@@ -2,29 +2,13 @@
 <html lang="en">
 <head>
     <base href="{{ path('web-dashboard') }}/">
+
     <meta charset="UTF-8">
     <title>Document</title>
 
-    {#{% revstylesheet 'web/style.css' %}#}
-    <link rel="stylesheet" href="bower_components/semantic-ui/dist/semantic.css">
-    <link rel="stylesheet" href="/css/dashboard.css">
-    {#{% endrevstylesheet %}#}
+    <link rel="stylesheet" href="/css/{{ rev_asset('dashboard.css', 'rev-css.json') }}">
 
-    {#{% revjavascript 'web/vendor.js' %}#}
-    <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/angularjs/angular.min.js"></script>
-    <script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <script src="bower_components/semantic-ui/dist/semantic.min.js"></script>
-    {#{% endrevjavascript %}#}
-
-    {#{% revjavascript 'web/dashboard.js' %}#}
-    {% glob  'dashboard/app/js/*/**/*.js' %}
-    <script src="app/{{ glob_path }}"></script>
-    {% endglob %}
-    <script src="app/app.js"></script>
-    <script src="app/run.js"></script>
-    <script src="app/states.js"></script>
-    {#{% endrevjavascript %}#}
+    <script src="/js/{{ rev_asset('dashboard.js', 'rev-dashboard.json') }}"></script>
 
 </head>
 <body>

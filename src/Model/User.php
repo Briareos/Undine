@@ -12,6 +12,31 @@ class User implements UserInterface
     private $id;
 
     /**
+     * @var string
+     */
+    private $email;
+
+    /**
+     * @var string|null
+     */
+    private $password;
+
+    /**
+     * @var \DateTime|null
+     */
+    private $lastLoginAt;
+
+    /**
+     * @var \DateTime|null
+     */
+    private $lastActiveAt;
+
+    /**
+     * @var \DateTime
+     */
+    private $createdAt;
+
+    /**
      * @return int
      */
     public function getId()

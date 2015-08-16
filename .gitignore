@@ -15,8 +15,11 @@
 !bin/symfony_requirements
 /composer.phar
 /.idea/
-/web/css/
-/web/js/
-/web/image/
+/web/css/*
+/web/js/*
+/web/image/*
+!web/css/.gitkeep
+!web/js/.gitkeep
+!web/image/.gitkeep
 /node_modules/
 /dashboard/bower_components/

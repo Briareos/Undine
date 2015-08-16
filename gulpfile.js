@@ -11,6 +11,10 @@ var concat = require('gulp-concat');
 var glob = require('gulp-glob-html');
 var rev = require('gulp-rev');
 var revReplace = require('gulp-rev-replace');
+var filter = require('gulp-filter');
+var autoprefixer = require('gulp-autoprefixer');
+var del = require('del');
+var debug = require('gulp-debug');
 
 var minifyImages = require('gulp-imagemin');
 var minifyCss = require('gulp-minify-css');
@@ -25,6 +29,34 @@ var config = {
     liveReloadPort: 48263
 };
 
+function clean(cb) {
+    del([
+        './var/tmp/**',
+        '!./var/tmp',
+        '!./var/tmp/.gitkeep',
+        './web/css/**',
+        '!./var/css',
+        '!./web/css/.gitkeep',
+        './web/js/**',
+        '!./var/js',
+        '!./web/js/.gitkeep',
+        './web/image/**',
+        '!./web/image',
+        '!./web/image/.gitkeep'
+    ], cb);
+}
+
+function buildDashboardImage() {
+    return gulp.src('./dashboard/image/**/*')
+        .pipe(minifyImages())
+        .pipe(rev())
+        .pipe(gulp.dest('./web/image'))
+        .pipe(rev.manifest('rev-image.json'))
+        .pipe(gulp.dest('./var/tmp'));
+}
+
+gulp.task('t', gulp.series(clean, buildDashboardImage));
+
 function buildDashboardCssDev() {
     return gulp.src('./dashboard/style/dashboard.scss')
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.init()))
@@ -34,46 +66,88 @@ function buildDashboardCssDev() {
 }
 
 function buildDashboardCss() {
-    return gulp.src('./dashboard/style/dashboard.scss')
+    var filterScss = filter('**.scss', {restore: true});
+
+    return gulp.src([
+        './dashboard/style/dashboard.scss',
+        './dashboard/bower_components/semantic-ui/dist/semantic.min.css'
+    ])
+        .pipe(filterScss)
         .pipe(sass().on('error', sass.logError))
+        .pipe(revReplace({manifest: gulp.src('./var/tmp/rev-image.json')}))
         .pipe(minifyCss())
-        .pipe(gulp.dest('./web/css'));
+        .pipe(filterScss.restore)
+        .pipe(concat('dashboard.css'))
+        .pipe(rev())
+        .pipe(gulp.dest('./web/css'))
+        .pipe(rev.manifest('rev-css.json'))
+        .pipe(gulp.dest('./var/tmp'));
 }
 
 function buildDashboardTemplate() {
-    return gulp.src('./dashboard/app/**/*.html')
+    //return gulp.src('./dashboard/app/**/*.html')
+    //    .pipe(minifyHtml())
+    //    .pipe(ngTemplate({
+    //        filename: 'template.js',
+    //        module: 'undine.dashboard.template',
+    //        standalone: true
+    //    }))
+    //    .pipe(minifyJs())
+    //    .pipe(rev())
+    //    .pipe(gulp.dest('./web/js'))
+    //    .pipe(rev.manifest('rev-template.json'))
+    //    .pipe(gulp.dest('./var/tmp'));
+}
+
+function buildDashboardJs() {
+    var localFilter = filter('app/**/*.js', {restore: true});
+    var htmlFilter = filter('app/**/*.html', {restore: true});
+    var vendorFilter = filter('bower_components/**/*.js', {restore: true});
+
+    return gulp.src([
+        './dashboard/bower_components/jquery/dist/jquery.min.js',
+        './dashboard/bower_components/angularjs/angular.min.js',
+        './dashboard/bower_components/angular-ui-router/release/angular-ui-router.min.js',
+        './dashboard/bower_components/semantic-ui/dist/semantic.min.js',
+        './dashboard/app/**/*.html',
+        './dashboard/app/app.js',
+        './dashboard/app/states.js',
+        './dashboard/app/run.js',
+        './dashboard/app/*/**/*.js'
+    ], {base: './dashboard'})
+        .pipe(vendorFilter)
+        .pipe(concat('vendor.js'))
+        .pipe(vendorFilter.restore)
+        .pipe(htmlFilter)
         .pipe(minifyHtml())
         .pipe(ngTemplate({
-            filename: 'template.js',
+            filetitle: 'template.js',
             module: 'undine.dashboard.template',
             standalone: true
         }))
         .pipe(minifyJs())
-        .pipe(gulp.dest('./web/js'));
-}
-
-function buildDashboardJs() {
-    return gulp.src('./dashboard/app/**/*.js')
+        .pipe(htmlFilter.restore)
+        .pipe(localFilter)
         .pipe(ngAnnotate())
-        .pipe(gulp.dest('./web/js'));
-}
-
-function buildDashboardImage() {
-    return gulp.src('./dashboard/image/**/*')
-        .pipe(minifyImages())
+        .pipe(concat('app.js'))
+        .pipe(minifyJs())
+        .pipe(localFilter.restore)
+        .pipe(debug({title:'all'}))
+        .pipe(concat('dashboard.js'))
         .pipe(rev())
-        .pipe(gulp.dest('./web/image'));
+        .pipe(gulp.dest('./web/js'))
+        .pipe(rev.manifest('rev-dashboard.json'))
+        .pipe(gulp.dest('./var/tmp'));
 }
 
 function buildDashboardIndexDev(cb) {
-    // Force the twig cache reload, since we changed an asset.
+    // Force the twig cache reload.
     fs.utimes(__dirname + '/app/Resources/views/dashboard/dev.html.twig', new Date(), new Date(), cb);
 }
 
-function buildDashboardIndex() {
-    return gulp.src('./dashboard/dev.html.twig')
-        .pipe(glob())
-        .pipe(gulp.dest('./app/Resources/views/dashboard'))
+function buildDashboardIndex(cb) {
+    // Force the twig cache reload.
+    fs.utimes(__dirname + '/app/Resources/views/dashboard/prod.html.twig', new Date(), new Date(), cb);
 }
 
 var reload = noop;
@@ -116,11 +190,14 @@ gulp.task('default',
         )));
 
 gulp.task('build',
-    gulp.parallel(
-        buildDashboardCss,
-        buildDashboardTemplate,
-        buildDashboardJs,
+    gulp.series(
+        clean,
         buildDashboardImage,
-        buildDashboardIndex
+        gulp.parallel(
+            buildDashboardCss,
+            buildDashboardTemplate,
+            buildDashboardJs,
+            buildDashboardIndex
+        )
     )
 );

@@ -9,7 +9,7 @@ use Undine\AppBundle\DependencyInjection\CompilerPass\TwigEnvironmentPass;
 class AppBundle extends Bundle
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function build(ContainerBuilder $container)
     {

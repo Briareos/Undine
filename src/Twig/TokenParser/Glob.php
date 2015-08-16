@@ -21,7 +21,7 @@ class Glob extends \Twig_TokenParser
 
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function parse(Twig_Token $token)
     {
@@ -85,7 +85,7 @@ class Glob extends \Twig_TokenParser
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getTag()
     {

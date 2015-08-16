@@ -21,6 +21,5 @@ class AppExtension extends Extension
         $loader->load('repositories.xml');
         $loader->load('twig.xml');
         $loader->load('emails.xml');
-        $loader->load('angular.xml');
     }
 }

@@ -6,7 +6,10 @@
     "autoload": {
         "psr-4": {
             "Undine\\": "src/"
-        }
+        },
+        "files": [
+            "src/Functions/json.php"
+        ]
     },
     "require": {
         "php": ">=5.3.9",
