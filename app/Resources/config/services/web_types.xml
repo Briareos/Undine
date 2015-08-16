@@ -6,11 +6,11 @@
 
     <services>
 
-        <service id="delphi.form.type.user" class="Undine\Form\Type\UserType">
+        <service id="undine.form.type.user" class="Undine\Form\Type\UserType">
             <tag name="form.type" alias="user"/>
         </service>
 
-        <service id="delphi.form.type.staff" class="Undine\Form\Type\StaffType">
+        <service id="undine.form.type.staff" class="Undine\Form\Type\StaffType">
             <argument type="service" id="security.user_password_encoder.generic"/>
             <tag name="form.type" alias="staff"/>
         </service>
