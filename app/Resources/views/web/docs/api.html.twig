@@ -1,0 +1,17 @@
+{% extends 'web/layout.html.twig' %}
+
+{% block body %}
+
+    {% if app.user %}
+        {% if app.user.apiToken %}
+            <button class="ui green button">Create token</button>
+        {% else %}
+            <button class="ui blue button">Re-issue token</button>
+        {% endif %}
+    {% else %}
+        <div class="ui blue message">
+            You must <a href="{{ path('web-login') }}">log in</a> to view the API access token on this page.
+        </div>
+    {% endif %}
+
+{% endblock %}

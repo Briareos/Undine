@@ -13,6 +13,17 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <service id="undine.listener.api_command" class="Undine\EventListener\ApiCommandListener">
+            <argument type="service" id="form.factory"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="undine.listener.api_result" class="Undine\EventListener\ApiResultListener">
+            <argument type="service" id="undine.request_matcher.api"/>
+            <argument type="service" id="security.token_storage"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
     </services>
 
 </container>

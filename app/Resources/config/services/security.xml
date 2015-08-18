@@ -4,4 +4,41 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
+    <services>
+
+        <!-- Completely the same as the api_token matcher below, but this one exists to avoid confusion,
+        since the api_token matcher also includes the api_session matcher. The rest of the application
+        should only care if the request matches the "api" endpoint, not "api_token" or "api_session". -->
+        <service id="undine.request_matcher.api" class="Symfony\Component\HttpFoundation\RequestMatcher">
+            <call method="matchPath">
+                <argument>^/api($|/)</argument>
+            </call>
+        </service>
+
+        <service id="undine.request_matcher.api_token" class="Symfony\Component\HttpFoundation\RequestMatcher">
+            <call method="matchPath">
+                <argument>^/api($|/)</argument>
+            </call>
+        </service>
+
+        <service id="undine.request_matcher.api_session" class="Undine\Http\HeaderAwareRequestMatcher">
+            <call method="matchPath">
+                <argument>^/api($|/)</argument>
+            </call>
+            <call method="matchHeaders">
+                <argument type="collection">
+                    <argument>X-XSRF-TOKEN</argument>
+                </argument>
+            </call>
+        </service>
+
+        <service id="undine.authenticator.api_token" class="Undine\Security\Authentication\ApiTokenAuthenticator" public="false">
+        </service>
+
+        <service id="undine.user_provider.api_token" class="Undine\Security\User\ApiTokenUserProvider">
+            <argument type="service" id="doctrine.repository.user"/>
+        </service>
+
+    </services>
+
 </container>

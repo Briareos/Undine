@@ -29,19 +29,17 @@
                     <div class="field">
                         <div class="ui left icon input">
                             <i class="user icon"></i>
-                            <input type="email" name="email" placeholder="Email" autofocus
-                                   value="{% if lastUsername %}{{ lastUsername }}{% elseif app.debug %}admin@example.com{% endif %}">
+                            <input type="email" name="email" placeholder="Email" autofocus value="{{ lastUsername }}">
                         </div>
                     </div>
                     <div class="field">
                         <div class="ui left icon input">
                             <i class="lock icon"></i>
-                            <input type="password" name="password" placeholder="Password"
-                                   value="{% if app.debug %}admin{% endif %}">
+                            <input type="password" name="password" placeholder="Password">
                         </div>
                     </div>
                     <div class="inline field">
-                        <div class="ui checkbox">
+                        <div class="ui left aligned checkbox">
                             <input name="rememberMe" id="rememberMe" type="checkbox" class="hidden">
                             <label for="rememberMe">
                                 Remember me

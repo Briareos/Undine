@@ -6,10 +6,6 @@
 
     <services>
 
-        <service id="undine.api_request_matcher" class="Symfony\Component\HttpFoundation\RequestMatcher">
-            <argument>/api/</argument>
-        </service>
-
         <service id="current_time" class="DateTime">
             <argument>now</argument>
         </service>

@@ -12,8 +12,14 @@ class UserRepository extends EntityRepository
      *
      * @return User|null
      */
-    public function findByUid($uid)
+    public function findOneByUid($uid)
     {
-        return $this->find(User::getIdFromUid($uid));
+        $id = User::getIdFromUid($uid);
+
+        if ($id === null) {
+            return null;
+        }
+
+        return $this->find($id);
     }
 }

@@ -26,6 +26,11 @@ class User implements UserInterface, UidInterface
     private $password;
 
     /**
+     * @var string|null
+     */
+    private $apiToken;
+
+    /**
      * @var \DateTime|null
      */
     private $lastLoginAt;
@@ -113,6 +118,22 @@ class User implements UserInterface, UidInterface
         $this->email = $email;
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getApiToken()
+    {
+        return $this->apiToken;
+    }
+
+    /**
+     * @param string|null $apiToken
+     */
+    public function setApiToken($apiToken)
+    {
+        $this->apiToken = $apiToken;
     }
 
     /**

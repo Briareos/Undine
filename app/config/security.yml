@@ -11,6 +11,8 @@ security:
             entity:
                 class: Undine\Model\User
                 property: email
+        api_provider:
+            id: undine.user_provider.api_token
         staff_provider:
             entity:
                 class: Undine\Model\Staff
@@ -44,12 +46,21 @@ security:
                 csrf_parameter:       token
                 csrf_token_id:        logout
                 path:                 admin-logout
-        api:
+        # The session matcher must go before the token matcher because it's more specific (it requires a header).
+        api_session:
             anonymous: ~
-            request_matcher: undine.api_request_matcher
-            context: main
-        main:
+            request_matcher: undine.request_matcher.api_session
+            context: web
+        api_token:
+            provider: api_provider
+            request_matcher: undine.request_matcher.api_token
+            stateless: true
             anonymous: ~
+            simple_preauth:
+                authenticator: undine.authenticator.api_token
+        web:
+            anonymous: ~
+            context: web
             form_login:
                 login_path:             web-login
                 check_path:             web-login_check
@@ -69,7 +80,6 @@ security:
     access_control:
         - { path: ^/admin/login(_check)?$, roles: IS_AUTHENTICATED_ANONYMOUSLY } # requires_channel: https
         - { path: ^/admin($|/), roles: ROLE_ADMIN } # requires_channel: https
-#        - { path: ^/api($|/), roles: IS_AUTHENTICATED_REMEMBERED }
-#        - { path: ^/login(_check)?$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-#        - { path: ^/, roles: IS_AUTHENTICATED_REMEMBERED }
+        - { path: ^/api/api\.test$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api($|/), roles: IS_AUTHENTICATED_REMEMBERED }
 
