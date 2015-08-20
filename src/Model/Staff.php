@@ -15,6 +15,11 @@ class Staff implements UserInterface, UserActivityAwareInterface
     /**
      * @var string
      */
+    private $name;
+
+    /**
+     * @var string
+     */
     private $email;
 
     /**
@@ -63,6 +68,22 @@ class Staff implements UserInterface, UserActivityAwareInterface
     public function getRoles()
     {
         return ['ROLE_ADMIN'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
     }
 
     /**
@@ -126,7 +147,6 @@ class Staff implements UserInterface, UserActivityAwareInterface
         return $this;
     }
 
-
     public function getSalt()
     {
         return null;
@@ -186,7 +206,7 @@ class Staff implements UserInterface, UserActivityAwareInterface
      */
     public function getAvatarUrl()
     {
-        return '//www.gravatar.com/avatar/' . md5($this->email);
+        return '//www.gravatar.com/avatar/'.md5($this->email);
     }
 
     /**

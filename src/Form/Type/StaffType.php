@@ -28,6 +28,7 @@ class StaffType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $builder->add('name', 'text');
         $builder->add('email', 'email');
         $builder->add('plainPassword', 'password', [
             'constraints' => [
@@ -36,6 +37,7 @@ class StaffType extends AbstractType
                     'max' => 72,
                 ]),
             ],
+            'required'    => false,
         ]);
 
         $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {

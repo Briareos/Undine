@@ -1,0 +1,70 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block body %}
+    <style>
+        .table td:first-child {
+            width: 10%;
+            min-width: 100px;
+            white-space: nowrap;
+        }
+
+        .ui.admin.body.container {
+            max-width: 500px !important;
+        }
+
+        .ui.input {
+            width: 100%;
+        }
+
+        .table .ui.button {
+            /* Fixes a semantic css bug where the buttons are not aligned */
+            vertical-align: bottom;
+        }
+    </style>
+
+    <h2>Edit staff member</h2>
+
+    {{ form_start(editForm) }}
+    <table class="ui definition table">
+        <tbody>
+        <tr>
+            <td>Name</td>
+            <td>
+                <div class="ui input">
+                    {{ form_widget(editForm.name) }}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td>
+                <div class="ui input">
+                    {{ form_widget(editForm.email) }}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>Password</td>
+            <td>
+                <div class="ui input">
+                    {{ form_widget(editForm.plainPassword) }}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" class="ui primary button">
+                    <i class="ui checkmark icon"></i>
+                    Save
+                </button>
+                <a href="{{ path('admin-staff_list') }}" class="ui basic button">
+                    <i class="ui angle left icon"></i>
+                    Back
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    {{ form_end(editForm) }}
+{% endblock %}

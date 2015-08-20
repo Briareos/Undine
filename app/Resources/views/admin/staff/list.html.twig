@@ -1,0 +1,56 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block body %}
+    <style>
+        .table td:nth-child(3), .table td:nth-child(2) {
+            width: 1%;
+            white-space: nowrap;
+        }
+    </style>
+
+    <h2>Awesome Staff</h2>
+
+    <table class="ui striped celled padded table">
+        <thead>
+        <tr>
+            <th>Staff Member</th>
+            <th>Last active at</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for staff in staffMembers %}
+            <tr>
+                <td>
+                    <div class="ui image header">
+                        <img src="{{ gravatar_url(staff.email) }}" class="ui mini rounded image"/>
+
+                        <div class="content">
+                            {{ staff.name }}
+                            <div class="sub header">{{ staff.email }}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    {{ staff.lastActiveAt | date('h:i d.m.Y.') }}
+                </td>
+                <td>
+                    <div class="ui buttons">
+                        <a class="ui primary button" href="{{ path('admin-staff_edit', {id: staff.id}) }}">
+                            <i class="ui user icon"></i>
+                            Edit
+                        </a>
+
+                        <div class="or"></div>
+
+                        <a class="ui negative button" href="{{ path('admin-staff_delete', {id: staff.id}) }}">
+                            <i class="ui erase icon"></i>
+                            Delete
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

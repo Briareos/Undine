@@ -13,8 +13,10 @@ class LoadAppData extends ContainerAwareFixture
     {
         /** @var EncoderFactoryInterface $encoderFactory */
         $encoderFactory = $this->container->get('security.encoder_factory');
-        $encoder = $encoderFactory->getEncoder(Staff::class);
+        $encoder        = $encoderFactory->getEncoder(Staff::class);
+
         $admin = new Staff('admin@example.com', $encoder->encodePassword('admin', null));
+        $admin->setName('Super Administrator');
 
         $manager->persist($admin);
 

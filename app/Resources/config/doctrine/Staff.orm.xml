@@ -10,6 +10,7 @@
             <generator strategy="AUTO"/>
         </id>
 
+        <field name="name" type="string" length="255"/>
         <field name="email" type="string" length="255"/>
         <field name="password" type="string" length="255"/>
         <field name="createdAt" type="datetime">
