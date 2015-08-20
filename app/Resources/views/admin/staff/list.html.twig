@@ -35,15 +35,13 @@
                     {{ staff.lastActiveAt | date('h:i d.m.Y.') }}
                 </td>
                 <td>
-                    <div class="ui buttons">
-                        <a class="ui primary button" href="{{ path('admin-staff_edit', {id: staff.id}) }}">
+                    <div class="two ui buttons">
+                        <a class="ui labeled icon primary button" href="{{ path('admin-staff_edit', {id: staff.id}) }}">
                             <i class="ui user icon"></i>
                             Edit
                         </a>
 
-                        <div class="or"></div>
-
-                        <a class="ui negative button" href="{{ path('admin-staff_delete', {id: staff.id}) }}">
+                        <a class="ui right labeled icon negative button" href="{{ path('admin-staff_delete', {id: staff.id}) }}">
                             <i class="ui erase icon"></i>
                             Delete
                         </a>
