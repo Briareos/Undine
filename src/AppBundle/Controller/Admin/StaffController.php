@@ -37,7 +37,8 @@ class StaffController extends AppController
     public function createAction(Request $request)
     {
         $createForm = $this->createForm('staff', null, [
-            'method' => 'POST',
+            'method'            => 'POST',
+            'validation_groups' => ['create'],
         ]);
 
         $createForm->handleRequest($request);

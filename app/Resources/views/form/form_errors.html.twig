@@ -1,0 +1,19 @@
+{% block form_errors %}
+    {% spaceless %}
+        {% if errors|length == 1 %}
+            <div class="ui error message">
+                <p>
+                    {{ errors[0].message }}
+                </p>
+            </div>
+        {% elseif errors|length > 1 %}
+            <div class="ui error message">
+                <ul class="list">
+                    {% for error in errors %}
+                        <li>{{ error.message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    {% endspaceless %}
+{% endblock %}

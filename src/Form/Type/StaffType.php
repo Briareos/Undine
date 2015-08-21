@@ -2,6 +2,7 @@
 
 namespace Undine\Form\Type;
 
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Undine\Model\Staff;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -32,8 +33,9 @@ class StaffType extends AbstractType
         $builder->add('email', 'email');
         $builder->add('plainPassword', 'password', [
             'constraints' => [
+                new NotBlank(['groups' => ['create']]),
                 new Length([
-                    // Bcrypt limitation.
+                    // Bcrypt limitation
                     'max' => 72,
                 ]),
             ],
