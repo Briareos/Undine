@@ -31,8 +31,8 @@
                         </div>
                     </div>
                 </td>
-                <td>
-                    {{ staff.lastActiveAt | date('h:i d.m.Y.') }}
+                <td title="{{ staff.lastActiveAt | date('h:i d.m.Y.') }}">
+                    {{ staff.lastActiveAt | time_diff }}
                 </td>
                 <td>
                     <div class="two ui buttons">

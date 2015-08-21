@@ -8,6 +8,9 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class TwigEnvironmentPass implements CompilerPassInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function process(ContainerBuilder $container)
     {
         $definition = $container->getDefinition('twig');

@@ -25,6 +25,7 @@ class ApiResultListener implements EventSubscriberInterface
 
     public function __construct(RequestMatcherInterface $requestMatcher, TokenStorage $tokenStorage)
     {
+//        $this->serialzier = $no
         $this->requestMatcher = $requestMatcher;
         $this->tokenStorage = $tokenStorage;
     }
@@ -86,6 +87,7 @@ class ApiResultListener implements EventSubscriberInterface
                 $data += ['error' => SecurityConstraint::NOT_AUTHENTICATED];
             }
         } else {
+            return;
             $data += ['error' => $exception->getMessage()];
         }
 

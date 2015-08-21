@@ -21,6 +21,11 @@ class Site implements UidInterface
     private $url;
 
     /**
+     * @var User
+     */
+    private $user;
+
+    /**
      * Drupal's internal "site_key", used for statistic tracking.
      *
      * @var string|null
@@ -28,11 +33,18 @@ class Site implements UidInterface
     private $siteKey;
 
     /**
-     * @param UriInterface $url
+     * @var \DateTime
      */
-    public function __construct(UriInterface $url)
+    private $createdAt;
+
+    /**
+     * @param UriInterface $url
+     * @param User         $user
+     */
+    public function __construct(UriInterface $url, User $user)
     {
         $this->url = $url;
+        $this->user = $user;
     }
 
     /**
@@ -64,6 +76,14 @@ class Site implements UidInterface
     }
 
     /**
+     * @return User
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
      * @return string|null
      */
     public function getSiteKey()
@@ -81,5 +101,13 @@ class Site implements UidInterface
         $this->siteKey = $siteKey;
 
         return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
     }
 }

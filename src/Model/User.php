@@ -2,11 +2,13 @@
 
 namespace Undine\Model;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Undine\Security\User\UserActivityAwareInterface;
 use Undine\Uid\UidInterface;
 use Undine\Uid\UidTrait;
 
-class User implements UserInterface, UidInterface
+class User implements UserInterface, UidInterface, UserActivityAwareInterface
 {
     use UidTrait;
 
@@ -31,6 +33,11 @@ class User implements UserInterface, UidInterface
     private $apiToken;
 
     /**
+     * @var ArrayCollection|Site[]
+     */
+    private $sites;
+
+    /**
      * @var \DateTime|null
      */
     private $lastLoginAt;
@@ -51,6 +58,7 @@ class User implements UserInterface, UidInterface
     public function __construct($email)
     {
         $this->email = $email;
+        $this->sites = new ArrayCollection();
     }
 
     /**
@@ -137,6 +145,22 @@ class User implements UserInterface, UidInterface
     }
 
     /**
+     * @return Site[]
+     */
+    public function getSites()
+    {
+        return $this->sites->toArray();
+    }
+
+    /**
+     * @param Site[] $sites
+     */
+    public function setSites(array $sites)
+    {
+        $this->sites = new ArrayCollection($sites);
+    }
+
+    /**
      * @return \DateTime|null
      */
     public function getLastLoginAt()
@@ -145,11 +169,35 @@ class User implements UserInterface, UidInterface
     }
 
     /**
+     * @param \DateTime|null $lastLoginAt
+     *
+     * @return $this
+     */
+    public function setLastLoginAt(\DateTime $lastLoginAt = null)
+    {
+        $this->lastLoginAt = $lastLoginAt;
+
+        return $this;
+    }
+
+    /**
      * @return \DateTime|null
      */
     public function getLastActiveAt()
     {
         return $this->lastActiveAt;
+    }
+
+    /**
+     * @param \DateTime|null $lastActiveAt
+     *
+     * @return $this
+     */
+    public function setLastActiveAt(\DateTime $lastActiveAt = null)
+    {
+        $this->lastActiveAt = $lastActiveAt;
+
+        return $this;
     }
 
     /**
