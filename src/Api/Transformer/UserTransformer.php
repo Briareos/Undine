@@ -3,6 +3,7 @@
 namespace Undine\Api\Transformer;
 
 use League\Fractal\ParamBag;
+use Undine\Model\Site;
 use Undine\Model\User;
 
 class UserTransformer extends AbstractTransformer
