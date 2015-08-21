@@ -6,7 +6,7 @@ use Undine\Api\Serializer\Context;
 use Undine\Api\Serializer\Normalizer;
 use Undine\Model\User;
 
-class AuthTestResult extends AbstractResult
+class ApiMeResult extends AbstractResult
 {
     /**
      * @var User

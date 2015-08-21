@@ -19,6 +19,7 @@
         </service>
 
         <service id="undine.listener.api_result" class="Undine\EventListener\ApiResultListener">
+            <argument type="service" id="undine.normalizer"/>
             <argument type="service" id="undine.request_matcher.api"/>
             <argument type="service" id="security.token_storage"/>
             <tag name="kernel.event_subscriber"/>

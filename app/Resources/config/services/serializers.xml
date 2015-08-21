@@ -6,10 +6,21 @@
 
     <services>
 
-        <service id="undine.serializer" class="League\Fractal\Serializer\DataArraySerializer">
+        <service id="undine.normalizer" class="Undine\Api\Serializer\Normalizer">
+            <argument type="service" id="undine.serializer.manager"/>
+            <argument type="service" id="undine.serializer.registry"/>
         </service>
 
-        <service id="undine.serializer.registry" class="Undine\Api\Transformer\TransformerRegistry">
+        <service id="undine.serializer.manager" class="League\Fractal\Manager">
+            <call method="setSerializer">
+                <argument type="service" id="undine.serializer.serializer"/>
+            </call>
+        </service>
+
+        <service id="undine.serializer.serializer" class="Undine\Api\Serializer\ApiSerializer" public="false">
+        </service>
+
+        <service id="undine.serializer.registry" class="Undine\Api\Transformer\TransformerRegistry" public="false">
         </service>
 
         <service id="undine.serializer.transformer.user" class="Undine\Api\Transformer\UserTransformer" public="false" lazy="true">

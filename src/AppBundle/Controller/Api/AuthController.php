@@ -3,6 +3,7 @@
 namespace Undine\AppBundle\Controller\Api;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Undine\Api\Result\AuthTestResult;
 use Undine\AppBundle\Controller\AppController;
 use Undine\Configuration\ApiResult;
 
@@ -14,6 +15,6 @@ class AuthController extends AppController
      */
     public function testAction()
     {
-        return new AuthTestResult();
+        return new AuthTestResult($this->getUser());
     }
 }

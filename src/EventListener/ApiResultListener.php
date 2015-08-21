@@ -16,18 +16,22 @@ use Undine\Api\Constraint\SecurityConstraint;
 use Undine\Api\Exception\CommandInvalidException;
 use Undine\Api\Exception\ConstraintViolationException;
 use Undine\Api\Result\ResultInterface;
+use Undine\Api\Serializer\Context;
+use Undine\Api\Serializer\Normalizer;
 
 class ApiResultListener implements EventSubscriberInterface
 {
+    private $normalizer;
+
     private $requestMatcher;
 
     private $tokenStorage;
 
-    public function __construct(RequestMatcherInterface $requestMatcher, TokenStorage $tokenStorage)
+    public function __construct(Normalizer $normalizer, RequestMatcherInterface $requestMatcher, TokenStorage $tokenStorage)
     {
-//        $this->serialzier = $no
+        $this->normalizer     = $normalizer;
         $this->requestMatcher = $requestMatcher;
-        $this->tokenStorage = $tokenStorage;
+        $this->tokenStorage   = $tokenStorage;
     }
 
     /**
@@ -53,11 +57,13 @@ class ApiResultListener implements EventSubscriberInterface
         if (!$result instanceof ResultInterface) {
             throw new \RuntimeException(sprintf('API controller result must be an instance of %s.', ResultInterface::class));
         }
-        // Make the 'ok' property first.
-        $result = array_merge(['ok' => true], $result->getData());
 
-        // @todo: add logic or whatever
-        $data = json_encode($result);
+        $includes = $request->get('include', null);
+        $context  = new Context(is_scalar($includes) ? $includes : '');
+
+        // Make the 'ok' property first.
+        $result = array_merge(['ok' => true], $result->normalize($this->normalizer, $context));
+        $data   = json_encode($result);
 
         $response = new Response($data, 200, ['content-type' => 'application/json']);
 
