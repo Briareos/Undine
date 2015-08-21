@@ -12,6 +12,7 @@
 
         <field name="email" type="string" length="255"/>
         <field name="password" type="string" length="255" nullable="true"/>
+        <field name="apiToken" type="string" length="255" nullable="true"/>
         <field name="createdAt" type="datetime">
             <gedmo:timestampable on="create"/>
         </field>

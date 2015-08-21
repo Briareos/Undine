@@ -4,21 +4,21 @@ namespace Undine\Api\Result;
 
 use Undine\Api\Serializer\Context;
 use Undine\Api\Serializer\Normalizer;
-use Undine\Model\User;
+use Undine\Model\Site;
 
-class AuthTestResult extends AbstractResult
+class SiteConnectResult extends AbstractResult
 {
     /**
-     * @var User
+     * @var Site
      */
-    private $user;
+    private $site;
 
     /**
-     * @param User $user
+     * @param Site $site
      */
-    public function __construct(User $user)
+    public function __construct(Site $site)
     {
-        $this->user = $user;
+        $this->site = $site;
     }
 
     /**
@@ -27,7 +27,7 @@ class AuthTestResult extends AbstractResult
     public function normalize(Normalizer $normalizer, Context $context)
     {
         return [
-            'user' => $normalizer->normalizeObject($this->user, $context),
+            'site' => $normalizer->normalizeObject($this->site, $context),
         ];
     }
 }
