@@ -38,6 +38,16 @@
 </div>
 
 <div class="ui admin body container">
+    {% if app.session.flashbag.has('success') %}
+        <div class="ui positive message">
+            {% for flashMessage in app.session.flashBag.get('success') %}
+                <p>
+                    {{ flashMessage }}
+                </p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     {{ block('body') }}
 </div>
 

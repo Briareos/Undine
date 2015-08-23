@@ -38,12 +38,12 @@
                 <td>
                     <div class="two ui buttons">
                         <a class="ui labeled icon primary button" href="{{ path('admin-staff_edit', {id: staff.id}) }}">
-                            <i class="ui user icon"></i>
+                            <i class="user icon"></i>
                             Edit
                         </a>
 
                         <a class="ui right labeled icon negative button" href="{{ path('admin-staff_delete', {id: staff.id}) }}">
-                            <i class="ui erase icon"></i>
+                            <i class="erase icon"></i>
                             Delete
                         </a>
                     </div>
@@ -52,4 +52,9 @@
         {% endfor %}
         </tbody>
     </table>
+
+    <a href="{{ path('admin-staff_create') }}" class="ui labeled icon primary button">
+        <i class="user icon"></i>
+        Create a new member
+    </a>
 {% endblock %}

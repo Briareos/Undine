@@ -18,7 +18,9 @@
         }
     </style>
 
-    <h2>View staff member</h2>
+    <h2>Delete staff member</h2>
+
+    <p>Are you sure you want to delete the following staff member?</p>
 
     <table class="ui definition table">
         <tbody>
@@ -43,20 +45,17 @@
         <tr>
             <td></td>
             <td>
-                <a class="ui labeled icon primary button" href="{{ path('admin-staff_edit', {id: staff.id}) }}">
-                    <i class="user icon"></i>
-                    Edit
-                </a>
-
-                <a class="ui labeled icon negative button" href="{{ path('admin-staff_delete', {id: staff.id}) }}">
+                {{ form_start(deleteForm) }}
+                <button class="ui labeled icon negative button">
                     <i class="erase icon"></i>
                     Delete
-                </a>
+                </button>
 
-                <a class="ui labeled icon button" href="{{ path('admin-staff_list') }}">
+                <a class="ui labeled icon button" href="{{ path('admin-staff_view', {id: staff.id}) }}">
                     <i class="angle left icon"></i>
                     Back
                 </a>
+                {{ form_end(deleteForm) }}
             </td>
         </tr>
         </tbody>

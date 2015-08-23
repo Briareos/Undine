@@ -47,6 +47,7 @@ class StaffController extends AppController
             $staff = $createForm->getData();
             $this->em->persist($staff);
             $this->em->flush($staff);
+            $this->addFlash('success', 'Staff member created.');
 
             return $this->redirectToRoute('admin-staff_view', ['id' => $staff->getId()]);
         }
@@ -93,9 +94,7 @@ class StaffController extends AppController
     {
         $deleteForm = $this->createFormBuilder(null, [
             'method' => 'DELETE',
-        ])
-            ->add('id', 'hidden', ['data' => $staff->getId()])
-            ->getForm();
+        ])->getForm();
 
         $deleteForm->handleRequest($request);
         if ($deleteForm->isValid()) {
