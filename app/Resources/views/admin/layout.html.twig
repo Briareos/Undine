@@ -20,21 +20,7 @@
 <body>
 
 <div class="ui secondary pointing menu">
-    <div class="ui container">
-        <a href="{{ path('admin-home') }}" class="item">
-            Admin
-        </a>
-
-        <a href="{{ path('admin-staff_list') }}" class="item">
-            List staff
-        </a>
-
-        <div class="right menu">
-            <a href="{{ logout_url('admin') }}" class="item">
-                Logout
-            </a>
-        </div>
-    </div>
+    {{ knp_menu_render('AppBundle:Builder:adminMenu', {currentClass: 'active'}, 'semantic-ui') }}
 </div>
 
 <div class="ui admin body container">

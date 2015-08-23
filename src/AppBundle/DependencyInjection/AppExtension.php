@@ -22,5 +22,6 @@ class AppExtension extends Extension
         $loader->load('twig.xml');
         $loader->load('emails.xml');
         $loader->load('serializers.xml');
+        $loader->load('menu.xml');
     }
 }
