@@ -4,4 +4,12 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
+    <services>
+
+        <service id="undine.form.type.api.site_connect" class="Undine\Form\Type\Api\SiteConnectType">
+            <tag name="form.type" alias="api__site_connect"/>
+        </service>
+
+    </services>
+
 </container>
