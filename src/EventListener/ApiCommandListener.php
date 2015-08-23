@@ -32,12 +32,12 @@ class ApiCommandListener implements EventSubscriberInterface
     {
         $request = $event->getRequest();
 
-        if (!$request->attributes->has('_api_form')) {
+        if (!$request->attributes->has('_api_command')) {
             return;
         }
 
         /** @var ApiCommand $apiCommand */
-        $apiCommand = $request->attributes->get('_api_form');
+        $apiCommand = $request->attributes->get('_api_command');
 
         $type = $apiCommand->getType();
 

@@ -128,6 +128,11 @@ class User implements UserInterface, UidInterface, UserActivityAwareInterface
         return $this;
     }
 
+    public function hasApiToken()
+    {
+        return (bool)strlen($this->apiToken);
+    }
+
     /**
      * @return string|null
      */
@@ -139,7 +144,7 @@ class User implements UserInterface, UidInterface, UserActivityAwareInterface
     /**
      * @param string|null $apiToken
      */
-    public function setApiToken($apiToken)
+    public function setApiToken($apiToken = null)
     {
         $this->apiToken = $apiToken;
     }

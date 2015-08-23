@@ -39,6 +39,11 @@
             <argument type="service" id="doctrine.repository.user"/>
         </service>
 
+        <service id="undine.security.api_token_manager" class="Undine\Security\User\ApiTokenManager">
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
+            <argument type="service" id="security.secure_random"/>
+        </service>
+
     </services>
 
 </container>
