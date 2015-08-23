@@ -49,4 +49,12 @@ class SecurityController extends AppController
     {
         throw new \LogicException('This method should be intercepted by the firewall.');
     }
+
+    /**
+     * @Route("/logout", name="web-logout")
+     */
+    public function logoutAction()
+    {
+        throw new \LogicException('This method should be intercepted by the firewall.');
+    }
 }

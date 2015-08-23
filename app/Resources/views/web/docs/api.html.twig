@@ -3,11 +3,27 @@
 {% block body %}
 
     {% if app.user %}
-        {% if app.user.apiToken %}
-            <button class="ui green button">Create token</button>
+
+        {% if token is defined %}
+
+            <code>{{ token }}</code>
+
+            {{ form_start(regenerateForm) }}
+            {{ form_widget(regenerateForm) }}
+            <button type="submit" class="ui blue button">Re-issue token</button>
+            {{ form_end(regenerateForm) }}
+
+            {{ form_start(deleteForm) }}
+            {{ form_widget(deleteForm) }}
+            <button type="submit" class="ui red button">Delete token</button>
+            {{ form_end(deleteForm) }}
         {% else %}
-            <button class="ui blue button">Re-issue token</button>
+            {{ form_start(createForm) }}
+            {{ form_widget(createForm) }}
+            <button type="submit" class="ui green button">Create token</button>
+            {{ form_end(createForm) }}
         {% endif %}
+
     {% else %}
         <div class="ui blue message">
             You must <a href="{{ path('web-login') }}">log in</a> to view the API access token on this page.
