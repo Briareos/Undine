@@ -6,7 +6,13 @@
 
         {% if token is defined %}
 
-            <code>{{ token }}</code>
+            <strong>Token:</strong> <code>{{ token }}</code>
+
+            <br>
+
+            <strong>Test access:</strong> <a href="{{ url('api-auth.test', {token:token}) }}">{{ url('api-auth.test', {token:token}) }}</a>
+
+            <br>
 
             {{ form_start(regenerateForm) }}
             {{ form_widget(regenerateForm) }}
