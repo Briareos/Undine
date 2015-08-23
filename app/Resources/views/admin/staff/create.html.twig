@@ -22,39 +22,44 @@
         }
     </style>
 
-    <h2>Edit staff member</h2>
+    <h2>Create staff member</h2>
 
-    {{ form_start(editForm) }}
+    {{ form_start(createForm) }}
+
+    <!-- Prevent browsers from autofilling email/password - http://stackoverflow.com/a/23646111 -->
+    <input type="email" style="display: none;" value="ignorerememberme@example.com">
+    <input type="password" style="display: none;" value="ignorerememberme">
+
     <table class="ui definition table">
         <tbody>
         <tr>
             <td>Name</td>
             <td>
                 <div class="ui input">
-                    {{ form_widget(editForm.name) }}
+                    {{ form_widget(createForm.name) }}
                 </div>
 
-                {{ form_errors(editForm.name) }}
+                {{ form_errors(createForm.name) }}
             </td>
         </tr>
         <tr>
             <td>Email</td>
             <td>
                 <div class="ui input">
-                    {{ form_widget(editForm.email) }}
+                    {{ form_widget(createForm.email) }}
                 </div>
 
-                {{ form_errors(editForm.email) }}
+                {{ form_errors(createForm.email) }}
             </td>
         </tr>
         <tr>
             <td>Password</td>
             <td>
                 <div class="ui input">
-                    {{ form_widget(editForm.plainPassword) }}
+                    {{ form_widget(createForm.plainPassword) }}
                 </div>
 
-                {{ form_errors(editForm.plainPassword) }}
+                {{ form_errors(createForm.plainPassword) }}
             </td>
         </tr>
         <tr>
@@ -62,7 +67,7 @@
             <td>
                 <button type="submit" class="ui labeled icon primary button">
                     <i class="ui checkmark icon"></i>
-                    Save
+                    Create
                 </button>
                 <a href="{{ path('admin-staff_list') }}" class="ui labeled icon button">
                     <i class="ui angle left icon"></i>
@@ -72,5 +77,5 @@
         </tr>
         </tbody>
     </table>
-    {{ form_end(editForm) }}
+    {{ form_end(createForm) }}
 {% endblock %}
