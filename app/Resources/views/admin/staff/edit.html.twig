@@ -25,6 +25,11 @@
     <h2>Edit staff member</h2>
 
     {{ form_start(editForm) }}
+
+    <!-- Prevent browsers from autofilling email/password - http://stackoverflow.com/a/23646111 -->
+    <input type="email" style="display: none;" value="ignorerememberme@example.com">
+    <input type="password" style="display: none;" value="ignorerememberme">
+
     <table class="ui definition table">
         <tbody>
         <tr>

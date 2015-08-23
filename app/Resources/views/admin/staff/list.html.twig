@@ -26,7 +26,8 @@
                         <img src="{{ gravatar_url(staff.email) }}" class="ui mini rounded image"/>
 
                         <div class="content">
-                            {{ staff.name }}
+                            <a href="{{ path('admin-staff_view', {id: staff.id}) }}">{{ staff.name }}</a>
+
                             <div class="sub header">{{ staff.email }}</div>
                         </div>
                     </div>

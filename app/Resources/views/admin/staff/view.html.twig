@@ -1,0 +1,66 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block body %}
+    <style>
+        .table td:first-child {
+            width: 10%;
+            min-width: 100px;
+            white-space: nowrap;
+        }
+
+        .ui.admin.body.container {
+            max-width: 500px !important;
+        }
+
+        .table .ui.button {
+            /* Fixes a semantic css bug where the buttons are not aligned */
+            vertical-align: bottom;
+        }
+    </style>
+
+    <h2>View staff member</h2>
+
+    <table class="ui definition table">
+        <tbody>
+        <tr>
+            <td>Name</td>
+            <td>
+                {{ staff.name }}
+            </td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td>
+                {{ staff.email }}
+            </td>
+        </tr>
+        <tr>
+            <td>Last active at</td>
+            <td title="{{ staff.lastActiveAt | date('h:i d.m.Y.') }}">
+                {{ staff.lastActiveAt | time_diff }}
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div class="three ui buttons">
+                    <a class="ui labeled icon primary button" href="{{ path('admin-staff_edit', {id: staff.id}) }}">
+                        <i class="ui user icon"></i>
+                        Edit
+                    </a>
+
+                    <a class="ui labeled icon negative button" href="{{ path('admin-staff_delete', {id: staff.id}) }}">
+                        <i class="ui erase icon"></i>
+                        Delete
+                    </a>
+
+                    <a class="ui labeled icon button" href="{{ path('admin-staff_list') }}">
+                        <i class="ui angle left icon"></i>
+                        Back
+                    </a>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+{% endblock %}
