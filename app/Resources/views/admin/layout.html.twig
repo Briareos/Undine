@@ -23,6 +23,10 @@
     {{ knp_menu_render('AppBundle:Builder:adminMenu', {currentClass: 'active'}, 'semantic-ui') }}
 </div>
 
+<div class="ui container">
+    {{ knp_menu_render('AppBundle:Breadcrumbs:breadcrumbsMenu', {currentClass: 'active'}, 'semantic-ui-breadcrumbs') }}
+</div>
+
 <div class="ui admin body container">
     {% if app.session.flashbag.has('success') %}
         <div class="ui positive message">

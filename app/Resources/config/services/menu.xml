@@ -6,11 +6,18 @@
 
     <services>
 
-        <service id="knp_menu.semantic_renderer" class="Undine\AppBundle\Menu\SemanticMenuRenderer" lazy="true">
+        <service id="knp_menu.semantic_menu_renderer" class="Undine\AppBundle\Menu\SemanticMenuRenderer" lazy="true">
             <argument type="service" id="knp_menu.matcher"/>
             <argument>%knp_menu.renderer.list.options%</argument>
             <argument>%kernel.charset%</argument>
             <tag name="knp_menu.renderer" alias="semantic-ui"/>
+        </service>
+
+        <service id="knp_menu.semantic_breadcrumbs_renderer" class="Undine\AppBundle\Menu\SemanticBreadcrumbsRenderer" lazy="true">
+            <argument type="service" id="knp_menu.matcher"/>
+            <argument>%knp_menu.renderer.list.options%</argument>
+            <argument>%kernel.charset%</argument>
+            <tag name="knp_menu.renderer" alias="semantic-ui-breadcrumbs"/>
         </service>
 
     </services>
