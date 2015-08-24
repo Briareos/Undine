@@ -20,7 +20,17 @@ class User implements UserInterface, UidInterface, UserActivityAwareInterface
     /**
      * @var string
      */
+    private $name;
+
+    /**
+     * @var string
+     */
     private $email;
+
+    /**
+     * @var string|null
+     */
+    private $plainPassword;
 
     /**
      * @var string|null
@@ -86,11 +96,35 @@ class User implements UserInterface, UidInterface, UserActivityAwareInterface
     }
 
     /**
+     * @param null|string $password
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getSalt()
     {
         return null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
     }
 
     /**
@@ -130,7 +164,7 @@ class User implements UserInterface, UidInterface, UserActivityAwareInterface
 
     public function hasApiToken()
     {
-        return (bool)strlen($this->apiToken);
+        return (bool) strlen($this->apiToken);
     }
 
     /**
@@ -203,6 +237,22 @@ class User implements UserInterface, UidInterface, UserActivityAwareInterface
         $this->lastActiveAt = $lastActiveAt;
 
         return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getPlainPassword()
+    {
+        return $this->plainPassword;
+    }
+
+    /**
+     * @param null|string $plainPassword
+     */
+    public function setPlainPassword($plainPassword)
+    {
+        $this->plainPassword = $plainPassword;
     }
 
     /**

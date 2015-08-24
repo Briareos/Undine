@@ -8,6 +8,7 @@ use Knp\Menu\ItemInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Undine\Model\Staff;
+use Undine\Model\User;
 
 class Breadcrumbs implements ContainerAwareInterface
 {
@@ -27,6 +28,10 @@ class Breadcrumbs implements ContainerAwareInterface
 
         if (strncmp($route, 'admin-staff', strlen('admin-staff')) === 0) {
             $this->staffMenu($menu);
+        }
+
+        if (strncmp($route, 'admin-user', strlen('admin-user')) === 0) {
+            $this->userMenu($menu);
         }
 
         return $menu;
@@ -56,6 +61,37 @@ class Breadcrumbs implements ContainerAwareInterface
             'admin-staff_create' => 'Create',
             'admin-staff_edit'   => 'Edit',
             'admin-staff_delete' => 'Delete',
+        ];
+
+        if (isset($routeLabelMap[$route])) {
+            $menu->addChild($routeLabelMap[$route]);
+        }
+    }
+
+    private function userMenu(ItemInterface $menu)
+    {
+        $route  = $this->getRoute();
+        $userId = $this->getRequestAttribute('id');
+
+        if ($userId !== null) {
+            /** @var User $user */
+            $user = $this->getEntityManager()->find(User::class, $userId);
+        }
+
+        $menu->addChild('User', ['route' => 'admin-user_list']);
+
+        if (isset($user) && in_array($route, ['admin-user_view', 'admin-user_edit', 'admin-user_delete'])) {
+            $menu->addChild($user->getEmail(),
+                [
+                    'route'           => 'admin-user_view',
+                    'routeParameters' => ['id' => $userId],
+                ]);
+        }
+
+        $routeLabelMap = [
+            'admin-user_create' => 'Create',
+            'admin-user_edit'   => 'Edit',
+            'admin-user_delete' => 'Delete',
         ];
 
         if (isset($routeLabelMap[$route])) {

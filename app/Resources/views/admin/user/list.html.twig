@@ -8,41 +8,39 @@
         }
     </style>
 
-    <h2>Awesome Staff</h2>
-
     <table class="ui striped celled padded table">
         <thead>
         <tr>
-            <th>Staff Member</th>
+            <th>User</th>
             <th>Last active at</th>
             <th>Actions</th>
         </tr>
         </thead>
         <tbody>
-        {% for staff in staffMembers %}
+        {% for user in users %}
             <tr>
                 <td>
                     <div class="ui image header">
-                        <img src="{{ gravatar_url(staff.email) }}" class="ui mini rounded image"/>
+                        <img src="{{ gravatar_url(user.email) }}" class="ui mini rounded image"/>
 
                         <div class="content">
-                            <a href="{{ path('admin-staff_view', {id: staff.id}) }}">{{ staff.name }}</a>
+                            <a href="{{ path('admin-user_view', {id: user.id}) }}">{{ user.name }}</a>
 
-                            <div class="sub header">{{ staff.email }}</div>
+                            <div class="sub header">{{ user.email }}</div>
                         </div>
                     </div>
                 </td>
-                <td title="{{ staff.lastActiveAt | date('h:i d.m.Y.') }}">
-                    {{ staff.lastActiveAt | time_diff }}
+                <td title="{{ user.lastActiveAt | date('h:i d.m.Y.') }}">
+                    {{ user.lastActiveAt | time_diff }}
                 </td>
                 <td>
                     <div class="two ui buttons">
-                        <a class="ui labeled icon primary button" href="{{ path('admin-staff_edit', {id: staff.id}) }}">
+                        <a class="ui labeled icon primary button" href="{{ path('admin-user_edit', {id: user.id}) }}">
                             <i class="user icon"></i>
                             Edit
                         </a>
 
-                        <a class="ui right labeled icon negative button" href="{{ path('admin-staff_delete', {id: staff.id}) }}">
+                        <a class="ui right labeled icon negative button" href="{{ path('admin-user_delete', {id: user.id}) }}">
                             <i class="erase icon"></i>
                             Delete
                         </a>
@@ -53,8 +51,8 @@
         </tbody>
     </table>
 
-    <a href="{{ path('admin-staff_create') }}" class="ui labeled icon primary button">
+    <a href="{{ path('admin-user_create') }}" class="ui labeled icon primary button">
         <i class="user icon"></i>
-        Create a new member
+        Create a new user
     </a>
 {% endblock %}

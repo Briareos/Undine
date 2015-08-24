@@ -30,6 +30,34 @@ class UserController extends AppController
     }
 
     /**
+     * @Method("GET|POST")
+     * @Route("/create", name="admin-user_create")
+     * @Template("admin/user/create.html.twig")
+     */
+    public function createAction(Request $request)
+    {
+        $createForm = $this->createForm('user', null, [
+            'method'            => 'POST',
+            'validation_groups' => ['create'],
+        ]);
+
+        $createForm->handleRequest($request);
+        if ($createForm->isValid()) {
+            /** @var User $user */
+            $user = $createForm->getData();
+            $this->em->persist($user);
+            $this->em->flush($user);
+            $this->addFlash('success', 'Staff member created.');
+
+            return $this->redirectToRoute('admin-user_view', ['id' => $user->getId()]);
+        }
+
+        return [
+            'createForm' => $createForm->createView(),
+        ];
+    }
+
+    /**
      * @Method("GET|PUT")
      * @Route("/{id}/edit", name="admin-user_edit")
      * @ParamConverter("user", class="Model:User")

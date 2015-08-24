@@ -1,0 +1,58 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block body %}
+    <style>
+        .table td:first-child {
+            width: 10%;
+            min-width: 100px;
+            white-space: nowrap;
+        }
+
+        .ui.admin.body.container {
+            max-width: 550px !important;
+        }
+
+        .table .ui.button {
+            /* Fixes a semantic css bug where the buttons are not aligned */
+            vertical-align: bottom;
+        }
+    </style>
+
+    <h2>Delete user</h2>
+
+    <p>Are you sure you want to delete the following user member?</p>
+
+    <table class="ui definition table">
+        <tbody>
+        <tr>
+            <td>Name</td>
+            <td>
+                {{ user.name }}
+            </td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td>
+                {{ user.email }}
+            </td>
+        </tr>
+        <tr>
+            <td>Last active at</td>
+            <td title="{{ user.lastActiveAt | date('h:i d.m.Y.') }}">
+                {{ user.lastActiveAt | time_diff }}
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                {{ form_start(deleteForm) }}
+                <button class="ui labeled icon negative button">
+                    <i class="erase icon"></i>
+                    Delete
+                </button>
+                {{ form_end(deleteForm) }}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+{% endblock %}

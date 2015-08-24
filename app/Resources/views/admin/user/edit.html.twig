@@ -1,0 +1,77 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block body %}
+    <style>
+        .table td:first-child {
+            width: 10%;
+            min-width: 100px;
+            white-space: nowrap;
+        }
+
+        .ui.admin.body.container {
+            max-width: 550px !important;
+        }
+
+        .ui.input {
+            width: 100%;
+        }
+
+        .table .ui.button {
+            /* Fixes a semantic css bug where the buttons are not aligned */
+            vertical-align: bottom;
+        }
+    </style>
+
+    <h2>Edit user</h2>
+
+    {{ form_start(editForm) }}
+
+    <!-- Prevent browsers from autofilling email/password - http://stackoverflow.com/a/23646111 -->
+    <input type="email" style="display: none;" value="ignorerememberme@example.com">
+    <input type="password" style="display: none;" value="ignorerememberme">
+
+    <table class="ui definition table">
+        <tbody>
+        <tr>
+            <td>Name</td>
+            <td>
+                <div class="ui input">
+                    {{ form_widget(editForm.name) }}
+                </div>
+
+                {{ form_errors(editForm.name) }}
+            </td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td>
+                <div class="ui input">
+                    {{ form_widget(editForm.email) }}
+                </div>
+
+                {{ form_errors(editForm.email) }}
+            </td>
+        </tr>
+        <tr>
+            <td>Password</td>
+            <td>
+                <div class="ui input">
+                    {{ form_widget(editForm.plainPassword) }}
+                </div>
+
+                {{ form_errors(editForm.plainPassword) }}
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" class="ui labeled icon primary button">
+                    <i class="checkmark icon"></i>
+                    Save
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    {{ form_end(editForm) }}
+{% endblock %}

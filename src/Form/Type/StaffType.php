@@ -30,7 +30,11 @@ class StaffType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('name', 'text');
-        $builder->add('email', 'email');
+        $builder->add('email', 'email', [
+            'constraints' => [
+                new NotBlank(['groups' => ['create']]),
+            ],
+        ]);
         $builder->add('plainPassword', 'password', [
             'constraints' => [
                 new NotBlank(['groups' => ['create']]),
