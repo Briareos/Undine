@@ -23,5 +23,6 @@ class AppExtension extends Extension
         $loader->load('emails.xml');
         $loader->load('serializers.xml');
         $loader->load('menu.xml');
+        $loader->load('oxygen.xml');
     }
 }

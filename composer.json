@@ -5,6 +5,7 @@
     "description": "Undine application for Drupal site management.",
     "autoload": {
         "psr-4": {
+            "Undine\\Tests\\": "tests/",
             "Undine\\": "src/"
         },
         "files": [
