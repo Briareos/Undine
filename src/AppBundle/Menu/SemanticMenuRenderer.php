@@ -77,14 +77,19 @@ class SemanticMenuRenderer extends ListRenderer
             $attributes['class'] = implode(' ', $class);
         }
 
-        $html = '';
-        if ($item->hasChildren()) {
+        $html        = '';
+        $isRightMenu = $item->getExtra('type', 'left-menu') === 'right-menu';
+
+        // Don't render the container if the menu has children but is a right aligned menu
+        if ($item->hasChildren() && !$isRightMenu) {
             // opening li tag
             $html = $this->format('<div'.$this->renderHtmlAttributes($attributes).'>', 'li', $item->getLevel(), $options);
         }
 
         // render the text/link inside the li tag
-        $html .= $this->renderLink($item, $options);
+        if (!$isRightMenu) {
+            $html .= $this->renderLink($item, $options);
+        }
 
         if ($item->hasChildren()) {
             // renders the embedded ul
@@ -136,10 +141,14 @@ class SemanticMenuRenderer extends ListRenderer
             $attributes['class'] = $attributes['class'].' active';
         }
 
-        return sprintf('<a href="%s"%s>%s</a>',
+        $position = $item->getExtra('position', 'left');
+
+        $link = sprintf('<a href="%s"%s>%s</a>',
             $this->escape($item->getUri()),
             $this->renderHtmlAttributes($attributes),
             $this->renderLabel($item, $options)
         );
+
+        return $link;
     }
 }
