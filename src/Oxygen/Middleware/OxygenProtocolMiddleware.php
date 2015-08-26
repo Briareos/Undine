@@ -2,22 +2,21 @@
 
 namespace Undine\Oxygen\Middleware;
 
+use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Util\SecureRandomInterface;
 use Undine\Model\Site;
 use Undine\Oxygen\Action\ActionInterface;
+use Undine\Oxygen\Reaction\ReactionInterface;
 
 /**
  * This class should map the fields 1:1 to Oxygen_EventListener_ProtocolListener.
  */
 class OxygenProtocolMiddleware
 {
-    private static $schemePortMap = [
-        'http'  => 80,
-        'https' => 443,
-    ];
-
     /**
      * @var string
      */
@@ -68,7 +67,7 @@ class OxygenProtocolMiddleware
 
     public static function create($moduleVersion, SecureRandomInterface $secureRandom, \DateTime $currentTime, $handshakeKeyName, $handshakeKeyValue)
     {
-        return function (callable $nextHandler) use($moduleVersion, $secureRandom, $currentTime, $handshakeKeyName, $handshakeKeyValue) {
+        return function (callable $nextHandler) use ($moduleVersion, $secureRandom, $currentTime, $handshakeKeyName, $handshakeKeyValue) {
             return new self($moduleVersion, $secureRandom, $currentTime, $handshakeKeyName, $handshakeKeyValue, $nextHandler);
         };
     }
@@ -81,7 +80,7 @@ class OxygenProtocolMiddleware
             throw new \RuntimeException(sprintf('The option "oxygen_site" is expected to contain an instance of %s.', Site::class));
         }
 
-        if (!isset($options['oxygen_action']) || !$options['oxygen_action'] instanceof Site) {
+        if (!isset($options['oxygen_action']) || !$options['oxygen_action'] instanceof ActionInterface) {
             throw new \RuntimeException(sprintf('The option "oxygen_action" is expected to contain an instance of %s.', ActionInterface::class));
         }
 
@@ -92,7 +91,10 @@ class OxygenProtocolMiddleware
 
         $nonce = $this->generateNonce();
 
+        $requestId = bin2hex($this->secureRandom->nextBytes(20));
+
         $requestData = [
+            'oxygenRequestId'    => $requestId,
             'nonce'              => $nonce,
             'publicKey'          => $site->getPublicKey(),
             'signature'          => $this->sign($site->getPrivateKey(), $nonce),
@@ -104,9 +106,39 @@ class OxygenProtocolMiddleware
             'actionParameters'   => $action->getParameters(),
         ];
 
-        $oxygenRequest = $request->withBody(\GuzzleHttp\Psr7\stream_for(json_encode($requestData)));
+        $oxygenRequest = $request
+            ->withHeader('accept', 'text/html,application/oxygen')
+            ->withBody(\GuzzleHttp\Psr7\stream_for(json_encode($requestData)));
 
-        return $fn($oxygenRequest, $options);
+        return $fn($oxygenRequest, $options)
+            ->then(function (ResponseInterface $response) use ($request, $requestId, $action) {
+                $contentType = $response->getHeaderLine('content-type');
+
+                if (!preg_match('{^application/json($|;)$}', $contentType)) {
+                    throw new RequestException('Content type header should be "application/json".', $request, $response);
+                }
+
+                $data = \Undine\Functions\json_parse($response->getBody());
+
+                if (!is_array($data)
+                    || !isset($data['actionResult'])
+                    || !is_array($data['actionResult'])
+                    || !isset($data['oxygenResponseId'])
+                    || $data['oxygenResponseId'] !== $requestId
+                ) {
+                    throw new RequestException('Unexpected response gotten', $request, $response);
+                }
+
+                $reactionClass = $action->getReactionClass();
+                /** @var ReactionInterface $reaction */
+                $reaction = new $reactionClass();
+                $resolver = new OptionsResolver();
+                $reaction->configureOptions($resolver);
+                $parsedData = $resolver->resolve($data['actionResult']);
+                $reaction->setData($parsedData);
+
+                return $reaction;
+            });
     }
 
     /**
@@ -120,6 +152,8 @@ class OxygenProtocolMiddleware
     /**
      * @param string $privateKey
      * @param string $data
+     *
+     * @return string Base64-encoded signature.
      */
     private function sign($privateKey, $data)
     {
@@ -136,7 +170,7 @@ class OxygenProtocolMiddleware
             throw new \RuntimeException(sprintf('Failed to sign data using private key; last error: %s; OpenSSL error: %s', $lastError['message'], $opensslError));
         }
 
-        return $signature;
+        return base64_encode($signature);
     }
 
     /**
@@ -150,11 +184,6 @@ class OxygenProtocolMiddleware
      */
     private function getUrlSlug(UriInterface $url)
     {
-        $port = '';
-        if ($url->getPort() !== self::$schemePortMap[$url->getScheme()]) {
-            $port = ':'.$url->getPort();
-        }
-
-        return sprintf('%s%s%s', $url->getHost(), $port, rtrim($url->getPath(), '/'));
+        return sprintf('%s%s%s', $url->getHost(), ($url->getPort() ? ':'.$url->getPort() : ''), rtrim($url->getPath(), '/'));
     }
 }

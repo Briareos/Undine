@@ -2,7 +2,25 @@
 
 namespace Undine\Oxygen\Reaction;
 
-class PingReaction
-{
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
+class PingReaction extends AbstractReaction
+{
+    /**
+     * @param OptionsResolver $resolver
+     */
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefined('pong');
+        $resolver->setRequired('pong');
+        $resolver->setAllowedTypes('pong', 'string');
+    }
+
+    /**
+     * @return string
+     */
+    public function getPong()
+    {
+        return $this->data['pong'];
+    }
 }

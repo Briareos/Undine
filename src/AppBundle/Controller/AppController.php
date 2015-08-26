@@ -9,6 +9,7 @@ use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\FormTypeInterface;
 use Undine\Model\User;
+use Undine\Oxygen\Client;
 use Undine\Repository\StaffRepository;
 use Undine\Repository\UserRepository;
 
@@ -17,6 +18,7 @@ use Undine\Repository\UserRepository;
  * @property UserRepository           $userRepository
  * @property StaffRepository          $staffRepository
  * @property EventDispatcherInterface $dispatcher
+ * @property Client                   $oxygenClient
  */
 abstract class AppController extends Controller
 {
@@ -31,6 +33,8 @@ abstract class AppController extends Controller
                 return $this->get('doctrine.repository.staff');
             case 'dispatcher':
                 return $this->get('event_dispatcher');
+            case 'oxygenClient':
+                return $this->get('undine.oxygen.client');
             default:
                 throw new \BadMethodCallException();
         }
