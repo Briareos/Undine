@@ -33,6 +33,16 @@ class Site implements UidInterface
     private $siteKey;
 
     /**
+     * @var string
+     */
+    private $privateKey;
+
+    /**
+     * @var string
+     */
+    private $publicKey;
+
+    /**
      * @var \DateTime
      */
     private $createdAt;
@@ -40,11 +50,15 @@ class Site implements UidInterface
     /**
      * @param UriInterface $url
      * @param User         $user
+     * @param string       $privateKey
+     * @param string       $publicKey
      */
-    public function __construct(UriInterface $url, User $user)
+    public function __construct(UriInterface $url, User $user, $privateKey, $publicKey)
     {
-        $this->url = $url;
-        $this->user = $user;
+        $this->url        = $url;
+        $this->user       = $user;
+        $this->privateKey = $privateKey;
+        $this->publicKey  = $publicKey;
     }
 
     /**
@@ -101,6 +115,22 @@ class Site implements UidInterface
         $this->siteKey = $siteKey;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPrivateKey()
+    {
+        return $this->privateKey;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPublicKey()
+    {
+        return $this->publicKey;
     }
 
     /**

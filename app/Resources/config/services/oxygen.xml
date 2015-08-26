@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+
+        <parameter key="oxygen_private_key_name">undine</parameter>
+        <parameter key="oxygen_private_key_value">-----BEGIN PRIVATE KEY-----
+MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCwG38/ZcW36oAl
+Ig+VWvv7MVXBZgeXR/H/g4kEr5mVZfd+tifMKHtSLA1J0EWpERc+E4+36n+TAOpA
+UruOacydzLYOMQUrF1j5PotBu65qIH0DFJzrwjE1Y+j8ktMW1wZ1HDyopXjBmeC6
+HjUp/ibg661VuDqcI5+fsxV9k2rm00cXrK5RP0TXC31WtIutZ+1VpSH1B5H9I4DH
+kYLrzUz737GIp2TfkLliiGuaQ8wh40tnNh7qchG37fYQB83cBKcD32UliRrN24i2
+LzGSyoJWTT3r2QVC0eLw4PeEr5Sljg+IZbz7FqOYXr8J6xCxEQNk3Wc5mLPj2hvh
+xb3Bq4yvAgMBAAECggEAAoiywQfG24mdRGuEC+MeQxQHptu/+jZHziRnYVDhhdvM
+vt8CHZbrh1go7Mn5ZqBfVD5V0BCou0XFGR3Xown0rsSWTgf4ihEw740t1clMjixf
+gB7Yzy+hI6KHZLL8JJT9e8vnN4oB/c8oA6WRoEQO7SeW++fFuB9vGY4rHf50CFQ1
+0fMGqZ9u+p67cZAkEKZxHQqVXwqTlcI5mnLpKNa/2nJXVDPTOozjiCUkYq6l6n8T
+zKxq4b/8fP2BRKouHyUCXCq3J8Rf7QmysV/LLTacTMEiepBEbypbPIzwjCx9pcqb
+Pgzi6A9TAc2GHl/2Qufku23oxypCLshHCMMNh28lSQKBgQDZfIgGK9X9FRTrlA6G
+4lXwtFRfBXwe5s72osXJYrqduIOL+6EorXjsdOYqAeXxesJDHXBJigsPoODKFNmv
+tDaSNBYjGkp0iWAlXku+1EtNbb7U6JGvB8lBEB+UTd8iOUwqYGxcqMN/jMsdooPw
+XpHoVDpIhiubKld/CXk7HoWP7QKBgQDPSxmhueGmwlAjdjSkv4fe6IYhPTNSa1pp
+7UaJjXD4PIUzP5zJQp745dl+LnuNyVYpNER2CzIBja/8bVlXE64ujcwoH3YdD6WK
+JP2htQ2XWrqY38jUnri1uIeJdg6puhn6sh6UdY3C0rHJEQ1d+5UxgnttrfycpmHQ
+ag6JBT0jiwKBgAq0oJV9LuloUkFOZnCpT4WrusN6p6N1xRZK6OWC4KDG5mLLniE8
+eMla78F9mm4Klulq144nJ2g7iRUpdZW6jz0fJz/PGX8nC/6K57ubA6HqFwyv7gvp
+nDSBsKxCMQukOmWTnYHqJMVwjscEqu34GcKP8taDFD5tFSWBt9/7HqP5AoGAeibc
+HNQnZ5gblzoBvY9r5mwJFi81Pf0q0z7SER57Epy/NTroDiUm/q6bYmLLxfp9vlwh
+d5oTRp0StmJNgiWDv8UpJ/+aH3fn6abwmsjREH6TdKByfPBnEhaCL/uUmmmjA3rQ
+0FURS1vTDhPxV494FCu6xh//uuPEwgatOAsRQw8CgYBUxxNnlLFHe8jwyFHyGnlw
+IgdlWVkmuNQCxmgTrmAvOqsRg63kG4SOrdbzuPjeeWCf4MbJZSrF3lhzWDef9KPt
+HGXmPmTQhG8r5Xpx5EoXwym318EcvoOsC4ldnB2+apffMRFPLFzgq9njQTZgDJih
+JysSjVf/NjnSLlfmqwh2kg==
+-----END PRIVATE KEY-----</parameter>
+        <parameter key="oxygen_public_key_value">-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsBt/P2XFt+qAJSIPlVr7
++zFVwWYHl0fx/4OJBK+ZlWX3frYnzCh7UiwNSdBFqREXPhOPt+p/kwDqQFK7jmnM
+ncy2DjEFKxdY+T6LQbuuaiB9AxSc68IxNWPo/JLTFtcGdRw8qKV4wZnguh41Kf4m
+4OutVbg6nCOfn7MVfZNq5tNHF6yuUT9E1wt9VrSLrWftVaUh9QeR/SOAx5GC681M
++9+xiKdk35C5YohrmkPMIeNLZzYe6nIRt+32EAfN3ASnA99lJYkazduIti8xksqC
+Vk0969kFQtHi8OD3hK+UpY4PiGW8+xajmF6/CesQsREDZN1nOZiz49ob4cW9wauM
+rwIDAQAB
+-----END PUBLIC KEY-----</parameter>
+
+    </parameters>
+
+    <services>
+
+        <service id="undine.oxygen.http_handler" class="Undine\Guzzle\Handler\CurlMultiHandler" public="false">
+        </service>
+
+        <service id="undine.oxygen.client" class="Undine\Oxygen\Client">
+            <argument type="service" id="undine.oxygen.http_handler"/>
+            <argument type="service" id="undine.oxygen.protocol_middleware"/>
+        </service>
+
+        <service id="undine.oxygen.protocol_middleware" class="Undine\Oxygen\Middleware\OxygenProtocolMiddleware" factory-class="Undine\Oxygen\Middleware\OxygenProtocolMiddleware" factory-method="create" public="false">
+            <argument>%oxygen_module_version%</argument>
+            <argument type="service" id="security.secure_random"/>
+            <argument type="service" id="current_time"/>
+            <argument>%oxygen_private_key_name%</argument>
+            <argument>%oxygen_private_key_value%</argument>
+        </service>
+
+    </services>
+
+</container>

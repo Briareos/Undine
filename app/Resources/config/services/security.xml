@@ -44,6 +44,10 @@
             <argument type="service" id="security.secure_random"/>
         </service>
 
+        <service id="undine.security.keychain_generator" class="Undine\Security\Rsa\KeychainGenerator">
+            <argument>2048</argument>
+        </service>
+
     </services>
 
 </container>

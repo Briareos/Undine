@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd" xmlns:gedmo="http://gediminasm.org/schemas/orm/doctrine-extensions-mapping">
+
     <entity repository-class="Undine\Repository\UserRepository" name="Undine\Model\User" change-tracking-policy="DEFERRED_EXPLICIT">
 
         <indexes>
@@ -24,4 +25,5 @@
         </one-to-many>
 
     </entity>
+
 </doctrine-mapping>
