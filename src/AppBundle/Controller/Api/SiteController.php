@@ -21,7 +21,7 @@ class SiteController extends AppController
      */
     public function connectAction(SiteConnectCommand $command)
     {
-        list($privateKey, $publicKey) = $this->get('undine.keychain_generator')->generateKeyPair();
+        list($privateKey, $publicKey) = $this->get('undine.security.keychain_generator')->generateKeyPair();
         $site = new Site($command->getUrl(), $this->getUser(), $privateKey, $publicKey);
 
         $this->oxygenClient->send($site, new PingAction());
