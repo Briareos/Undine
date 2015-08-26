@@ -8,8 +8,11 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Util\SecureRandomInterface;
+use Undine\Functions\Exception\JsonParseException;
 use Undine\Model\Site;
 use Undine\Oxygen\Action\ActionInterface;
+use Undine\Oxygen\Exception\InvalidBodyException;
+use Undine\Oxygen\Exception\InvalidContentTypeException;
 use Undine\Oxygen\Reaction\ReactionInterface;
 
 /**
@@ -46,6 +49,11 @@ class OxygenProtocolMiddleware
      * @var callable
      */
     private $nextHandler;
+
+    /**
+     * @var OptionsResolver[]
+     */
+    private $cachedResolvers = [];
 
     /**
      * @param string                $moduleVersion
@@ -111,34 +119,63 @@ class OxygenProtocolMiddleware
             ->withBody(\GuzzleHttp\Psr7\stream_for(json_encode($requestData)));
 
         return $fn($oxygenRequest, $options)
-            ->then(function (ResponseInterface $response) use ($request, $requestId, $action) {
+            ->then(function (ResponseInterface $response) use ($request, $options, $requestId, $action) {
                 $contentType = $response->getHeaderLine('content-type');
 
                 if (!preg_match('{^application/json($|;)$}', $contentType)) {
-                    throw new RequestException('Content type header should be "application/json".', $request, $response);
+                    throw new InvalidContentTypeException('application/json', $contentType, $request, $response, $options);
                 }
 
-                $data = \Undine\Functions\json_parse($response->getBody());
-
-                if (!is_array($data)
-                    || !isset($data['actionResult'])
-                    || !is_array($data['actionResult'])
-                    || !isset($data['oxygenResponseId'])
-                    || $data['oxygenResponseId'] !== $requestId
-                ) {
-                    throw new RequestException('Unexpected response gotten', $request, $response);
+                try {
+                    $data = \Undine\Functions\json_parse($response->getBody());
+                } catch (JsonParseException $e) {
+                    throw new InvalidBodyException('The body provided is not valid JSON.', $request, $response, $e, $options);
                 }
 
-                $reactionClass = $action->getReactionClass();
-                /** @var ReactionInterface $reaction */
-                $reaction = new $reactionClass();
-                $resolver = new OptionsResolver();
-                $reaction->configureOptions($resolver);
-                $parsedData = $resolver->resolve($data['actionResult']);
-                $reaction->setData($parsedData);
+                $this->validateData($requestId, $data);
+
+                $reaction = $this->createReaction($action, $data);
 
                 return $reaction;
             });
+    }
+
+    /**
+     * @param string $requestId
+     * @param array  $data
+     */
+    private function validateData($requestId, array $data)
+    {
+        if (!is_array($data)
+            || !isset($data['actionResult'])
+            || !is_array($data['actionResult'])
+            || !isset($data['oxygenResponseId'])
+            || $data['oxygenResponseId'] !== $requestId
+        ) {
+            throw new RequestException('Unexpected response gotten', $request, $response);
+        }
+    }
+
+    /**
+     * @param ActionInterface $action
+     * @param array           $data
+     *
+     * @return ReactionInterface
+     */
+    private function createReaction(ActionInterface $action, array $data)
+    {
+        $reactionClass = $action->getReactionClass();
+        if (!class_exists($reactionClass)) {
+            throw new \RuntimeException(sprintf('The reaction class "%s" for action "%s" could not be found.', $reactionClass, get_class($action)));
+        }
+        /** @var ReactionInterface $reaction */
+        $reaction = new $reactionClass();
+        $resolver = new OptionsResolver();
+        $reaction->configureOptions($resolver);
+        $parsedData = $resolver->resolve($data['actionResult']);
+        $reaction->setData($parsedData);
+
+        return $reaction;
     }
 
     /**
