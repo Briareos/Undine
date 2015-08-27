@@ -2,7 +2,6 @@
 
 namespace Undine\Oxygen\Middleware;
 
-use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
@@ -13,6 +12,7 @@ use Undine\Model\Site;
 use Undine\Oxygen\Action\ActionInterface;
 use Undine\Oxygen\Exception\InvalidBodyException;
 use Undine\Oxygen\Exception\InvalidContentTypeException;
+use Undine\Oxygen\Exception\OxygenException;
 use Undine\Oxygen\Reaction\ReactionInterface;
 
 /**
@@ -49,11 +49,6 @@ class OxygenProtocolMiddleware
      * @var callable
      */
     private $nextHandler;
-
-    /**
-     * @var OptionsResolver[]
-     */
-    private $cachedResolvers = [];
 
     /**
      * @param string                $moduleVersion
@@ -97,15 +92,14 @@ class OxygenProtocolMiddleware
         /** @var ActionInterface $action */
         $action = $options['oxygen_action'];
 
-        $nonce = $this->generateNonce();
-
-        $requestId = bin2hex($this->secureRandom->nextBytes(20));
+        $requestId = bin2hex($this->secureRandom->nextBytes(16));
+        $expiresAt = $this->currentTime->getTimestamp() + 86400;
 
         $requestData = [
             'oxygenRequestId'    => $requestId,
-            'nonce'              => $nonce,
+            'requestExpiresAt'   => $expiresAt,
             'publicKey'          => $site->getPublicKey(),
-            'signature'          => $this->sign($site->getPrivateKey(), $nonce),
+            'signature'          => $this->sign($site->getPrivateKey(), sprintf('%s|%d', $requestId, $expiresAt)),
             'handshakeKey'       => $this->handshakeKeyName,
             'handshakeSignature' => $this->sign($this->handshakeKeyValue, $this->getUrlSlug($site->getUrl())),
             'requiredVersion'    => $this->moduleVersion,
@@ -115,7 +109,7 @@ class OxygenProtocolMiddleware
         ];
 
         $oxygenRequest = $request
-            ->withHeader('accept', 'text/html,application/oxygen')
+            ->withHeader('accept', 'text/html,application/json,application/oxygen')
             ->withBody(\GuzzleHttp\Psr7\stream_for(json_encode($requestData)));
 
         return $fn($oxygenRequest, $options)
@@ -132,7 +126,11 @@ class OxygenProtocolMiddleware
                     throw new InvalidBodyException('The body provided is not valid JSON.', $request, $response, $e, $options);
                 }
 
-                $this->validateData($requestId, $data);
+                if (!is_array($data)) {
+                    throw new InvalidBodyException(sprintf('The JSON response must resolve to an array; got %s.', gettype($data)), $request, $response);
+                }
+
+                $this->validateData($request, $requestId, $response, $data, $options);
 
                 $reaction = $this->createReaction($action, $data);
 
@@ -141,18 +139,24 @@ class OxygenProtocolMiddleware
     }
 
     /**
-     * @param string $requestId
-     * @param array  $data
+     * @param RequestInterface  $request
+     * @param string            $requestId
+     * @param ResponseInterface $response
+     * @param array             $data
+     * @param array             $options
      */
-    private function validateData($requestId, array $data)
+    private function validateData(RequestInterface $request, $requestId, ResponseInterface $response, array $data, array $options)
     {
-        if (!is_array($data)
-            || !isset($data['actionResult'])
+        if (isset($data['oxygenException'])) {
+            throw OxygenException::createFromResponseData('oxygenException', $data['oxygenException'], $request, $response, $options);
+        }
+
+        if (!isset($data['actionResult'])
             || !is_array($data['actionResult'])
             || !isset($data['oxygenResponseId'])
             || $data['oxygenResponseId'] !== $requestId
         ) {
-            throw new RequestException('Unexpected response gotten', $request, $response);
+            throw new InvalidBodyException('Unexpected response gotten', $request, $response, null, $options);
         }
     }
 
@@ -176,14 +180,6 @@ class OxygenProtocolMiddleware
         $reaction->setData($parsedData);
 
         return $reaction;
-    }
-
-    /**
-     * @return string
-     */
-    private function generateNonce()
-    {
-        return sprintf('%s_%d', bin2hex($this->secureRandom->nextBytes(16)), $this->currentTime->getTimestamp() + 86400);
     }
 
     /**

@@ -48,6 +48,11 @@ class Site implements UidInterface
     private $createdAt;
 
     /**
+     * @var \DateTime|null
+     */
+    private $deletedAt;
+
+    /**
      * @param UriInterface $url
      * @param User         $user
      * @param string       $privateKey
@@ -139,5 +144,13 @@ class Site implements UidInterface
     public function getCreatedAt()
     {
         return $this->createdAt;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getDeletedAt()
+    {
+        return $this->deletedAt;
     }
 }

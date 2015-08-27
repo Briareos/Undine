@@ -10,7 +10,8 @@ use Undine\AppBundle\Controller\AppController;
 use Undine\Configuration\ApiCommand;
 use Undine\Configuration\ApiResult;
 use Undine\Model\Site;
-use Undine\Oxygen\Action\PingAction;
+use Undine\Oxygen\Action\ModuleDeactivateAction;
+use Undine\Oxygen\Action\SitePingAction;
 
 class SiteController extends AppController
 {
@@ -24,7 +25,7 @@ class SiteController extends AppController
         list($privateKey, $publicKey) = $this->get('undine.security.keychain_generator')->generateKeyPair();
         $site = new Site($command->getUrl(), $this->getUser(), $privateKey, $publicKey);
 
-        $this->oxygenClient->send($site, new PingAction());
+        $this->oxygenClient->send($site, new SitePingAction());
 
         $this->em->persist($site);
         $this->em->flush($site);
@@ -39,9 +40,24 @@ class SiteController extends AppController
      */
     public function pingAction(Site $site)
     {
-        $this->oxygenClient->send($site, new PingAction());
+        $this->oxygenClient->send($site, new SitePingAction());
 
         $this->em->persist($site);
+        $this->em->flush($site);
+
+        return new SiteConnectResult($site);
+    }
+
+    /**
+     * @Route("site.disconnect", name="api-site.disconnect")
+     * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
+     * @ApiResult()
+     */
+    public function disconnectAction(Site $site)
+    {
+        $this->oxygenClient->send($site, new ModuleDeactivateAction(['color']));
+
+        $this->em->remove($site);
         $this->em->flush($site);
 
         return new SiteConnectResult($site);

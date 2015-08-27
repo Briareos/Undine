@@ -14,6 +14,9 @@
             <gedmo:timestampable on="create"/>
         </field>
 
+        <field name="deletedAt" type="datetime" nullable="true"/>
+        <gedmo:soft-deleteable field-name="deletedAt" time-aware="false"/>
+
         <many-to-one target-entity="Undine\Model\User" field="user" inversed-by="sites">
         </many-to-one>
 

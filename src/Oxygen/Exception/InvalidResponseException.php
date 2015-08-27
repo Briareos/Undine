@@ -2,7 +2,7 @@
 
 namespace Undine\Oxygen\Exception;
 
-class InvalidResponseException extends ProtocolException
+abstract class InvalidResponseException extends ProtocolException
 {
 
 }

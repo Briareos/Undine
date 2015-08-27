@@ -63,6 +63,11 @@ class User implements UserInterface, UidInterface, UserActivityAwareInterface
     private $createdAt;
 
     /**
+     * @var \DateTime|null
+     */
+    private $deletedAt;
+
+    /**
      * @param string $email
      */
     public function __construct($email)
@@ -261,5 +266,13 @@ class User implements UserInterface, UidInterface, UserActivityAwareInterface
     public function getCreatedAt()
     {
         return $this->createdAt;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getDeletedAt()
+    {
+        return $this->deletedAt;
     }
 }
