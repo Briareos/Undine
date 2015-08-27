@@ -55,7 +55,7 @@ class SiteController extends AppController
      */
     public function disconnectAction(Site $site)
     {
-        $this->oxygenClient->send($site, new ModuleDeactivateAction(['color']));
+        $this->oxygenClient->send($site, new ModuleDeactivateAction(['oxygen']));
 
         $this->em->remove($site);
         $this->em->flush($site);
