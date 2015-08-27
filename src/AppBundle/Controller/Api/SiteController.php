@@ -6,6 +6,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Undine\Api\Command\SiteConnectCommand;
 use Undine\Api\Result\SiteConnectResult;
+use Undine\Api\Result\SiteLoginResult;
 use Undine\AppBundle\Controller\AppController;
 use Undine\Configuration\ApiCommand;
 use Undine\Configuration\ApiResult;
@@ -22,7 +23,7 @@ class SiteController extends AppController
      */
     public function connectAction(SiteConnectCommand $command)
     {
-        list($privateKey, $publicKey) = $this->get('undine.security.keychain_generator')->generateKeyPair();
+        list($privateKey, $publicKey) = \Undine\Functions\openssl_generate_rsa_key_pair();
         $site = new Site($command->getUrl(), $this->getUser(), $privateKey, $publicKey);
 
         $this->oxygenClient->send($site, new SitePingAction());
@@ -61,5 +62,17 @@ class SiteController extends AppController
         $this->em->flush($site);
 
         return new SiteConnectResult($site);
+    }
+
+    /**
+     * @Route("site.login", name="api-site.login")
+     * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
+     * @ApiResult()
+     */
+    public function loginAction(Site $site)
+    {
+        $loginUrl = $this->oxygenLoginUrlGenerator->generateUrl($site);
+
+        return new SiteLoginResult($site, $loginUrl);
     }
 }

@@ -6,6 +6,7 @@
 
     <parameters>
 
+        <!-- Make sure the keys below don't get auto-formatted, since it breaks them! -->
         <parameter key="oxygen_private_key_name">undine</parameter>
         <parameter key="oxygen_private_key_value">-----BEGIN PRIVATE KEY-----
 MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCwG38/ZcW36oAl
@@ -63,6 +64,11 @@ rwIDAQAB
             <argument type="service" id="current_time"/>
             <argument>%oxygen_private_key_name%</argument>
             <argument>%oxygen_private_key_value%</argument>
+        </service>
+
+        <service id="undine.oxygen.login_url_generator" class="Undine\Oxygen\LoginUrlGenerator">
+            <argument type="service" id="security.secure_random"/>
+            <argument type="service" id="current_time"/>
         </service>
 
     </services>

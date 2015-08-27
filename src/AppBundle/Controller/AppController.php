@@ -10,6 +10,7 @@ use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\FormTypeInterface;
 use Undine\Model\User;
 use Undine\Oxygen\Client;
+use Undine\Oxygen\LoginUrlGenerator;
 use Undine\Repository\StaffRepository;
 use Undine\Repository\UserRepository;
 
@@ -19,6 +20,7 @@ use Undine\Repository\UserRepository;
  * @property StaffRepository          $staffRepository
  * @property EventDispatcherInterface $dispatcher
  * @property Client                   $oxygenClient
+ * @property LoginUrlGenerator        $oxygenLoginUrlGenerator
  */
 abstract class AppController extends Controller
 {
@@ -35,6 +37,8 @@ abstract class AppController extends Controller
                 return $this->get('event_dispatcher');
             case 'oxygenClient':
                 return $this->get('undine.oxygen.client');
+            case 'oxygenLoginUrlGenerator';
+                return $this->get('undine.oxygen.login_url_generator');
             default:
                 throw new \BadMethodCallException();
         }

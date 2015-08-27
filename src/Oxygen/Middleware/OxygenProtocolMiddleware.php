@@ -99,9 +99,9 @@ class OxygenProtocolMiddleware
             'oxygenRequestId'    => $requestId,
             'requestExpiresAt'   => $expiresAt,
             'publicKey'          => $site->getPublicKey(),
-            'signature'          => $this->sign($site->getPrivateKey(), sprintf('%s|%d', $requestId, $expiresAt)),
+            'signature'          => \Undine\Functions\openssl_sign_data($site->getPrivateKey(), sprintf('%s|%d', $requestId, $expiresAt)),
             'handshakeKey'       => $this->handshakeKeyName,
-            'handshakeSignature' => $this->sign($this->handshakeKeyValue, $this->getUrlSlug($site->getUrl())),
+            'handshakeSignature' => \Undine\Functions\openssl_sign_data($this->handshakeKeyValue, $this->getUrlSlug($site->getUrl())),
             'requiredVersion'    => $this->moduleVersion,
             'baseUrl'            => (string)$site->getUrl(),
             'actionName'         => $action->getName(),
@@ -180,30 +180,6 @@ class OxygenProtocolMiddleware
         $reaction->setData($parsedData);
 
         return $reaction;
-    }
-
-    /**
-     * @param string $privateKey
-     * @param string $data
-     *
-     * @return string Base64-encoded signature.
-     */
-    private function sign($privateKey, $data)
-    {
-        $signed = @openssl_sign($data, $signature, $privateKey);
-
-        if (!$signed) {
-            $lastError    = error_get_last();
-            $opensslError = '';
-
-            while (($opensslErrorRow = openssl_error_string()) !== false) {
-                $opensslError = $opensslErrorRow."\n".$opensslError;
-            }
-
-            throw new \RuntimeException(sprintf('Failed to sign data using private key; last error: %s; OpenSSL error: %s', $lastError['message'], $opensslError));
-        }
-
-        return base64_encode($signature);
     }
 
     /**
