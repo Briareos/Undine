@@ -2,7 +2,7 @@
 
 namespace Undine\Oxygen\Action;
 
-class ModuleDeactivateAction extends AbstractAction
+class ModuleDisableAction extends AbstractAction
 {
     /**
      * @var string[]
@@ -22,7 +22,7 @@ class ModuleDeactivateAction extends AbstractAction
      */
     public function getName()
     {
-        return 'module.deactivate';
+        return 'module.disable';
     }
 
     /**

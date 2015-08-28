@@ -94,18 +94,42 @@ class OxygenProtocolMiddleware
 
         $requestId = bin2hex($this->secureRandom->nextBytes(16));
         $expiresAt = $this->currentTime->getTimestamp() + 86400;
+        $username = '';
 
         $requestData = [
+            // Request nonce/ID. It's also expected to be present in the response, so we know we
+            // got a response from the module.
             'oxygenRequestId'    => $requestId,
+            // When the nonce should expire. There is no need for this value to be too low; the point is to persist
+            // them on the module so they can be safely cleared when they expire.
             'requestExpiresAt'   => $expiresAt,
+            // The public key is always provided so initial request would automatically save the key.
+            // There are no "connect website"/"re-connect website" requests.
             'publicKey'          => $site->getPublicKey(),
+            // The reason we're signing both the nonce (request ID) and the expiration time is to prevent a certain kind
+            // of reply attack where one could significantly lower the expiration time and retry the request as long as
+            // they would like.
             'signature'          => \Undine\Functions\openssl_sign_data($site->getPrivateKey(), sprintf('%s|%d', $requestId, $expiresAt)),
+            // This is used only during the initial handshake (when the website does not have a public key set).
+            // The signature is double-checked against a normalized URL, so an attacker cannot save handshake requests
+            // and forward them to target victim website.
+            // The point is that only authorized entities can provide public keys (field 'publicKey' above).
             'handshakeKey'       => $this->handshakeKeyName,
             'handshakeSignature' => \Undine\Functions\openssl_sign_data($this->handshakeKeyValue, $this->getUrlSlug($site->getUrl())),
+            // The module will throw an error if the required version is not met.
             'requiredVersion'    => $this->moduleVersion,
+            // URL of the website as we know it. The website itself will reject the request if it doesn't match,
+            // so it should be handled accordingly. Probably by updating the site entity and retrying the request.
             'baseUrl'            => (string)$site->getUrl(),
+            // Action name and action parameters are pretty similar to Symfony's concept of actions.
+            // Parameters are also automatically ordered using reflection to match method's signature.
             'actionName'         => $action->getName(),
             'actionParameters'   => $action->getParameters(),
+            // This doesn't have use currently, but it's implemented at protocol level for statistic purposes.
+            'username'           => $username,
+            // Implemented to tie in dashboard users and site administrators, also for statistic purposes.
+            // In LoginUrlGenerator it has more significant use.
+            'userUid'            => $site->getUser()->getUid(),
         ];
 
         $oxygenRequest = $request

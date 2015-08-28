@@ -23,10 +23,10 @@ function openssl_generate_rsa_key_pair($bits = 2048)
 }
 
 /**
- * @param string $privateKey
- * @param string $data
+ * @param string $privateKey Private key in base64-encoded form.
+ * @param string $data Any data up to
  *
- * @return string Signature in base64-encoded form.
+ * @return string Signature in base64-encoded form, to be consistent with public/private key formats.
  *
  * @throws OpensslSignException
  */
