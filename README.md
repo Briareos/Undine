@@ -44,8 +44,8 @@ Add this to Nginx configuration for development environment:
     }
 
     location ~ ^(/app_dev\.php)?(/image/.*\.(jpg|png))$ {
-        root /home/vagrant/www/undine/dashboard;
-        try_files $2 =404;
+        root /home/vagrant/www/undine;
+        try_files /dashboard/$2 /web/$2 =404;
     }
 
 To bootstrap the application, run `composer install --no-scripts --no-autoloader` on the host machine.
