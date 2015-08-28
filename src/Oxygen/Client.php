@@ -79,8 +79,14 @@ class Client
      */
     public function sendAsync(Site $site, ActionInterface $action, array $options = [])
     {
-        $options['oxygen_site']   = $site;
-        $options['oxygen_action'] = $action;
+        $options['oxygen_site']     = $site;
+        $options['oxygen_action']   = $action;
+        $options['allow_redirects'] = [
+            'max'      => 1,
+            // Strict redirect following means that you follow up with a GET request; don't do that.
+            'strict'   => true,
+            'referrer' => true,
+        ];
 
         $request = new Request('POST', $site->getUrl(), ['cookie' => 'XDEBUG_SESSION=PHPSTORM']);
 
