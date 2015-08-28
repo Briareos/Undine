@@ -10,6 +10,10 @@
             <argument>now</argument>
         </service>
 
+        <service id="web_debug_toolbar.angular_profiler" class="Undine\AppBundle\DataCollector\AngularDataCollector">
+            <tag name="data_collector" template="views/toolbar/angular.html.twig" id="angular"/>
+        </service>
+
     </services>
 
 </container>
