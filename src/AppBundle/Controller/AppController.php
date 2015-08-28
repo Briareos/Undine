@@ -3,11 +3,13 @@
 namespace Undine\AppBundle\Controller;
 
 use Doctrine\ORM\EntityManager;
+use Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\FormTypeInterface;
+use Undine\Email\EmailFactory;
 use Undine\Model\User;
 use Undine\Oxygen\Client;
 use Undine\Oxygen\LoginUrlGenerator;
@@ -21,6 +23,10 @@ use Undine\Repository\UserRepository;
  * @property EventDispatcherInterface $dispatcher
  * @property Client                   $oxygenClient
  * @property LoginUrlGenerator        $oxygenLoginUrlGenerator
+ * @property \DateTime                $currentTime
+ * @property EmailFactory             $emailFactory
+ * @property \Swift_Mailer            $mailer
+ * @property Logger                   $logger
  */
 abstract class AppController extends Controller
 {
@@ -39,6 +45,14 @@ abstract class AppController extends Controller
                 return $this->get('undine.oxygen.client');
             case 'oxygenLoginUrlGenerator';
                 return $this->get('undine.oxygen.login_url_generator');
+            case 'currentTime':
+                return $this->get('current_time');
+            case 'emailFactory':
+                return $this->get('undine.email.factory');
+            case 'mailer':
+                return $this->get('swiftmailer.mailer.default');
+            case 'logger':
+                return $this->get('logger');
             default:
                 throw new \BadMethodCallException();
         }
@@ -78,6 +92,6 @@ abstract class AppController extends Controller
      */
     protected function createNamedFormBuilder($name, $data = null, array $options = [])
     {
-
+        return $this->get('form.factory')->createNamedBuilder($name, 'form', $data, $options);
     }
 }

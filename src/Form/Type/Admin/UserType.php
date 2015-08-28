@@ -33,7 +33,11 @@ class UserType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('name', 'text');
+        $builder->add('name', 'text', [
+            'constraints' => [
+                new NotBlank(['groups' => ['create']]),
+            ],
+        ]);
         $builder->add('email', 'email', [
             'constraints' => [
                 new NotBlank(['groups' => ['create']]),
@@ -66,7 +70,7 @@ class UserType extends AbstractType
         $resolver->setDefaults([
             'data_class' => User::class,
             'empty_data' => function (FormInterface $form) {
-                return new User($form->get('email')->getData(), null);
+                return new User($form->get('name')->getData(), $form->get('email')->getData());
             },
         ]);
     }

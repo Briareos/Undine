@@ -68,10 +68,12 @@ class User implements UserInterface, UidInterface, UserActivityAwareInterface
     private $deletedAt;
 
     /**
+     * @param string $name
      * @param string $email
      */
-    public function __construct($email)
+    public function __construct($name, $email)
     {
+        $this->name  = $name;
         $this->email = $email;
         $this->sites = new ArrayCollection();
     }
@@ -177,7 +179,7 @@ class User implements UserInterface, UidInterface, UserActivityAwareInterface
 
     public function hasApiToken()
     {
-        return (bool) strlen($this->apiToken);
+        return (bool)strlen($this->apiToken);
     }
 
     /**

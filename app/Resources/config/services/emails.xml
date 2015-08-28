@@ -4,4 +4,24 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
+    <services>
+
+        <service id="undine.email.factory" class="Undine\Email\EmailFactory" lazy="true">
+        </service>
+
+        <service id="undine.email.twig" class="Undine\Email\AbstractTwigEmail" abstract="true" public="false">
+            <call method="setTwig">
+                <argument type="service" id="twig"/>
+            </call>
+        </service>
+
+        <service id="undine.email.type.user_reset_password" class="Undine\Email\UserResetPasswordEmail" parent="undine.email.twig" public="false" lazy="true">
+            <argument>%mailer_no_reply_address%</argument>
+            <argument>%brand%</argument>
+            <argument>%brand%</argument>
+            <tag name="app.email" alias="user.resetPassword"/>
+        </service>
+
+    </services>
+
 </container>
