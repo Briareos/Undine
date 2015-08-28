@@ -1,6 +1,6 @@
 <?php
 
-namespace Undine\Form\Type;
+namespace Undine\Form\Type\Admin;
 
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -28,7 +28,7 @@ class UserType extends AbstractType
 
     public function getName()
     {
-        return 'user';
+        return 'admin__user';
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)

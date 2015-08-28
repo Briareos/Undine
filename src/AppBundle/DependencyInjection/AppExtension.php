@@ -16,6 +16,8 @@ class AppExtension extends Extension
         $loader->load('listeners.xml');
         $loader->load('api_types.xml');
         $loader->load('web_types.xml');
+        $loader->load('type_extensions.xml');
+        $loader->load('admin_types.xml');
         $loader->load('security.xml');
         $loader->load('validators.xml');
         $loader->load('repositories.xml');

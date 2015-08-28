@@ -1,6 +1,6 @@
 <?php
 
-namespace Undine\Form\Type;
+namespace Undine\Form\Type\Admin;
 
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Undine\Model\Staff;
@@ -24,7 +24,7 @@ class StaffType extends AbstractType
 
     public function getName()
     {
-        return 'staff';
+        return 'admin__staff';
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)

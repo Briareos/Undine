@@ -101,11 +101,15 @@ class User implements UserInterface, UidInterface, UserActivityAwareInterface
     }
 
     /**
-     * @param null|string $password
+     * @param string|null $password
+     *
+     * @return $this
      */
     public function setPassword($password)
     {
         $this->password = $password;
+
+        return $this;
     }
 
     /**
@@ -126,10 +130,14 @@ class User implements UserInterface, UidInterface, UserActivityAwareInterface
 
     /**
      * @param string $name
+     *
+     * @return $this
      */
     public function setName($name)
     {
         $this->name = $name;
+
+        return $this;
     }
 
     /**
@@ -198,10 +206,14 @@ class User implements UserInterface, UidInterface, UserActivityAwareInterface
 
     /**
      * @param Site[] $sites
+     *
+     * @return $this
      */
     public function setSites(array $sites)
     {
         $this->sites = new ArrayCollection($sites);
+
+        return $this;
     }
 
     /**
@@ -245,7 +257,7 @@ class User implements UserInterface, UidInterface, UserActivityAwareInterface
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getPlainPassword()
     {
@@ -253,11 +265,15 @@ class User implements UserInterface, UidInterface, UserActivityAwareInterface
     }
 
     /**
-     * @param null|string $plainPassword
+     * @param string|null $plainPassword
+     *
+     * @return $this
      */
     public function setPlainPassword($plainPassword)
     {
         $this->plainPassword = $plainPassword;
+
+        return $this;
     }
 
     /**
