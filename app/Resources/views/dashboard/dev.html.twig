@@ -33,6 +33,7 @@
 <ui-view></ui-view>
 
 {{ include('live-reload.html.twig') }}
+{{ include('toolbar/angular_toolbar_js.html.twig') }}
 
 <script>
     {# Dirty fix - when visiting /dashboard# it flips out. Must be the router component, but it's probably related to the <base> tag not being a substring of the current URL. Remove once it's fixed. #}
