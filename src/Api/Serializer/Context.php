@@ -47,6 +47,7 @@ class Context
      */
     public function __construct($includes = null)
     {
+        $includes       = (string)$includes;
         $this->includes = $includes;
 
         if (is_string($includes)) {

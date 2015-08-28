@@ -42,6 +42,21 @@ class SecurityController extends AppController
         ];
     }
 
+    public function registerAction()
+    {
+
+    }
+
+    public function resetPasswordAction()
+    {
+
+    }
+
+    public function deactivateAccountAction()
+    {
+
+    }
+
     /**
      * @Route("/login_check", name="web-login_check")
      */
