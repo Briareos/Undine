@@ -70,7 +70,7 @@ security:
                 csrf_provider:          security.csrf.token_manager
                 intention:              authenticate
                 post_only:              true
-                default_target_path:    /
+                default_target_path:    web-home
             remember_me:
                 key:                    %secret%
                 name:                   WEBREMEMBERME
@@ -87,4 +87,6 @@ security:
         - { path: ^/admin($|/), roles: ROLE_ADMIN } # requires_channel: https
         - { path: ^/api/api\.test$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api($|/), roles: IS_AUTHENTICATED_REMEMBERED }
+        - { path: ^/dashboard($|/), roles: IS_AUTHENTICATED_REMEMBERED }
+        - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 

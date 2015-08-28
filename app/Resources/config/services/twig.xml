@@ -20,6 +20,11 @@
             <tag name="twig.extension"/>
         </service>
 
+        <service id="undine.twig.extension.normalizer" class="Undine\Twig\Extension\NormalizerExtension">
+            <argument type="service" id="undine.normalizer"/>
+            <tag name="twig.extension"/>
+        </service>
+
         <service id="twig.extension.time_diff" class="Twig_Extensions_Extension_Date" public="false">
             <tag name="twig.extension"/>
         </service>

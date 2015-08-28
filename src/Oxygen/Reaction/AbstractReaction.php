@@ -2,6 +2,8 @@
 
 namespace Undine\Oxygen\Reaction;
 
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
 abstract class AbstractReaction implements ReactionInterface
 {
     /**
@@ -15,5 +17,12 @@ abstract class AbstractReaction implements ReactionInterface
     public function setData(array $data)
     {
         $this->data = $data;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function configureOptions(OptionsResolver $resolver)
+    {
     }
 }

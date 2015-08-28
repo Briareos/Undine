@@ -1,0 +1,7 @@
+<script>
+    window.appData = {
+        apiUrl: {{ (app.request.baseUrl~'/api/')|json_encode|raw }},
+        logoutUrl: {{ logout_url('web')|json_encode|raw }},
+        currentUser: {{ app.user|normalize_object|json_encode|raw }}
+    }
+</script>

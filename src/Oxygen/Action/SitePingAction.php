@@ -2,13 +2,13 @@
 
 namespace Undine\Oxygen\Action;
 
-class PingAction extends AbstractAction
+class SitePingAction extends AbstractAction
 {
     /**
      * {@inheritdoc}
      */
     public function getName()
     {
-        return 'ping';
+        return 'site.ping';
     }
 }

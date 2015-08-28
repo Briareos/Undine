@@ -6,14 +6,9 @@
 
     <services>
 
-        <service id="undine.form.type.user" class="Undine\Form\Type\UserType">
-            <argument type="service" id="security.user_password_encoder.generic"/>
-            <tag name="form.type" alias="user"/>
-        </service>
-
-        <service id="undine.form.type.staff" class="Undine\Form\Type\StaffType">
-            <argument type="service" id="security.user_password_encoder.generic"/>
-            <tag name="form.type" alias="staff"/>
+        <service id="undine.form.type.web.registration" class="Undine\Form\Type\Web\RegistrationType">
+            <argument type="service" id="doctrine.repository.user"/>
+            <tag name="form.type" alias="web__registration"/>
         </service>
 
     </services>

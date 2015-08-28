@@ -36,7 +36,7 @@ class UserController extends AppController
      */
     public function createAction(Request $request)
     {
-        $createForm = $this->createForm('user', null, [
+        $createForm = $this->createForm('admin__user', null, [
             'method'            => 'POST',
             'validation_groups' => ['create'],
         ]);
@@ -65,7 +65,7 @@ class UserController extends AppController
      */
     public function editAction(User $user, Request $request)
     {
-        $editForm = $this->createForm('user', $user, [
+        $editForm = $this->createForm('admin__user', $user, [
             'method' => 'PUT',
         ]);
 

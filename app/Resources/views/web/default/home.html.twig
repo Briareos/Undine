@@ -6,6 +6,19 @@
 
     {% if app.user %}
         <br>
+        Welcome back, {{ app.user.email }}
+        <br>
+        <a href="{{ path('web-dashboard') }}">Click here to go to your dashboard</a>
+    {% else %}
+        <br>
+        Welcome!
+        <br>
+        <a href="{{ path('web-dashboard') }}">Please log in to access your dashboard</a>
+    {% endif %}
+
+
+    {% if app.user %}
+        <br>
         <a href="{{ logout_url('web') }}">Log out</a>
     {% endif %}
 

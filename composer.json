@@ -9,7 +9,8 @@
             "Undine\\": "src/"
         },
         "files": [
-            "src/Functions/json.php"
+            "src/Functions/json.php",
+            "src/Functions/openssl.php"
         ]
     },
     "require": {

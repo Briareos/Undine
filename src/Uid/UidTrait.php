@@ -11,8 +11,6 @@ use Doctrine\Common\Util\ClassUtils;
  */
 trait UidTrait
 {
-    private static $maxId = Optimus::MAX_INT;
-
     /**
      * @return array An array of two elements; first is string (prefix), second is an Optimus instance.
      *
@@ -90,7 +88,7 @@ trait UidTrait
         }
         $id = (int)$id;
 
-        if ($id < 1 || $id > self::$maxId) {
+        if ($id < 1 || $id > Optimus::MAX_INT) {
             return null;
         }
 

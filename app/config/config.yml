@@ -49,9 +49,12 @@ doctrine:
         types:
             uri: Undine\Doctrine\Type\UriType
     orm:
+        filters:
+            softdeleteable:
+                class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter
+                enabled: true
         auto_generate_proxy_classes: "%kernel.debug%"
         naming_strategy: doctrine.orm.naming_strategy.default
-        auto_mapping: true
         mappings:
             model:
                 type: xml
@@ -72,7 +75,8 @@ swiftmailer:
 stof_doctrine_extensions:
     orm:
         default:
-            timestampable: true
+            timestampable:  true
+            softdeleteable: true
 
 sensio_framework_extra:
     request:

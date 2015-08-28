@@ -4,7 +4,7 @@ namespace Undine\Oxygen\Reaction;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class PingReaction extends AbstractReaction
+class SitePingReaction extends AbstractReaction
 {
     /**
      * @param OptionsResolver $resolver

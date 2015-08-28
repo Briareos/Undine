@@ -5,9 +5,12 @@ namespace Undine\AppBundle\Controller\Web;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Security;
 use Undine\AppBundle\Controller\AppController;
+use Undine\Model\User;
+use Undine\Web\Command\RegistrationCommand;
 
 class SecurityController extends AppController
 {
@@ -40,6 +43,49 @@ class SecurityController extends AppController
             'error'        => $error,
             'csrfToken'    => $csrfToken,
         ];
+    }
+
+    /**
+     * @Route("/register", name="web-register")
+     * @Template("web/security/register.html.twig")
+     */
+    public function registerAction(Request $request)
+    {
+        $form = $this->createForm('web__registration', null, [
+            'method' => 'POST',
+            'action' => $this->generateUrl('web-register'),
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            /** @var RegistrationCommand $command */
+            $command  = $form->getData();
+            $password = $this->get('security.encoder_factory')->getEncoder(User::class)->encodePassword($command->getPlainPassword(), '');
+            $user     = (new User($command->getEmail()))
+                ->setName($command->getName())
+                ->setPassword($password);
+            $this->em->persist($user);
+            $this->em->flush($user);
+
+            // Log the user In. Check how UserAuthenticationProvider does it.
+            $this->get('security.token_storage')->setToken(new UsernamePasswordToken($user, $command->getPlainPassword(), 'web', $user->getRoles()));
+
+            return $this->redirectToRoute('web-dashboard');
+        }
+
+        return [
+            'form' => $form->createView(),
+        ];
+    }
+
+    public function resetPasswordAction()
+    {
+
+    }
+
+    public function deactivateAccountAction()
+    {
+
     }
 
     /**

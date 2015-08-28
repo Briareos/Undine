@@ -36,7 +36,7 @@ class StaffController extends AppController
      */
     public function createAction(Request $request)
     {
-        $createForm = $this->createForm('staff', null, [
+        $createForm = $this->createForm('admin__staff', null, [
             'method'            => 'POST',
             'validation_groups' => ['create'],
         ]);
@@ -65,7 +65,7 @@ class StaffController extends AppController
      */
     public function editAction(Staff $staff, Request $request)
     {
-        $editForm = $this->createForm('staff', $staff, [
+        $editForm = $this->createForm('admin__staff', $staff, [
             'method' => 'PUT',
         ]);
 
