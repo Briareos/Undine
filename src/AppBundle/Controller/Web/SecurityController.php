@@ -13,6 +13,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Security\Http\SecurityEvents;
 use Symfony\Component\Validator\Constraints\Email;
@@ -86,6 +87,7 @@ class SecurityController extends AppController
             $this->em->flush($user);
 
             // Log the user In. Check how UserAuthenticationProvider does it.
+            $this->session->migrate();
             $token = new UsernamePasswordToken($user, $command->getPlainPassword(), 'web', $user->getRoles());
             $this->get('security.token_storage')->setToken($token);
 
@@ -185,6 +187,12 @@ class SecurityController extends AppController
         return $url;
     }
 
+    /**
+     * @param User $user
+     * @param int  $timestamp
+     *
+     * @return string
+     */
     private function getLoginToken(User $user, $timestamp)
     {
         $hash = base64_encode(
@@ -275,6 +283,7 @@ class SecurityController extends AppController
             $this->addFlash('success', 'You have successfully reset your password and have been logged in.');
 
             // Log the user In. Check how UserAuthenticationProvider does it.
+            $this->session->migrate();
             $token = new UsernamePasswordToken($resetUser, $plainPassword, 'web', $resetUser->getRoles());
             $this->get('security.token_storage')->setToken($token);
 
@@ -294,9 +303,42 @@ class SecurityController extends AppController
         ];
     }
 
-    public function deactivateAccountAction()
+    /**
+     * @Route("/delete-account", name="web-delete_account")
+     * @Template("web/security/delete-account.html.twig")
+     */
+    public function deactivateAccountAction(Request $request)
     {
+        $form = $this->createFormBuilder(null, [
+            'method' => 'POST',
+            'action' => $this->generateUrl('web-delete_account'),
+        ])
+            ->add('password', 'password', [
+                'constraints' => [
+                    new Type(['type' => 'string']),
+                    new NotBlank(),
+                    new UserPassword(),
+                ],
+            ])
+            ->getForm();
 
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $user = $this->getUser();
+            $this->get('security.token_storage')->setToken(null);
+            $this->session->migrate();
+            $this->em->remove($user);
+            $this->em->flush($user);
+
+            $this->addFlash('success', 'Your account has been successfully deleted.');
+
+            return $this->redirectToRoute('web-home');
+        }
+
+        return [
+            'form' => $form->createView(),
+        ];
     }
 
     /**

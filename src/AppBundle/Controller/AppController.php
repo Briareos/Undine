@@ -9,6 +9,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\FormTypeInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Undine\Email\EmailFactory;
 use Undine\Model\User;
 use Undine\Oxygen\Client;
@@ -27,6 +28,7 @@ use Undine\Repository\UserRepository;
  * @property EmailFactory             $emailFactory
  * @property \Swift_Mailer            $mailer
  * @property Logger                   $logger
+ * @property Session                  $session
  */
 abstract class AppController extends Controller
 {
@@ -53,6 +55,8 @@ abstract class AppController extends Controller
                 return $this->get('swiftmailer.mailer.default');
             case 'logger':
                 return $this->get('logger');
+            case 'session':
+                return $this->get('session');
             default:
                 throw new \BadMethodCallException();
         }
