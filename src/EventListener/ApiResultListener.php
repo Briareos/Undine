@@ -81,7 +81,7 @@ class ApiResultListener implements EventSubscriberInterface
         $data = [];
 
         if ($exception instanceof CommandInvalidException) {
-            $data += ['error' => $exception->getForm()->getErrors(true)->current()->getMessage()];
+            $data += ['error' => $exception->getForm()->getErrors(true)->current()->getMessage(), 'verbose'=>$exception->getForm()->getErrors(true,true)->__toString()];
         } elseif ($exception instanceof ConstraintViolationException) {
             $data += ['error' => $exception->getConstraintId()];
         } elseif ($exception instanceof UsernameNotFoundException) {

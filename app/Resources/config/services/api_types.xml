@@ -10,6 +10,14 @@
             <tag name="form.type" alias="api__site_connect"/>
         </service>
 
+        <service id="undine.form.type.api.module_enable" class="Undine\Form\Type\Api\ModuleEnableType">
+            <tag name="form.type" alias="api__module_enable"/>
+        </service>
+
+        <service id="undine.form.type.api.module_disable" class="Undine\Form\Type\Api\ModuleDisableType">
+            <tag name="form.type" alias="api__module_disable"/>
+        </service>
+
     </services>
 
 </container>

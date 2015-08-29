@@ -24,7 +24,7 @@ class ModuleEnableType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('module', 'collection', [
+        $builder->add('module', 'text', [
             'constraints' => [
                 new NotBlank(),
             ],
@@ -40,7 +40,7 @@ class ModuleEnableType extends AbstractType
         $resolver->setDefaults([
             'data_class' => ModuleEnableCommand::class,
             'empty_data' => function (FormInterface $form) {
-                return new ModuleEnableCommand($form->get('modules')->getData(), $form->get('enableDependencies')->getData());
+                return new ModuleEnableCommand($form->get('module')->getData(), $form->get('enableDependencies')->getData());
             },
         ]);
     }

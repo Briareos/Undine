@@ -35,7 +35,7 @@ class ModuleEnableCommand
     /**
      * @return bool
      */
-    public function shouldEnableDependencies()
+    public function enableDependencies()
     {
         return $this->enableDependencies;
     }

@@ -35,7 +35,7 @@ class ModuleDisableCommand
     /**
      * @return bool
      */
-    public function shouldDisableDependents()
+    public function disableDependents()
     {
         return $this->disableDependents;
     }

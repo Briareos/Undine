@@ -24,7 +24,7 @@ class ModuleDisableType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('module', 'collection', [
+        $builder->add('module', 'text', [
             'constraints' => [
                 new NotBlank(),
             ],
@@ -40,7 +40,7 @@ class ModuleDisableType extends AbstractType
         $resolver->setDefaults([
             'data_class' => ModuleDisableCommand::class,
             'empty_data' => function (FormInterface $form) {
-                return new ModuleDisableCommand($form->get('modules')->getData(), $form->get('disableDependents')->getData());
+                return new ModuleDisableCommand($form->get('module')->getData(), $form->get('disableDependents')->getData());
             },
         ]);
     }

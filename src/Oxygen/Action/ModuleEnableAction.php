@@ -29,7 +29,7 @@ class ModuleEnableAction extends AbstractAction
      */
     public function getName()
     {
-        return 'module.disable';
+        return 'module.enable';
     }
 
     /**
