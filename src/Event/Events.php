@@ -9,7 +9,9 @@ final class Events
 {
     const USER_REGISTER = 'user.register';
 
-    const USER_RESET_PASSWORD = 'user.resetPassword';
+    const USER_RESET_PASSWORD = 'user.reset_password';
+
+    const USER_DELETE_ACCOUNT = 'user.delete_account';
 
     private function __construct()
     {

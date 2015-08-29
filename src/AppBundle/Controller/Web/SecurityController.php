@@ -22,6 +22,7 @@ use Symfony\Component\Validator\Constraints\Type;
 use Undine\AppBundle\Controller\AppController;
 use Undine\Email\Emails;
 use Undine\Event\Events;
+use Undine\Event\UserDeleteAccountEvent;
 use Undine\Event\UserRegisterEvent;
 use Undine\Event\UserResetPasswordEvent;
 use Undine\Model\User;
@@ -329,8 +330,15 @@ class SecurityController extends AppController
 
         if ($form->isValid()) {
             $user = $this->getUser();
+
+            // Dispatch the app event.
+            $deleteAccountEvent = new UserDeleteAccountEvent($user);
+            $this->dispatcher->dispatch(Events::USER_DELETE_ACCOUNT, $deleteAccountEvent);
+
+            // Log the user out.
             $this->get('security.token_storage')->setToken(null);
             $this->session->migrate();
+
             $this->em->remove($user);
             $this->em->flush($user);
 
