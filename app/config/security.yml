@@ -88,5 +88,6 @@ security:
         - { path: ^/api/api\.test$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api($|/), roles: IS_AUTHENTICATED_REMEMBERED }
         - { path: ^/dashboard($|/), roles: IS_AUTHENTICATED_REMEMBERED }
+        - { path: ^/delete-account($|/), roles: IS_AUTHENTICATED_REMEMBERED }
         - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 

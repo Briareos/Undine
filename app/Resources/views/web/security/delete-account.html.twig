@@ -1,11 +1,16 @@
-{% extends 'web/layout.html.twig' %}
+{% extends 'web/security/layout.html.twig' %}
 
-{% block body %}
+{% block header %}
+    <h2 class="ui header">
+        Delete account
+    </h2>
+{% endblock %}
 
-
+{% block content %}
     {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button type="submit" class="ui button red">I am absolutely certain, delete my account</button>
+    <div class="ui stacked segment">
+        {{ form_widget(form) }}
+        <button type="submit" class="ui button red">I am absolutely certain, delete my account</button>
+    </div>
     {{ form_end(form) }}
-
 {% endblock %}

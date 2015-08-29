@@ -128,6 +128,7 @@ class SecurityController extends AppController
             $user = null;
             $form = $this->createNamedFormBuilder('reset_password', null, $formOptions)
                 ->add('email', 'email', [
+                    'attr'        => ['autofocus' => true],
                     'constraints' => [
                         new Type(['type' => 'string']),
                         new NotBlank(),
@@ -265,6 +266,7 @@ class SecurityController extends AppController
             'action' => $this->generateUrl('web-set_password', ['uid' => $resetUser->getUid(), 'timestamp' => $timestamp, 'hash' => $hash]),
         ])
             ->add('password', 'password', [
+                'attr'        => ['autofocus' => true],
                 'constraints' => [
                     new Type(['type' => 'string']),
                     new NotBlank(),
@@ -314,6 +316,7 @@ class SecurityController extends AppController
             'action' => $this->generateUrl('web-delete_account'),
         ])
             ->add('password', 'password', [
+                'attr'        => ['autofocus' => true],
                 'constraints' => [
                     new Type(['type' => 'string']),
                     new NotBlank(),

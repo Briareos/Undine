@@ -1,55 +1,42 @@
-{% extends 'web/layout.html.twig' %}
+{% extends 'web/security/layout.html.twig' %}
 
-{% block body %}
-    <style>
-        body {
-            background-color: #DADADA;
-        }
-        body > .grid {
-            height: 100%;
-        }
-        .column {
-            max-width: 450px;
-        }
-    </style>
-    <div class="ui middle aligned center aligned grid">
-        <div class="column">
-            <h2 class="ui header">
-                Sign in to your account
-            </h2>
+{% block header %}
+    <h2 class="ui header">
+        Sign in to your account
+    </h2>
+{% endblock %}
 
-            {% if error %}
-                <div class="ui error message">
-                    {{ error.message }}
-                </div>
-            {% endif %}
-
-            <form action="{{ path('web-login_check') }}" method="post" class="ui large form">
-                <div class="ui segment">
-                    <div class="field">
-                        <div class="ui left icon input">
-                            <i class="user icon"></i>
-                            <input type="email" name="email" placeholder="Email" autofocus value="{{ lastUsername }}">
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="ui left icon input">
-                            <i class="lock icon"></i>
-                            <input type="password" name="password" placeholder="Password">
-                        </div>
-                    </div>
-                    <div class="inline field">
-                        <div class="ui left aligned checkbox">
-                            <input name="rememberMe" id="rememberMe" type="checkbox" class="hidden">
-                            <label for="rememberMe">
-                                Remember me
-                            </label>
-                        </div>
-                    </div>
-                    <input name="token" type="hidden" value="{{ csrfToken }}"/>
-                    <button type="submit" class="ui fluid large submit button">Log in</button>
-                </div>
-            </form>
+{% block content %}
+    {% if error %}
+        <div class="ui error message">
+            {{ error.message }}
         </div>
-    </div>
+    {% endif %}
+
+    <form action="{{ path('web-login_check') }}" method="post" class="ui large form">
+        <div class="ui stacked segment">
+            <div class="field">
+                <div class="ui left icon input">
+                    <i class="user icon"></i>
+                    <input type="email" name="email" placeholder="Email" autofocus value="{{ lastUsername }}">
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui left icon input">
+                    <i class="lock icon"></i>
+                    <input type="password" name="password" placeholder="Password">
+                </div>
+            </div>
+            <div class="inline field">
+                <div class="ui left aligned checkbox">
+                    <input name="rememberMe" id="rememberMe" type="checkbox" class="hidden">
+                    <label for="rememberMe">
+                        Remember me
+                    </label>
+                </div>
+            </div>
+            <input name="token" type="hidden" value="{{ csrfToken }}"/>
+            <button type="submit" class="ui fluid large submit button">Log in</button>
+        </div>
+    </form>
 {% endblock %}

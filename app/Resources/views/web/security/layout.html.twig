@@ -1,0 +1,26 @@
+{% extends 'web/layout.html.twig' %}
+
+{% block body %}
+    <style>
+        body {
+            background-color: #DADADA;
+        }
+
+        body > .grid {
+            height: 100%;
+        }
+
+        .column {
+            max-width: 450px;
+        }
+    </style>
+    <div class="ui middle aligned center aligned grid">
+        <div class="column">
+            {{ block('header') }}
+
+            {% include 'flash-messages.html.twig' %}
+
+            {{ block('content') }}
+        </div>
+    </div>
+{% endblock %}

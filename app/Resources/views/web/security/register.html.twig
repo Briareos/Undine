@@ -1,28 +1,16 @@
-{% extends 'web/layout.html.twig' %}
+{% extends 'web/security/layout.html.twig' %}
 
-{% block body %}
-    <style>
-        body {
-            background-color: #DADADA;
-        }
-        body > .grid {
-            height: 100%;
-        }
-        .column {
-            max-width: 450px;
-        }
-    </style>
-    <div class="ui middle aligned center aligned grid">
-        <div class="column">
-            <h2 class="ui header">
-                Register
-            </h2>
+{% block header %}
+    <h2 class="ui header">
+        Sign up
+    </h2>
+{% endblock %}
 
-            {{ form_start(form) }}
-            {{ form_widget(form) }}
-            <button type="submit">Register</button>
-            {{ form_end(form) }}
-
-        </div>
+{% block content %}
+    {{ form_start(form) }}
+    <div class="ui stacked segment">
+        {{ form_widget(form) }}
+        <button type="submit" class="ui fluid primary large button">Sign up</button>
     </div>
+    {{ form_end(form) }}
 {% endblock %}
