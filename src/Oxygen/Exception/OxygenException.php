@@ -13,7 +13,7 @@ class OxygenException extends ProtocolException
 {
     const GENERAL_ERROR = 10000;
 
-    const FATAL_ERROR = 10046;
+    const FATAL_ERROR = 10076;
 
     const RSA_KEY_OPENSSL_VERIFY_ERROR = 10001;
 
@@ -72,6 +72,34 @@ class OxygenException extends ProtocolException
     const PUBLIC_KEY_MISSING = 10046;
 
     const AUTO_LOGIN_CAN_NOT_FIND_USER = 10047;
+
+    const MULTIPART_ENCODING_NOT_SUPPORTED = 10052;
+
+    const ARCHIVE_FILE_NOT_FOUND = 10053;
+    const ARCHIVE_TAR_ZLIB_EXTENSION_NOT_LOADED = 10054;
+    const ARCHIVE_TAR_DESTINATION_DOES_NOT_EXIST = 10055;
+    const ARCHIVE_TAR_FILE_EXISTS_AS_DIRECTORY = 10056;
+    const ARCHIVE_TAR_DIRECTORY_EXISTS_AS_FILE = 10057;
+    const ARCHIVE_TAR_FILE_IS_WRITE_PROTECTED = 10058;
+    const ARCHIVE_TAR_DIRECTORY_CAN_NOT_BE_CREATED = 10059;
+    const ARCHIVE_TAR_UNABLE_TO_OPEN_FILE_FOR_WRITING = 10060;
+    const ARCHIVE_TAR_FILE_SIZE_MISMATCH = 10061;
+    const ARCHIVE_TAR_INVALID_BLOCK_SIZE = 10062;
+    const ARCHIVE_TAR_CHECKSUM_NOT_VALID = 10063;
+    const ARCHIVE_TAR_FILE_NAME_CONTAINS_DIRECTORY_TRAVERSAL = 10064;
+
+    const ARCHIVE_ZIP_EXTENSION_NOT_LOADED = 10065;
+    const ARCHIVE_ZIP_EXTENSION_ERROR = 10066;
+
+    const PROJECT_MANAGER_UNABLE_TO_RETRIEVE_DRUPAL_PROJECT = 10067;
+    const PROJECT_MANAGER_EXTRACT_FAILED = 10068;
+    const PROJECT_MANAGER_ARCHIVE_CONTAINS_NO_FILES = 10069;
+    const PROJECT_MANAGER_ARCHIVE_VERIFY_ERROR = 10070;
+    const PROJECT_MANAGER_CAN_NOT_FIND_APPROPRIATE_UPDATER = 10071;
+    const PROJECT_MANAGER_UNABLE_TO_PARSE_PROJECT_INFO = 10072;
+    const PROJECT_MANAGER_UNABLE_TO_DETERMINE_PROJECT_NAME = 10073;
+    const PROJECT_MANAGER_PROJECT_ALREADY_INSTALLED = 10074;
+    const PROJECT_MANAGER_FILE_SYSTEM_NOT_WRITABLE = 10075;
 
     /**
      * @var string|null
@@ -236,7 +264,7 @@ class OxygenException extends ProtocolException
         ];
     }
 
-    private function validateBaseExceptionData($path, array $responseData, RequestInterface $request, ResponseInterface $response, array $requestOptions)
+    private static function validateBaseExceptionData($path, array $responseData, RequestInterface $request, ResponseInterface $response, array $requestOptions)
     {
         if (!isset($responseData['class']) || !is_string($responseData['class'])) {
             throw new InvalidBodyException(sprintf('%s.class should be a string, got %s.', $path, gettype($responseData['class'])), $request, $response, null, $requestOptions);
