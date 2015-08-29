@@ -105,10 +105,11 @@ class OxygenException extends ProtocolException
      * @param string|null       $file
      * @param int|null          $line
      * @param string|null       $traceString
+     * @param \Exception|null   $previous
      */
-    public function __construct(RequestInterface $request, ResponseInterface $response, array $handlerContext, $class, $message, $code, $type = null, array $context = null, $file = null, $line = null, $traceString = null)
+    public function __construct(RequestInterface $request, ResponseInterface $response, array $handlerContext, $class, $message, $code, $type = null, array $context = null, $file = null, $line = null, $traceString = null, \Exception $previous = null)
     {
-        parent::__construct($message, $request, $response, null, $handlerContext);
+        parent::__construct($message, $request, $response, $previous, $handlerContext);
 
         $this->class       = $class;
         $this->code        = $code;
@@ -150,9 +151,9 @@ class OxygenException extends ProtocolException
      */
     public static function createFromResponseData($path, array $responseData, RequestInterface $request, ResponseInterface $response, array $requestOptions)
     {
-        list($class, $message, $code, $type, $context, $file, $line, $traceString) = self::extractResponseData($path, $responseData, $request, $response, $requestOptions);
+        list($class, $message, $code, $type, $context, $file, $line, $traceString, $previous) = self::extractResponseData($path, $responseData, $request, $response, $requestOptions);
 
-        return new self($request, $response, $requestOptions, $class, $message, $code, $type, $context, $file, $line, $traceString);
+        return new self($request, $response, $requestOptions, $class, $message, $code, $type, $context, $file, $line, $traceString, $previous);
     }
 
     /**
@@ -177,23 +178,11 @@ class OxygenException extends ProtocolException
             'file'        => null,
             'line'        => null,
             'traceString' => null,
+            'previous'    => null,
         ];
+        $previous = null;
 
-        if (!isset($responseData['class']) || !is_string($responseData['class'])) {
-            throw new InvalidBodyException(sprintf('%s.class should be a string, got %s.', $path, gettype($responseData['class'])), $request, $response, null, $requestOptions);
-        }
-
-        if (!isset($responseData['message']) || !is_string($responseData['message'])) {
-            throw new InvalidBodyException(sprintf('%s.message should be a string, got %s.', $path, gettype($responseData['message'])), $request, $response, null, $requestOptions);
-        }
-
-        if (!isset($responseData['code']) || !is_int($responseData['code'])) {
-            throw new InvalidBodyException(sprintf('%s.code should be an integer, got %s.', $path, gettype($responseData['code'])), $request, $response, null, $requestOptions);
-        }
-
-        if (isset($responseData['traceString']) && !is_string($responseData['traceString'])) {
-            throw new InvalidBodyException(sprintf('%s.code should be a string, got %s.', $path, gettype($responseData['traceString'])), $request, $response, null, $requestOptions);
-        }
+        self::validateBaseExceptionData($path, $responseData, $request, $response, $requestOptions);
 
         if (isset($responseData['type']) && !is_string($responseData['type'])) {
             throw new InvalidBodyException(sprintf('%s.type should be a string, got %s.', $path, gettype($responseData['type'])), $request, $response, null, $requestOptions);
@@ -215,6 +204,25 @@ class OxygenException extends ProtocolException
             }
         }
 
+        // Only track previous exception if the returned type is an Oxygen_Exception (eg. has 'type' property).
+        if (isset($responseData['type']) && isset($responseData['previous'])) {
+            if (!is_array($responseData['previous'])) {
+                throw new InvalidBodyException(sprintf('%s.previous should be an array, got %s', gettype($responseData['previous'])), $request, $response, null, $requestOptions);
+            }
+            $previousData = $responseData['previous'] + [
+                    'class'       => null,
+                    'message'     => null,
+                    'code'        => null,
+                    'file'        => null,
+                    'line'        => null,
+                    'traceString' => null,
+                ];
+
+            self::validateBaseExceptionData($path.'.previous', $previousData, $request, $response, $requestOptions);
+
+            $previous = new OxygenPreviousException($previousData['class'], $previousData['message'], $previousData['code'], $previousData['file'], $previousData['line'], $previousData['traceString']);
+        }
+
         return [
             $responseData['class'],
             $responseData['message'],
@@ -224,6 +232,34 @@ class OxygenException extends ProtocolException
             $responseData['file'],
             $responseData['line'],
             $responseData['traceString'],
+            $previous,
         ];
+    }
+
+    private function validateBaseExceptionData($path, array $responseData, RequestInterface $request, ResponseInterface $response, array $requestOptions)
+    {
+        if (!isset($responseData['class']) || !is_string($responseData['class'])) {
+            throw new InvalidBodyException(sprintf('%s.class should be a string, got %s.', $path, gettype($responseData['class'])), $request, $response, null, $requestOptions);
+        }
+
+        if (!isset($responseData['message']) || !is_string($responseData['message'])) {
+            throw new InvalidBodyException(sprintf('%s.message should be a string, got %s.', $path, gettype($responseData['message'])), $request, $response, null, $requestOptions);
+        }
+
+        if (!isset($responseData['code']) || !is_int($responseData['code'])) {
+            throw new InvalidBodyException(sprintf('%s.code should be an integer, got %s.', $path, gettype($responseData['code'])), $request, $response, null, $requestOptions);
+        }
+
+        if (isset($responseData['file']) && !is_string($responseData['file'])) {
+            throw new InvalidBodyException(sprintf('%s.file should be an integer, got %s.', $path, gettype($responseData['file'])), $request, $response, null, $requestOptions);
+        }
+
+        if (isset($responseData['line']) && !is_int($responseData['line'])) {
+            throw new InvalidBodyException(sprintf('%s.line should be an integer, got %s.', $path, gettype($responseData['line'])), $request, $response, null, $requestOptions);
+        }
+
+        if (isset($responseData['traceString']) && !is_string($responseData['traceString'])) {
+            throw new InvalidBodyException(sprintf('%s.code should be a string, got %s.', $path, gettype($responseData['traceString'])), $request, $response, null, $requestOptions);
+        }
     }
 }
