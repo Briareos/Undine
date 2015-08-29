@@ -2,7 +2,7 @@
 
 namespace Undine\Oxygen\Action;
 
-class ModuleDisableAction extends AbstractAction
+class ModuleEnableAction extends AbstractAction
 {
     /**
      * @var string[]
@@ -12,16 +12,16 @@ class ModuleDisableAction extends AbstractAction
     /**
      * @var bool
      */
-    private $disableDependents;
+    private $enableDependencies;
 
     /**
      * @param string[] $modules
-     * @param bool     $disableDependents
+     * @param bool     $enableDependencies
      */
-    public function __construct(array $modules, $disableDependents = false)
+    public function __construct(array $modules, $enableDependencies = false)
     {
-        $this->modules           = $modules;
-        $this->disableDependents = $disableDependents;
+        $this->modules            = $modules;
+        $this->enableDependencies = $enableDependencies;
     }
 
     /**
@@ -38,8 +38,8 @@ class ModuleDisableAction extends AbstractAction
     public function getParameters()
     {
         return [
-            'modules'           => $this->modules,
-            'disableDependents' => $this->disableDependents,
+            'modules'            => $this->modules,
+            'enableDependencies' => $this->enableDependencies,
         ];
     }
 }
