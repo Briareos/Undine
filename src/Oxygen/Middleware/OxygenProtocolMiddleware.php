@@ -91,7 +91,7 @@ class OxygenProtocolMiddleware
         /** @var ActionInterface $action */
         $action = $options['oxygen_action'];
 
-        $requestId  = bin2hex($this->secureRandom->nextBytes(16));
+        $requestId = substr(base_convert(bin2hex($this->secureRandom->nextBytes(32)), 16, 36), 0, 32);
         // Kind of like str_rot18 that includes support for numbers.
         $responseId = strtr($requestId, 'abcdefghijklmnopqrstuvwxyz0123456789', 'stuvwxyz0123456789abcdefghijklmnopqr');
         $expiresAt  = $this->currentTime->getTimestamp() + 86400;
