@@ -11,7 +11,6 @@ use Undine\Functions\Exception\JsonParseException;
 use Undine\Model\Site;
 use Undine\Oxygen\Action\ActionInterface;
 use Undine\Oxygen\Exception\InvalidBodyException;
-use Undine\Oxygen\Exception\InvalidContentTypeException;
 use Undine\Oxygen\Exception\OxygenException;
 use Undine\Oxygen\Reaction\ReactionInterface;
 
@@ -94,11 +93,11 @@ class OxygenProtocolMiddleware
 
         $requestId = bin2hex($this->secureRandom->nextBytes(16));
         $expiresAt = $this->currentTime->getTimestamp() + 86400;
-        $username = '';
+        $userName  = '';
 
         $requestData = [
-            // Request nonce/ID. It's also expected to be present in the response, so we know we
-            // got a response from the module.
+            // Request nonce/ID. It's also expected to be present in the response as oxygenResponseId = str_rot13(oxygenRequestId),
+            // so we are absolutely certain we got a response from the module.
             'oxygenRequestId'    => $requestId,
             // When the nonce should expire. There is no need for this value to be too low; the point is to persist
             // them on the module so they can be safely cleared when they expire.
@@ -126,7 +125,7 @@ class OxygenProtocolMiddleware
             'actionName'         => $action->getName(),
             'actionParameters'   => $action->getParameters(),
             // This doesn't have use currently, but it's implemented at protocol level for statistic purposes.
-            'username'           => $username,
+            'userName'           => $userName,
             // Implemented to tie in dashboard users and site administrators, also for statistic purposes.
             // In LoginUrlGenerator it has more significant use.
             'userUid'            => $site->getUser()->getUid(),
@@ -138,25 +137,9 @@ class OxygenProtocolMiddleware
 
         return $fn($oxygenRequest, $options)
             ->then(function (ResponseInterface $response) use ($request, $options, $requestId, $action) {
-                $contentType = $response->getHeaderLine('content-type');
-
-                if (!preg_match('{^application/json($|;)$}', $contentType)) {
-                    throw new InvalidContentTypeException('application/json', $contentType, $request, $response, $options);
-                }
-
-                try {
-                    $data = \Undine\Functions\json_parse($response->getBody());
-                } catch (JsonParseException $e) {
-                    throw new InvalidBodyException('The body provided is not valid JSON.', $request, $response, $e, $options);
-                }
-
-                if (!is_array($data)) {
-                    throw new InvalidBodyException(sprintf('The JSON response must resolve to an array; got %s.', gettype($data)), $request, $response);
-                }
-
-                $this->validateData($request, $requestId, $response, $data, $options);
-
-                $reaction = $this->createReaction($action, $data);
+                $responseData = $this->extractData(str_rot13($requestId), $request, $response, $options);
+                $this->validateData($request, $response, $responseData, $options);
+                $reaction = $this->createReaction($action, $responseData);
 
                 return $reaction;
             });
@@ -164,23 +147,22 @@ class OxygenProtocolMiddleware
 
     /**
      * @param RequestInterface  $request
-     * @param string            $requestId
      * @param ResponseInterface $response
      * @param array             $data
      * @param array             $options
      */
-    private function validateData(RequestInterface $request, $requestId, ResponseInterface $response, array $data, array $options)
+    private function validateData(RequestInterface $request, ResponseInterface $response, array $data, array $options)
     {
-        if (isset($data['oxygenException'])) {
-            throw OxygenException::createFromResponseData('oxygenException', $data['oxygenException'], $request, $response, $options);
+        // Was an exception thrown?
+        if (isset($data['exception'])) {
+            throw OxygenException::createFromResponseData('exception', $data['exception'], $request, $response, $options);
         }
 
+        // Does the action result exist?
         if (!isset($data['actionResult'])
             || !is_array($data['actionResult'])
-            || !isset($data['oxygenResponseId'])
-            || $data['oxygenResponseId'] !== $requestId
         ) {
-            throw new InvalidBodyException('Unexpected response gotten', $request, $response, null, $options);
+            throw new InvalidBodyException('Unable to find action result.', $request, $response, null, $options);
         }
     }
 
@@ -218,5 +200,52 @@ class OxygenProtocolMiddleware
     private function getUrlSlug(UriInterface $url)
     {
         return sprintf('%s%s%s', $url->getHost(), ($url->getPort() ? ':'.$url->getPort() : ''), rtrim($url->getPath(), '/'));
+    }
+
+    /**
+     * Finds a JSON line that should be our response.
+     * Should handle edge-cases where the Oxygen module's output is polluted prematurely (by PHP errors)
+     * or in the shutdown context (by register_shutdown_function output).
+     *
+     * @param string            $responseId
+     * @param RequestInterface  $request
+     * @param ResponseInterface $response
+     * @param array             $options
+     *
+     * @return array
+     */
+    private function extractData($responseId, RequestInterface $request, ResponseInterface $response, array $options)
+    {
+        // Find all lines that might represent a JSON string.
+        $matchCount = preg_match_all('{^({.*?})\s?$}m', (string)$response->getBody(), $matches);
+
+        // First check if there are any matches at all.
+        if (!$matchCount) {
+            throw new InvalidBodyException('The Oxygen module response could not be found.', $request, $response, null, $options);
+        }
+
+        // Iterate through all candidates.
+        foreach ($matches[1] as $line) {
+            try {
+                $data = \Undine\Functions\json_parse($line);
+            } catch (JsonParseException $e) {
+                // We'll ignore any lines that aren't valid json, since we're kinda greedy with capturing.
+                continue;
+            }
+
+            // Our response should always resolve to an array.
+            if (!is_array($data)) {
+                continue;
+            }
+
+            // Look for data that's always available in our protocol.
+            if (!isset($data['oxygenResponseId']) || $data['oxygenResponseId'] !== $responseId) {
+                continue;
+            }
+
+            return $data;
+        }
+
+        throw new InvalidBodyException('The Oxygen module response could not be found.', $request, $response, null, $options);
     }
 }
