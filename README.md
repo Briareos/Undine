@@ -52,8 +52,9 @@ To bootstrap the application, run `composer install --no-scripts --no-autoloader
 That should be all the host should run in order to provide smooth development experience.
 
 On the guest you have to run `composer install`, which will, along with the standard tasks, run `npm install`
-(`/node_modules`, `bower install` (`/dashboard/bower_components`), and `gulp build` (`/var/tmp`, `/web/(css|js|image)`),
-which will prepare the twig part of the project for the (automatically run) `cache:warmup` command.
+(`/node_modules`), `bower install` (`/dashboard/bower_components`), `tsd reinstall` (`/dashboard/typings`)
+and `gulp build` (`/var/tmp`, `/web/(css|js|image)`), which will prepare the twig part of the project for
+the (automatically run) `cache:warmup` command.
 
 >Note: If you get a 500 error on the `/dashboard` endpoint in production mode, do `tail var/logs/prod.log`; if the
 logs say anything about gulp manifest files, you have to run `gulp build` manually.
