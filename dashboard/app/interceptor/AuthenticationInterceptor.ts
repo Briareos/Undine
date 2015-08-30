@@ -3,7 +3,7 @@
  * That case should be handled here. For now, reload the page and let the backend handle it.
  */
 angular.module('undine.dashboard')
-    .service('AuthenticationInterceptor', function ($q, $window) {
+    .service('AuthenticationInterceptor', function ($q:ng.IQService, $window:ng.IWindowService) {
         // https://docs.angularjs.org/api/ng/service/$http#interceptors
         return {
             response: function (response) {

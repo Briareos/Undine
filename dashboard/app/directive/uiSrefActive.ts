@@ -9,8 +9,8 @@ angular.module('undine.dashboard')
             scope: {
                 uiSref: '@'
             },
-            link: function (scope, element, attr) {
-                scope.$on('$stateChangeSuccess', function (event, state) {
+            link: function (scope, element, attr:any) {
+                scope.$on('$stateChangeSuccess', function (event, state : ng.ui.IState) {
                     if (state.name === attr.uiSref) {
                         element.addClass('active');
                     } else {

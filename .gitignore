@@ -23,3 +23,4 @@
 !web/image/.gitkeep
 /node_modules/
 /dashboard/bower_components/
+/dashboard/typings/

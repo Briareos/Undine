@@ -18,13 +18,7 @@
     <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="bower_components/semantic-ui/dist/semantic.js"></script>
 
-    <script src="app/app.js"></script>
-    <script src="app/run.js"></script>
-    <script src="app/states.js"></script>
-    {% glob '/dashboard/app/' pattern='{^.+\/.+\.js$}' %}
-    <script src="app/{{ glob_path }}"></script>
-    {% endglob %}
-
+    <script src="app.js"></script>
 </head>
 <body>
 

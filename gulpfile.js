@@ -13,6 +13,7 @@ var rev = require('gulp-rev');
 var revReplace = require('gulp-rev-replace');
 var filter = require('gulp-filter');
 var autoprefixer = require('gulp-autoprefixer');
+var typescript = require('gulp-typescript');
 var del = require('del');
 var debug = require('gulp-debug');
 
@@ -82,8 +83,24 @@ function buildDashboardCss() {
         .pipe(gulp.dest('./var/tmp'));
 }
 
-function buildDashboardJs() {
-    var localFilter = filter('app/**/*.js', {restore: true});
+function buildDashboardTypescriptDev() {
+    return gulp.src([
+        './dashboard/app/all.ts',
+        './dashboard/app/app.ts',
+        './dashboard/app/states.ts',
+        './dashboard/app/run.ts',
+        './dashboard/app/*/**/*.ts'
+    ], {base: './dashboard'})
+        .pipe(gulpIf(config.useSourceMaps, sourcemaps.init()))
+        .pipe(typescript({sortOutput: true, target: "ES5"}))
+        .pipe(ngAnnotate())
+        .pipe(concat('app.js'))
+        .pipe(gulpIf(config.useSourceMaps, sourcemaps.write()))
+        .pipe(gulp.dest('./dashboard'));
+}
+
+function buildDashboardTypescript() {
+    var typescriptFilter = filter('app/**/*.ts', {restore: true});
     var htmlFilter = filter('app/**/*.html', {restore: true});
     var vendorFilter = filter('bower_components/**/*.js', {restore: true});
 
@@ -93,10 +110,11 @@ function buildDashboardJs() {
         './dashboard/bower_components/angular-ui-router/release/angular-ui-router.min.js',
         './dashboard/bower_components/semantic-ui/dist/semantic.min.js',
         './dashboard/app/**/*.html',
-        './dashboard/app/app.js',
-        './dashboard/app/states.js',
-        './dashboard/app/run.js',
-        './dashboard/app/*/**/*.js'
+        './dashboard/app/all.ts',
+        './dashboard/app/app.ts',
+        './dashboard/app/states.ts',
+        './dashboard/app/run.ts',
+        './dashboard/app/*/**/*.ts'
     ], {base: './dashboard'})
         .pipe(vendorFilter)
         .pipe(concat('vendor.js'))
@@ -110,11 +128,12 @@ function buildDashboardJs() {
         }))
         .pipe(minifyJs())
         .pipe(htmlFilter.restore)
-        .pipe(localFilter)
+        .pipe(typescriptFilter)
+        .pipe(typescript({sortOutput: true, target: "ES5"}))
         .pipe(ngAnnotate())
         .pipe(concat('app.js'))
         .pipe(minifyJs())
-        .pipe(localFilter.restore)
+        .pipe(typescriptFilter.restore)
         .pipe(concat('dashboard.js'))
         .pipe(rev())
         .pipe(gulp.dest('./web/js'))
@@ -151,12 +170,11 @@ function reloadComponent(component) {
     reload(component);
 }
 
-
 function watchDev() {
     watch('./dashboard/image/**/*', gulp.series(reloadComponent.bind(null, 'html')));
     watch('./dashboard/style/**/*', gulp.series(buildDashboardCssDev, reloadComponent.bind(null, 'css')));
     watch('./dashboard/app/**/*.html', gulp.series(reloadComponent.bind(null, 'html')));
-    watch('./dashboard/app/**/*.js', gulp.series(buildDashboardIndexDev, reloadComponent.bind(null, 'html')));
+    watch('./dashboard/app/**/*.ts', gulp.series(buildDashboardTypescriptDev, reloadComponent.bind(null, 'html')));
     watch('./app/Resources/views/dashboard/dev.html.twig', gulp.series(reloadComponent.bind(null, 'html')));
 }
 
@@ -164,6 +182,7 @@ gulp.task('default',
     gulp.series(
         gulp.parallel(
             buildDashboardCssDev,
+            buildDashboardTypescriptDev,
             buildDashboardIndexDev
         ),
         gulp.parallel(
@@ -177,7 +196,7 @@ gulp.task('build',
         buildDashboardImage,
         gulp.parallel(
             buildDashboardCss,
-            buildDashboardJs,
+            buildDashboardTypescript,
             buildDashboardIndex
         )
     )

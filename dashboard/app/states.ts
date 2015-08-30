@@ -1,5 +1,5 @@
 angular.module('undine.dashboard')
-    .config(function ($locationProvider, $stateProvider, $urlRouterProvider) {
+    .config(function ($locationProvider:ng.ILocationProvider, $stateProvider:ng.ui.IStateProvider, $urlRouterProvider:ng.ui.IUrlRouterProvider) {
         $urlRouterProvider.otherwise('/');
         $locationProvider.html5Mode(true);
         $stateProvider
