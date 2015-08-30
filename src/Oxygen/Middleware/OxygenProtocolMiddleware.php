@@ -115,8 +115,8 @@ class OxygenProtocolMiddleware
             // The point is that only authorized entities can provide public keys (field 'publicKey' above).
             'handshakeKey'       => $this->handshakeKeyName,
             'handshakeSignature' => \Undine\Functions\openssl_sign_data($this->handshakeKeyValue, $this->getUrlSlug($site->getUrl())),
-            // The module will throw an error if the required version is not met.
-            'requiredVersion'    => $this->moduleVersion,
+            // The module will throw an error if its version is lower.
+            'version'            => $this->moduleVersion,
             // URL of the website as we know it. The website itself will reject the request if it doesn't match,
             // so it should be handled accordingly. Probably by updating the site entity and retrying the request.
             'baseUrl'            => (string)$site->getUrl(),
