@@ -9,7 +9,7 @@ angular.module('undine.dashboard')
             scope: {
                 uiSref: '@'
             },
-            link: function (scope, element, attr:any) {
+            link: function (scope:ng.IScope, element:ng.IAugmentedJQuery, attr:any) {
                 scope.$on('$stateChangeSuccess', function (event, state : ng.ui.IState) {
                     if (state.name === attr.uiSref) {
                         element.addClass('active');

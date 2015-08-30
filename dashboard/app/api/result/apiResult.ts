@@ -1,0 +1,3 @@
+interface ApiResult {
+    ok: boolean
+}
