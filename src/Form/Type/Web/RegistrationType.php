@@ -2,7 +2,6 @@
 
 namespace Undine\Form\Type\Web;
 
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormError;
@@ -53,6 +52,7 @@ class RegistrationType extends AbstractType
             ],
         ]);
         $builder->add('plainPassword', 'password', [
+            'label'       => 'Password',
             'constraints' => [
                 new Type(['type' => 'string']),
                 new NotBlank(),
@@ -62,14 +62,14 @@ class RegistrationType extends AbstractType
         // We can't use UniqueEntity validator because it must be tied to the 'data' object.
         // Regardless, this is quite alright, because this is only used for new user creation, not modification.
         $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
+            if (!$event->getForm()->isValid()) {
+                return;
+            }
+
             /** @var RegistrationCommand $command */
             $command = $event->getData();
             $email   = $command->getEmail();
-            // This is user-submitted data, and it might be an array.
-            // Even if validation fails, this will still get called.
-            if (!is_string($email)) {
-                return;
-            }
+
             $users = $this->userRepository->findBy(['email' => $email]);
             if (!$users) {
                 return;
