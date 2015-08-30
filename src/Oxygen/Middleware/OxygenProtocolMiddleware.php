@@ -91,9 +91,11 @@ class OxygenProtocolMiddleware
         /** @var ActionInterface $action */
         $action = $options['oxygen_action'];
 
-        $requestId = bin2hex($this->secureRandom->nextBytes(16));
-        $expiresAt = $this->currentTime->getTimestamp() + 86400;
-        $userName  = '';
+        $requestId  = bin2hex($this->secureRandom->nextBytes(16));
+        // Kind of like str_rot18 that includes support for numbers.
+        $responseId = strtr($requestId, 'abcdefghijklmnopqrstuvwxyz0123456789', 'stuvwxyz0123456789abcdefghijklmnopqr');
+        $expiresAt  = $this->currentTime->getTimestamp() + 86400;
+        $userName   = '';
 
         $requestData = [
             // Request nonce/ID. It's also expected to be present in the response as oxygenResponseId = str_rot13(oxygenRequestId),
@@ -136,8 +138,8 @@ class OxygenProtocolMiddleware
             ->withBody(\GuzzleHttp\Psr7\stream_for(json_encode($requestData)));
 
         return $fn($oxygenRequest, $options)
-            ->then(function (ResponseInterface $response) use ($request, $options, $requestId, $action) {
-                $responseData = $this->extractData(str_rot13($requestId), $request, $response, $options);
+            ->then(function (ResponseInterface $response) use ($request, $options, $responseId, $action) {
+                $responseData = $this->extractData($responseId, $request, $response, $options);
                 $this->validateData($request, $response, $responseData, $options);
                 $reaction = $this->createReaction($action, $responseData);
 
