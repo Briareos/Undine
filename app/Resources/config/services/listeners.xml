@@ -29,6 +29,10 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <service id="undine.listener.json_body" class="Undine\EventListener\JsonBodyListener">
+            <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest" priority="64"/>
+        </service>
+
     </services>
 
 </container>
