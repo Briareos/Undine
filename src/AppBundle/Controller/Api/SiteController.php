@@ -11,6 +11,8 @@ use Undine\Api\Result\SiteLogoutResult;
 use Undine\AppBundle\Controller\AppController;
 use Undine\Configuration\ApiCommand;
 use Undine\Configuration\ApiResult;
+use Undine\Event\Events;
+use Undine\Event\SiteDisconnectEvent;
 use Undine\Model\Site;
 use Undine\Oxygen\Action\ModuleDisableAction;
 use Undine\Oxygen\Action\SiteLogoutAction;
@@ -60,6 +62,8 @@ class SiteController extends AppController
     public function disconnectAction(Site $site)
     {
         $this->oxygenClient->send($site, new ModuleDisableAction(['oxygen']));
+
+        $this->dispatcher->dispatch(new SiteDisconnectEvent($site), Events::SITE_DISCONNECT);
 
         $this->em->remove($site);
         $this->em->flush($site);

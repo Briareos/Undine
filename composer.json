@@ -10,7 +10,8 @@
         },
         "files": [
             "src/Functions/json.php",
-            "src/Functions/openssl.php"
+            "src/Functions/openssl.php",
+            "src/Functions/string.php"
         ]
     },
     "require": {

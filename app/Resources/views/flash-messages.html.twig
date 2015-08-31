@@ -3,7 +3,7 @@
     {% for label, flashes in flash_messages %}
         {% for flash in flashes %}
             <div class="ui message {{ label }}">
-                {{ flash }}
+                {{ flash|raw }}
             </div>
         {% endfor %}
     {% endfor %}

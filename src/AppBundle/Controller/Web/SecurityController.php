@@ -25,6 +25,7 @@ use Undine\Event\Events;
 use Undine\Event\UserDeleteAccountEvent;
 use Undine\Event\UserRegisterEvent;
 use Undine\Event\UserResetPasswordEvent;
+use Undine\Event\UserResetPasswordFailedEvent;
 use Undine\Model\User;
 use Undine\Web\Command\RegistrationCommand;
 
@@ -227,9 +228,13 @@ class SecurityController extends AppController
 
         if ($currentUser && $currentUser->getUid() !== $resetUser->getUid()) {
             // User is logged in as a different user.
-            $this->addFlash('error', sprintf('Another user (<em>%s</em>) is already logged into the site on this computer, but you tried to use a one-time link for user <em>%s</em>. Please <a href="%s">logout</a> and try using the link again.', $currentUser->getName(), $resetUser->getName(), $this->container->get('security.logout_url_generator')->getLogoutUrl('web')));
+            $this->addFlash('error', \Undine\Functions\format('Another user (%current_user) is already logged into the site on this computer, but you tried to use a one-time link for user %reset_user. Please <a href="!logout">logout</a> and try using the link again.', [
+                '%current_user' => $currentUser->getName(),
+                '%reset_user'   => $resetUser->getName(),
+                '!logout'       => $this->container->get('security.logout_url_generator')->getLogoutUrl('web'),
+            ]));
 
-            return $this->redirectToRoute('web-home');
+            return $this->redirectToRoute('web-reset_password');
         }
 
         $timeout = 86400;
@@ -250,12 +255,15 @@ class SecurityController extends AppController
 
         if (!hash_equals($this->getLoginToken($resetUser, $timestamp), $hash)) {
             // The hash is plain wrong. This is a sign of attack.
+            $this->dispatcher->dispatch(new UserResetPasswordFailedEvent($request, $resetUser), Events::USER_RESET_PASSWORD_FAILED);
+
             $this->logger->notice('Invalid reset password token used.', [
                 'ip'        => $request->getClientIp(),
                 'userId'    => $resetUser->getId(),
                 'userName'  => $resetUser->getName(),
                 'userEmail' => $resetUser->getEmail(),
             ]);
+
             $this->addFlash('error', 'You have tried to use a one-time login link that has either been used or is no longer valid. Please request a new one using the form below.');
 
             return $this->redirectToRoute('web-reset_password');
