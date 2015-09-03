@@ -1,4 +1,4 @@
-export class Api {
+class Api {
     constructor(private $http:ng.IHttpService, private endpoint:string) {
     }
 

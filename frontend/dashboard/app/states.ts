@@ -6,27 +6,27 @@ angular.module('undine.dashboard')
             .state('dashboard', {
                 abstract: true,
                 url: '/',
-                templateUrl: 'app/layout/dashboard.html'
+                templateUrl: '/layout/dashboard.html'
             })
             .state('dashboard.dashboard', {
                 url: '',
                 controller: 'DashboardController',
-                templateUrl: 'app/page/dashboard/dashboard.html'
+                templateUrl: '/page/dashboard/dashboard.html'
             })
             .state('dashboard.module', {
                 url: 'module',
                 controller: 'ModuleController',
-                templateUrl: 'app/page/module/module.html'
+                templateUrl: '/page/module/module.html'
             })
             .state('dashboard.backup', {
                 url: 'backup',
                 controller: 'BackupController',
-                templateUrl: 'app/page/backup/backup.html'
+                templateUrl: '/page/backup/backup.html'
             })
             .state('dashboard.account', {
                 url: 'account',
                 controller: 'ProfileController',
-                templateUrl: 'app/page/profile/profile.html'
+                templateUrl: '/page/profile/profile.html'
             })
         ;
     });

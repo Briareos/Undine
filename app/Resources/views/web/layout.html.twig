@@ -5,13 +5,28 @@
     <meta charset="UTF-8">
     <title>{% block title %}Undine{% endblock %}</title>
 
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.0.7/semantic.min.css">
+    {% if app.environment == 'dev' %}
+        <link rel="stylesheet" href="/bower_components/semantic-ui/dist/semantic.css">
+        <link rel="stylesheet" href="/tmp/css/web/web.css">
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.0.7/semantic.min.js"></script>
+        <script src="/bower_components/jquery/dist/jquery.js"></script>
+        <script src="/bower_components/angularjs/angular.js"></script>
+        <script src="/bower_components/semantic-ui/dist/semantic.js"></script>
+        <script src="/tmp/js/web/web-template.js"></script>
+        <script src="/tmp/js/web/web.js"></script>
+    {% else %}
+    <link rel="stylesheet" href="/css/web/{{ rev_asset('web.css', 'rev-css-web.json') }}">
+
+        <script src="/js/web/{{ rev_asset('web.js', 'rev-js-web.json') }}"></script>
+    {% endif %}
+
 
 </head>
 <body>
 {{ block('body') }}
+
+{% if app.environment == 'dev' %}
+    {{ include('live-reload.html.twig') }}
+{% endif %}
 </body>
 </html>

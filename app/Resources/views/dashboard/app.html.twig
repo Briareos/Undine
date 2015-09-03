@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <base href="{{ path('web-dashboard') }}/">
+
+    <meta charset="UTF-8">
+    <title>{{ brand }}</title>
+
+    {% if app.environment == 'dev' %}
+        <link rel="stylesheet" href="/bower_components/semantic-ui/dist/semantic.css">
+
+        {# The dashboard.css file is dynamically built by gulp. A server rule maps all assets like
+        /dashboard/*.{js|css|html} to the /dashboard/ directory (relative to the project directory),
+        and assets like /image/*.{jpg|png} to the /dashboard/image/ directory (for relative CSS
+        assets to work. An alternative is to rewrite CSS routes on build time. #}
+        <link rel="stylesheet" href="/tmp/css/dashboard/dashboard.css">
+
+        <script src="/bower_components/jquery/dist/jquery.js"></script>
+        <script src="/bower_components/angularjs/angular.js"></script>
+        <script src="/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+        <script src="/bower_components/semantic-ui/dist/semantic.js"></script>
+
+        <script src="/tmp/js/dashboard/dashboard-template.js"></script>
+        <script src="/tmp/js/dashboard/dashboard.js"></script>
+    {% else %}
+
+    <link rel="stylesheet" href="/css/dashboard/{{ rev_asset('dashboard.css', 'rev-css-dashboard.json') }}">
+
+        {# While the development dependencies are declared inline, production dependencies
+        are declared in the gulpfile.js, because modifying a .html.twig file would be too
+        much to maintain. The dependencies are also different, eg. the Angular.js has two
+        builds - one for development, and one for production. #}
+        <script src="/js/dashboard/{{ rev_asset('dashboard.js', 'rev-js-dashboard.json') }}"></script>
+    {% endif %}
+
+</head>
+<body>
+
+{{ include('dashboard/data.html.twig') }}
+
+<div class="logo-test"></div>
+
+<ui-view></ui-view>
+
+{% if app.environment == 'dev' %}
+    {{ include('live-reload.html.twig') }}
+    {{ include('toolbar/angular_toolbar_js.html.twig') }}
+{% endif %}
+
+<script>
+    {# Dirty fix - when visiting /dashboard# it flips out. Must be the router component, but it's probably related to the <base> tag not being a substring of the current URL. Remove once it's fixed. #}
+    if (window.location.href.indexOf('#') !== -1) {
+        history.replaceState('', document.title, window.location.pathname.replace(/\/$/, '') + '/' + window.location.search);
+    }
+
+    {% if app.environment == 'dev' %}
+    angular.bootstrap(document.body, ['undine.dashboard']);
+    {% else %}
+    angular.bootstrap(document.body, ['undine.dashboard'], {strictDi: true});
+    {% endif %}
+</script>
+
+</body>
+</html>

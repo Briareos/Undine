@@ -22,5 +22,5 @@
 !web/js/.gitkeep
 !web/image/.gitkeep
 /node_modules/
-/dashboard/bower_components/
-/dashboard/typings/
+/frontend/bower_components/
+/frontend/typings/
