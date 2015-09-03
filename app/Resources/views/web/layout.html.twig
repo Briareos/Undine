@@ -15,9 +15,9 @@
         <script src="/tmp/js/web/web-template.js"></script>
         <script src="/tmp/js/web/web.js"></script>
     {% else %}
-    <link rel="stylesheet" href="/css/web/{{ rev_asset('web.css', 'rev-css-web.json') }}">
+    <link rel="stylesheet" href="/css/web/{% asset 'web.css' 'rev-css-web.json' %}">
 
-        <script src="/js/web/{{ rev_asset('web.js', 'rev-js-web.json') }}"></script>
+        <script src="/js/web/{% asset 'web.js' 'rev-js-web.json' %}"></script>
     {% endif %}
 
 

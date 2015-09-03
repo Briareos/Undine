@@ -11,7 +11,12 @@
             <tag name="twig.token_parser"/>
         </service>
 
-        <service id="undine.twig.extension.rev_asset" class="Undine\Twig\Extension\RevAssetExtension">
+        <service id="undine.twig.token_parser.asset" class="Undine\Twig\TokenParser\Asset" public="false">
+            <argument>%kernel.root_dir%/../var/tmp</argument>
+            <tag name="twig.token_parser"/>
+        </service>
+
+        <service id="undine.twig.extension.rev_asset" class="Undine\Twig\Extension\RevAssetExtension" public="false">
             <argument>%kernel.root_dir%/../var/tmp</argument>
             <tag name="twig.extension"/>
         </service>

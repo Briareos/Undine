@@ -24,13 +24,13 @@
         <script src="/tmp/js/dashboard/dashboard.js"></script>
     {% else %}
 
-    <link rel="stylesheet" href="/css/dashboard/{{ rev_asset('dashboard.css', 'rev-css-dashboard.json') }}">
+    <link rel="stylesheet" href="/css/dashboard/{% asset 'dashboard.css' 'rev-css-dashboard.json' %}">
 
         {# While the development dependencies are declared inline, production dependencies
         are declared in the gulpfile.js, because modifying a .html.twig file would be too
         much to maintain. The dependencies are also different, eg. the Angular.js has two
         builds - one for development, and one for production. #}
-        <script src="/js/dashboard/{{ rev_asset('dashboard.js', 'rev-js-dashboard.json') }}"></script>
+        <script src="/js/dashboard/{% asset 'dashboard.js' 'rev-js-dashboard.json' %}"></script>
     {% endif %}
 
 </head>

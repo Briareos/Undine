@@ -30,11 +30,16 @@ var config = {
     liveReloadPort: 48263
 };
 
+function cleanDev(cb) {
+    del([
+        './var/tmp/css/**',
+        './var/tmp/js/**'
+    ], cb);
+}
+
 function clean(cb) {
     del([
-        './var/tmp/**',
-        '!./var/tmp',
-        '!./var/tmp/.gitkeep',
+        './var/tmp/rev-*.json',
         './web/css/**',
         '!./var/css',
         '!./web/css/.gitkeep',
@@ -174,7 +179,7 @@ function buildWebTypescriptDev() {
         './frontend/web/app/app.ts',
         './frontend/web/app/run.ts',
         './frontend/web/app/*/**/*.ts'
-    ], {base: './frontend/admin'})
+    ], {base: './frontend/web'})
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.init()))
         .pipe(typescript({sortOutput: true, target: 'ES5'}))
         .pipe(ngAnnotate())
@@ -407,7 +412,7 @@ function watchDev() {
 
 gulp.task('default',
     gulp.series(
-        clean,
+        cleanDev,
         gulp.parallel(
             buildDashboardCssDev,
             buildDashboardTemplateDev,
