@@ -10,6 +10,21 @@
         <field name="url" type="uri" length="255"/>
         <field name="privateKey" type="string" length="1750"/>
         <field name="publicKey" type="string" length="500"/>
+        <field name="phpVersion" type="string" length="50" nullable="true"/>
+        <field name="phpVersionId" type="number" nullable="true"/>
+        <field name="databaseSchema" type="string" length="50" nullable="true"/>
+        <field name="databaseDriver" type="string" length="10" nullable="true"/>
+        <field name="databaseDriverVersion" type="string" length="50" nullable="true"/>
+        <field name="databaseTablePrefix" type="string" length="50" nullable="true"/>
+        <field name="cronKey" type="string" length="250" nullable="true"/>
+        <field name="cronLastRunAt" type="datetime" nullable="true"/>
+        <field name="siteName" type="string" length="250" nullable="true"/>
+        <field name="siteMail" type="string" length="250" nullable="true"/>
+        <field name="siteKey" type="string" length="250" nullable="true"/>
+        <field name="drupalRoot" type="string" length="250" nullable="true"/>
+        <field name="drupalVersion" type="string" length="50" nullable="true"/>
+        <field name="updateLastCheckAt" type="datetime" nullable="true"/>
+        <field name="systemChecksum" type="string" length="32" nullable="true"/>
         <field name="createdAt" type="datetime">
             <gedmo:timestampable on="create"/>
         </field>
