@@ -91,9 +91,16 @@ class SiteStateResultTracker
             $resolver->setNormalizer('updateLastCheckAt', function (OptionsResolver $resolver, $timestamp) {
                 return new \DateTime('@'.$timestamp);
             });
-            $resolver->addAllowedValues('timezone', \DateTimeZone::listIdentifiers());
+            $timezones   = \DateTimeZone::listIdentifiers();
+            // Allow empty timezone.
+            $timezones[] = '';
+            $resolver->addAllowedValues('timezone', $timezones);
             /** @noinspection PhpUnusedParameterInspection */
             $resolver->setNormalizer('timezone', function (OptionsResolver $resolver, $timezone) {
+                if ($timezone === '') {
+                    return null;
+                }
+
                 return new \DateTimeZone($timezone);
             });
             $resolver->addAllowedTypes('phpVersion', 'string');
