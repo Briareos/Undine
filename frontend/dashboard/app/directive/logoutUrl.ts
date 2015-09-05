@@ -4,7 +4,6 @@ angular.module('undine.dashboard')
             restrict: 'A',
             link: function (scope:ng.IScope, element:ng.IAugmentedJQuery) {
                 element.attr('href', AppData.logoutUrl);
-
             }
         }
     });
