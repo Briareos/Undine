@@ -2,6 +2,7 @@
 
 namespace Undine\Model;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Psr\Http\Message\UriInterface;
 use Undine\Model\Site\SiteState;
 use Undine\Uid\UidInterface;
@@ -39,7 +40,12 @@ class Site implements UidInterface
     /**
      * @var SiteState
      */
-    private $state;
+    private $siteState;
+
+    /**
+     * @var SiteExtension[]
+     */
+    private $siteExtensions;
 
     /**
      * @var \DateTime
@@ -59,11 +65,12 @@ class Site implements UidInterface
      */
     public function __construct(UriInterface $url, User $user, $privateKey, $publicKey)
     {
-        $this->url        = $url;
-        $this->user       = $user;
-        $this->privateKey = $privateKey;
-        $this->publicKey  = $publicKey;
-        $this->state      = new SiteState();
+        $this->url            = $url;
+        $this->user           = $user;
+        $this->privateKey     = $privateKey;
+        $this->publicKey      = $publicKey;
+        $this->siteState      = new SiteState();
+        $this->siteExtensions = new ArrayCollection();
     }
 
     /**
@@ -123,7 +130,23 @@ class Site implements UidInterface
      */
     public function getSiteState()
     {
-        return $this->state;
+        return $this->siteState;
+    }
+
+    /**
+     * @return SiteExtension[]
+     */
+    public function getSiteExtensions()
+    {
+        return $this->siteExtensions->toArray();
+    }
+
+    /**
+     * @param SiteExtension[] $siteExtensions
+     */
+    public function setSiteExtensions(array $siteExtensions)
+    {
+        $this->siteExtensions = new ArrayCollection($siteExtensions);
     }
 
     /**

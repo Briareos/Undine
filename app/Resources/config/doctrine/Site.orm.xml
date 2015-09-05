@@ -20,7 +20,10 @@
         <many-to-one target-entity="Undine\Model\User" field="user" inversed-by="sites">
         </many-to-one>
 
-        <embedded name="state" class="Undine\Model\Site\SiteState" column-prefix="state_"/>
+        <one-to-many target-entity="Undine\Model\SiteExtension" field="siteExtensions" mapped-by="site" index-by="slug">
+        </one-to-many>
+
+        <embedded name="siteState" class="Undine\Model\Site\SiteState" column-prefix="state_"/>
 
     </entity>
 

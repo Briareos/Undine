@@ -127,6 +127,11 @@ class SiteState
     private $drupalVersion;
 
     /**
+     * @var int|null
+     */
+    private $drupalMajorVersion;
+
+    /**
      * @var \DateTime|null
      */
     private $updateLastCheckAt;
@@ -139,7 +144,7 @@ class SiteState
     /**
      * @var string|null
      */
-    private $systemChecksum;
+    private $extensionsChecksum;
 
     /**
      * @return string|null
@@ -542,6 +547,26 @@ class SiteState
     }
 
     /**
+     * @return int|null
+     */
+    public function getDrupalMajorVersion()
+    {
+        return $this->drupalMajorVersion;
+    }
+
+    /**
+     * @param int|null $drupalMajorVersion
+     *
+     * @return $this
+     */
+    public function setDrupalMajorVersion($drupalMajorVersion = null)
+    {
+        $this->drupalMajorVersion = $drupalMajorVersion;
+
+        return $this;
+    }
+
+    /**
      * @return \DateTime|null
      */
     public function getUpdateLastCheckAt()
@@ -571,28 +596,32 @@ class SiteState
 
     /**
      * @param \DateTimeZone|null $timezone
+     *
+     * @return $this
      */
     public function setTimezone(\DateTimeZone $timezone = null)
     {
         $this->timezone = $timezone;
+
+        return $this;
     }
 
     /**
      * @return string|null
      */
-    public function getSystemChecksum()
+    public function getExtensionsChecksum()
     {
-        return $this->systemChecksum;
+        return $this->extensionsChecksum;
     }
 
     /**
-     * @param string|null $systemChecksum
+     * @param string|null $extensionsChecksum
      *
      * @return $this
      */
-    public function setSystemChecksum($systemChecksum = null)
+    public function setExtensionsChecksum($extensionsChecksum = null)
     {
-        $this->systemChecksum = $systemChecksum;
+        $this->extensionsChecksum = $extensionsChecksum;
 
         return $this;
     }
