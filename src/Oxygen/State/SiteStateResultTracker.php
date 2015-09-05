@@ -5,10 +5,11 @@ namespace Undine\Oxygen\State;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Undine\Event\Events;
-use Undine\Event\SiteStateEvent;
+use Undine\Event\SiteStateResultEvent;
 use Undine\Model\Site;
+use Undine\Model\Site\SiteState;
 
-class SiteStateTracker
+class SiteStateResultTracker
 {
     /**
      * @var EventDispatcherInterface
@@ -35,12 +36,12 @@ class SiteStateTracker
     public function getParameters(Site $site)
     {
         return [
-            'systemChecksum' => $site->getSystemChecksum(),
+            'systemChecksum' => $site->getSiteState()->getSystemChecksum(),
         ];
     }
 
     /**
-     * Parses the resulting state.
+     * Creates a new site state.
      *
      * @param Site  $site
      * @param array $result The resulting state returned from the Oxygen module.
@@ -58,9 +59,9 @@ class SiteStateTracker
             }
         }
 
-        $state = new SiteState($data);
-        $event = new SiteStateEvent($site, $state);
-        $this->dispatcher->dispatch(Events::SITE_STATE, $event);
+        $siteStateResult = new SiteStateResult($data);
+        $event           = new SiteStateResultEvent($site, $siteStateResult);
+        $this->dispatcher->dispatch(Events::SITE_STATE_RESULT, $event);
     }
 
     /**
@@ -97,7 +98,11 @@ class SiteStateTracker
             });
             $resolver->addAllowedTypes('phpVersion', 'string');
             $resolver->addAllowedTypes('phpVersionId', 'int');
-            $resolver->addAllowedValues('databaseDriver', [Site::DATABASE_DRIVER_MYSQL, Site::DATABASE_DRIVER_PGSQL, Site::DATABASE_DRIVER_SQLITE]);
+            $resolver->addAllowedValues('databaseDriver', [
+                SiteState::DATABASE_DRIVER_MYSQL,
+                SiteState::DATABASE_DRIVER_PGSQL,
+                SiteState::DATABASE_DRIVER_SQLITE,
+            ]);
             $resolver->addAllowedTypes('databaseDriverVersion', 'string');
             $resolver->addAllowedTypes('databaseTablePrefix', 'string');
             $resolver->addAllowedTypes('memoryLimit', 'int');

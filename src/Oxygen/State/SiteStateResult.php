@@ -29,13 +29,12 @@ namespace Undine\Oxygen\State;
  * @property bool          $systemCacheHit
  * @property array         $systemData
  */
-class SiteState
+class SiteStateResult
 {
     /**
      * @var array
      */
     private $data;
-
     /**
      * @param array $data
      */
@@ -43,7 +42,6 @@ class SiteState
     {
         $this->data = $data;
     }
-
     /**
      * {@inheritdoc}
      */
@@ -52,10 +50,8 @@ class SiteState
         if (!array_key_exists($name, $this->data)) {
             throw new \OutOfBoundsException(sprintf('Property "%s" could not be found.'));
         }
-
         return $this->data[$name];
     }
-
     /**
      * {@inheritdoc}
      */

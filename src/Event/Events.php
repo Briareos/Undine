@@ -35,7 +35,7 @@ final class Events
     /**
      * A fresh state has been returned by the site.
      */
-    const SITE_STATE = 'site.state';
+    const SITE_STATE_RESULT = 'site.state_result';
 
     private function __construct()
     {

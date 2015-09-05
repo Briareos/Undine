@@ -13,7 +13,7 @@ use Undine\Oxygen\Action\ActionInterface;
 use Undine\Oxygen\Exception\InvalidBodyException;
 use Undine\Oxygen\Exception\OxygenException;
 use Undine\Oxygen\Reaction\ReactionInterface;
-use Undine\Oxygen\State\SiteStateTracker;
+use Undine\Oxygen\State\SiteStateResultTracker;
 
 /**
  * This class should map the fields 1:1 to Oxygen_EventListener_ProtocolListener.
@@ -46,9 +46,10 @@ class OxygenProtocolMiddleware
     private $handshakeKeyValue;
 
     /**
-     * @var SiteStateTracker
+     * @var SiteStateResultTracker
      */
     private $stateTracker;
+
     /**
      * @var callable
      */
@@ -60,10 +61,10 @@ class OxygenProtocolMiddleware
      * @param \DateTime             $currentTime
      * @param string                $handshakeKeyName
      * @param string                $handshakeKeyValue
-     * @param SiteStateTracker      $stateTracker
+     * @param SiteStateResultTracker      $stateTracker
      * @param callable              $nextHandler
      */
-    public function __construct($moduleVersion, SecureRandomInterface $secureRandom, \DateTime $currentTime, $handshakeKeyName, $handshakeKeyValue, SiteStateTracker $stateTracker, callable $nextHandler)
+    public function __construct($moduleVersion, SecureRandomInterface $secureRandom, \DateTime $currentTime, $handshakeKeyName, $handshakeKeyValue, SiteStateResultTracker $stateTracker, callable $nextHandler)
     {
         $this->moduleVersion     = $moduleVersion;
         $this->secureRandom      = $secureRandom;
@@ -74,7 +75,7 @@ class OxygenProtocolMiddleware
         $this->nextHandler       = $nextHandler;
     }
 
-    public static function create($moduleVersion, SecureRandomInterface $secureRandom, \DateTime $currentTime, $handshakeKeyName, $handshakeKeyValue, SiteStateTracker $stateTracker)
+    public static function create($moduleVersion, SecureRandomInterface $secureRandom, \DateTime $currentTime, $handshakeKeyName, $handshakeKeyValue, SiteStateResultTracker $stateTracker)
     {
         return function (callable $nextHandler) use ($moduleVersion, $secureRandom, $currentTime, $handshakeKeyName, $handshakeKeyValue, $stateTracker) {
             return new self($moduleVersion, $secureRandom, $currentTime, $handshakeKeyName, $handshakeKeyValue, $stateTracker, $nextHandler);
