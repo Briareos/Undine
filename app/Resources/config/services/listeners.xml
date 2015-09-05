@@ -33,6 +33,11 @@
             <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest" priority="64"/>
         </service>
 
+        <service id="undine.listener.site_state" class="Undine\EventListener\SiteStateListener">
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
+            <tag name="kernel.event_listener" event="site.state" method="onSiteState"/>
+        </service>
+
     </services>
 
 </container>

@@ -64,11 +64,16 @@ rwIDAQAB
             <argument type="service" id="current_time"/>
             <argument>%oxygen_private_key_name%</argument>
             <argument>%oxygen_private_key_value%</argument>
+            <argument type="service" id="undine.oxygen.site_state_tracker"/>
         </service>
 
         <service id="undine.oxygen.login_url_generator" class="Undine\Oxygen\LoginUrlGenerator">
             <argument type="service" id="security.secure_random"/>
             <argument type="service" id="current_time"/>
+        </service>
+
+        <service id="undine.oxygen.site_state_tracker" class="Undine\Oxygen\State\SiteStateTracker">
+            <argument type="service" id="event_dispatcher"/>
         </service>
 
     </services>

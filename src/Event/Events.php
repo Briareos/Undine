@@ -32,6 +32,11 @@ final class Events
      */
     const SITE_DISCONNECT = 'site.disconnect';
 
+    /**
+     * A fresh state has been returned by the site.
+     */
+    const SITE_STATE = 'site.state';
+
     private function __construct()
     {
     }

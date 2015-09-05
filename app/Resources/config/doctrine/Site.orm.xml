@@ -7,27 +7,39 @@
             <generator strategy="AUTO"/>
         </id>
 
-        <field name="url" type="uri" length="255"/>
+        <field name="url" type="uri" length="300"/>
         <field name="privateKey" type="string" length="1750"/>
         <field name="publicKey" type="string" length="500"/>
-        <field name="phpVersion" type="string" length="50" nullable="true"/>
-        <field name="phpVersionId" type="number" nullable="true"/>
-        <field name="databaseSchema" type="string" length="50" nullable="true"/>
-        <field name="databaseDriver" type="string" length="10" nullable="true"/>
-        <field name="databaseDriverVersion" type="string" length="50" nullable="true"/>
-        <field name="databaseTablePrefix" type="string" length="50" nullable="true"/>
-        <field name="cronKey" type="string" length="250" nullable="true"/>
-        <field name="cronLastRunAt" type="datetime" nullable="true"/>
-        <field name="siteName" type="string" length="250" nullable="true"/>
-        <field name="siteMail" type="string" length="250" nullable="true"/>
-        <field name="siteKey" type="string" length="250" nullable="true"/>
-        <field name="drupalRoot" type="string" length="250" nullable="true"/>
-        <field name="drupalVersion" type="string" length="50" nullable="true"/>
-        <field name="updateLastCheckAt" type="datetime" nullable="true"/>
-        <field name="systemChecksum" type="string" length="32" nullable="true"/>
         <field name="createdAt" type="datetime">
             <gedmo:timestampable on="create"/>
         </field>
+
+        <!-- State fields are considered "user input". It's hard to determine validation constraints on most of them,
+             (even though there are some) so they are all nullable and up to the default 255 characters. -->
+        <field name="phpVersion" type="string" nullable="true"/>
+        <field name="phpVersionId" type="integer" nullable="true"/>
+        <field name="databaseDriver" type="string" nullable="true"/>
+        <field name="databaseDriverVersion" type="string" nullable="true"/>
+        <field name="databaseTablePrefix" type="string" nullable="true"/>
+        <field name="memoryLimit" type="integer" nullable="true"/>
+        <field name="processArchitecture" type="integer" nullable="true"/>
+        <field name="internalIp" type="string" nullable="true"/>
+        <field name="uname" type="string" nullable="true"/>
+        <field name="hostname" type="string" nullable="true"/>
+        <field name="os" type="string" nullable="true"/>
+        <field name="windows" type="boolean" nullable="true"/>
+        <field name="cronKey" type="string" nullable="true"/>
+        <field name="cronLastRunAt" type="datetime" nullable="true"/>
+        <field name="siteName" type="string" nullable="true"/>
+        <field name="siteMail" type="string" nullable="true"/>
+        <field name="siteKey" type="string" nullable="true"/>
+        <field name="siteRoot" type="string" nullable="true"/>
+        <field name="drupalRoot" type="string" nullable="true"/>
+        <field name="drupalVersion" type="string" nullable="true"/>
+        <field name="updateLastCheckAt" type="datetime" nullable="true"/>
+        <field name="timezone" type="timezone" nullable="true"/>
+        <field name="systemChecksum" type="string" nullable="true"/>
+        <!-- End of state fields. -->
 
         <field name="deletedAt" type="datetime" nullable="true"/>
         <gedmo:soft-deleteable field-name="deletedAt" time-aware="false"/>

@@ -10,6 +10,12 @@ class Site implements UidInterface
 {
     use UidTrait;
 
+    const DATABASE_DRIVER_MYSQL = 'mysql';
+
+    const DATABASE_DRIVER_PGSQL = 'pgsql';
+
+    const DATABASE_DRIVER_SQLITE = 'sqlite';
+
     /**
      * @var int
      */
@@ -50,13 +56,6 @@ class Site implements UidInterface
     private $phpVersionId;
 
     /**
-     * Name of the database.
-     *
-     * @var string|null
-     */
-    private $databaseSchema;
-
-    /**
      * One of 'mysql', 'pdosql', 'sqlite'.
      *
      * @var string|null
@@ -72,6 +71,47 @@ class Site implements UidInterface
      * @var string|null
      */
     private $databaseTablePrefix;
+
+    /**
+     * PHP memory limit in bytes.
+     *
+     * @var int|null
+     */
+    private $memoryLimit;
+
+    /**
+     * Either 32 or 64.
+     *
+     * @var int|null
+     */
+    private $processArchitecture;
+
+    /**
+     * @var string|null
+     */
+    private $internalIp;
+
+    /**
+     * @var string|null
+     */
+    private $uname;
+
+    /**
+     * @var string|null
+     */
+    private $hostname;
+
+    /**
+     * @see PHP_OS
+     *
+     * @var string|null
+     */
+    private $os;
+
+    /**
+     * @var bool|null
+     */
+    private $windows;
 
     /**
      * @var string|null
@@ -101,6 +141,13 @@ class Site implements UidInterface
     private $siteKey;
 
     /**
+     * In most cases the same as $drupalRoot, but let's play it safe and keep both.
+     *
+     * @var string|null
+     */
+    private $siteRoot;
+
+    /**
      * @var string|null
      */
     private $drupalRoot;
@@ -114,6 +161,11 @@ class Site implements UidInterface
      * @var \DateTime|null
      */
     private $updateLastCheckAt;
+
+    /**
+     * @var \DateTimeZone|null
+     */
+    private $timezone;
 
     /**
      * @var string|null
@@ -239,26 +291,6 @@ class Site implements UidInterface
     /**
      * @return string|null
      */
-    public function getDatabaseSchema()
-    {
-        return $this->databaseSchema;
-    }
-
-    /**
-     * @param string|null $databaseSchema
-     *
-     * @return $this
-     */
-    public function setDatabaseSchema($databaseSchema = null)
-    {
-        $this->databaseSchema = $databaseSchema;
-
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
     public function getDatabaseDriver()
     {
         return $this->databaseDriver;
@@ -312,6 +344,146 @@ class Site implements UidInterface
     public function setDatabaseTablePrefix($databaseTablePrefix = null)
     {
         $this->databaseTablePrefix = $databaseTablePrefix;
+
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getMemoryLimit()
+    {
+        return $this->memoryLimit;
+    }
+
+    /**
+     * @param int|null $memoryLimit
+     *
+     * @return $this
+     */
+    public function setMemoryLimit($memoryLimit = null)
+    {
+        $this->memoryLimit = $memoryLimit;
+
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getProcessArchitecture()
+    {
+        return $this->processArchitecture;
+    }
+
+    /**
+     * @param int|null $processArchitecture
+     *
+     * @return $this
+     */
+    public function setProcessArchitecture($processArchitecture = null)
+    {
+        $this->processArchitecture = $processArchitecture;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getInternalIp()
+    {
+        return $this->internalIp;
+    }
+
+    /**
+     * @param string|null $internalIp
+     *
+     * @return $this
+     */
+    public function setInternalIp($internalIp = null)
+    {
+        $this->internalIp = $internalIp;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUname()
+    {
+        return $this->uname;
+    }
+
+    /**
+     * @param string|null $uname
+     *
+     * @return $this
+     */
+    public function setUname($uname = null)
+    {
+        $this->uname = $uname;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getHostname()
+    {
+        return $this->hostname;
+    }
+
+    /**
+     * @param string|null $hostname
+     *
+     * @return $this
+     */
+    public function setHostname($hostname = null)
+    {
+        $this->hostname = $hostname;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getOs()
+    {
+        return $this->os;
+    }
+
+    /**
+     * @param string|null $os
+     *
+     * @return $this
+     */
+    public function setOs($os = null)
+    {
+        $this->os = $os;
+
+        return $this;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function isWindows()
+    {
+        return $this->windows;
+    }
+
+    /**
+     * @param bool|null $windows
+     *
+     * @return $this
+     */
+    public function setWindows($windows = null)
+    {
+        $this->windows = $windows;
 
         return $this;
     }
@@ -419,6 +591,26 @@ class Site implements UidInterface
     /**
      * @return string|null
      */
+    public function getSiteRoot()
+    {
+        return $this->siteRoot;
+    }
+
+    /**
+     * @param string|null $siteRoot
+     *
+     * @return $this
+     */
+    public function setSiteRoot($siteRoot = null)
+    {
+        $this->siteRoot = $siteRoot;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
     public function getDrupalRoot()
     {
         return $this->drupalRoot;
@@ -474,6 +666,22 @@ class Site implements UidInterface
         $this->updateLastCheckAt = $updateLastCheckAt;
 
         return $this;
+    }
+
+    /**
+     * @return \DateTimeZone|null
+     */
+    public function getTimezone()
+    {
+        return $this->timezone === null ? null : new \DateTimeZone($this->timezone);
+    }
+
+    /**
+     * @param \DateTimeZone|null $timezone
+     */
+    public function setTimezone(\DateTimeZone $timezone = null)
+    {
+        $this->timezone = $timezone;
     }
 
     /**

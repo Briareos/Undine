@@ -13,6 +13,7 @@ use Undine\Oxygen\Action\ActionInterface;
 use Undine\Oxygen\Exception\InvalidBodyException;
 use Undine\Oxygen\Exception\OxygenException;
 use Undine\Oxygen\Reaction\ReactionInterface;
+use Undine\Oxygen\State\SiteStateTracker;
 
 /**
  * This class should map the fields 1:1 to Oxygen_EventListener_ProtocolListener.
@@ -45,6 +46,10 @@ class OxygenProtocolMiddleware
     private $handshakeKeyValue;
 
     /**
+     * @var SiteStateTracker
+     */
+    private $stateTracker;
+    /**
      * @var callable
      */
     private $nextHandler;
@@ -55,22 +60,24 @@ class OxygenProtocolMiddleware
      * @param \DateTime             $currentTime
      * @param string                $handshakeKeyName
      * @param string                $handshakeKeyValue
+     * @param SiteStateTracker      $stateTracker
      * @param callable              $nextHandler
      */
-    public function __construct($moduleVersion, SecureRandomInterface $secureRandom, \DateTime $currentTime, $handshakeKeyName, $handshakeKeyValue, callable $nextHandler)
+    public function __construct($moduleVersion, SecureRandomInterface $secureRandom, \DateTime $currentTime, $handshakeKeyName, $handshakeKeyValue, SiteStateTracker $stateTracker, callable $nextHandler)
     {
         $this->moduleVersion     = $moduleVersion;
         $this->secureRandom      = $secureRandom;
         $this->currentTime       = $currentTime;
         $this->handshakeKeyName  = $handshakeKeyName;
         $this->handshakeKeyValue = $handshakeKeyValue;
+        $this->stateTracker      = $stateTracker;
         $this->nextHandler       = $nextHandler;
     }
 
-    public static function create($moduleVersion, SecureRandomInterface $secureRandom, \DateTime $currentTime, $handshakeKeyName, $handshakeKeyValue)
+    public static function create($moduleVersion, SecureRandomInterface $secureRandom, \DateTime $currentTime, $handshakeKeyName, $handshakeKeyValue, SiteStateTracker $stateTracker)
     {
-        return function (callable $nextHandler) use ($moduleVersion, $secureRandom, $currentTime, $handshakeKeyName, $handshakeKeyValue) {
-            return new self($moduleVersion, $secureRandom, $currentTime, $handshakeKeyName, $handshakeKeyValue, $nextHandler);
+        return function (callable $nextHandler) use ($moduleVersion, $secureRandom, $currentTime, $handshakeKeyName, $handshakeKeyValue, $stateTracker) {
+            return new self($moduleVersion, $secureRandom, $currentTime, $handshakeKeyName, $handshakeKeyValue, $stateTracker, $nextHandler);
         };
     }
 
@@ -93,9 +100,10 @@ class OxygenProtocolMiddleware
 
         $requestId = substr(base_convert(bin2hex($this->secureRandom->nextBytes(32)), 16, 36), 0, 32);
         // Kind of like str_rot18 that includes support for numbers.
-        $responseId = strtr($requestId, 'abcdefghijklmnopqrstuvwxyz0123456789', 'stuvwxyz0123456789abcdefghijklmnopqr');
-        $expiresAt  = $this->currentTime->getTimestamp() + 86400;
-        $userName   = '';
+        $responseId      = strtr($requestId, 'abcdefghijklmnopqrstuvwxyz0123456789', 'stuvwxyz0123456789abcdefghijklmnopqr');
+        $expiresAt       = $this->currentTime->getTimestamp() + 86400;
+        $userName        = '';
+        $stateParameters = $this->stateTracker->getParameters($site);
 
         $requestData = [
             // Request nonce/ID. It's also expected to be present in the response as oxygenResponseId = str_rot13(oxygenRequestId),
@@ -131,6 +139,7 @@ class OxygenProtocolMiddleware
             // Implemented to tie in dashboard users and site administrators, also for statistic purposes.
             // In LoginUrlGenerator it has more significant use.
             'userUid'            => $site->getUser()->getUid(),
+            'stateParameters'    => $stateParameters,
         ];
 
         $oxygenRequest = $request
@@ -138,10 +147,11 @@ class OxygenProtocolMiddleware
             ->withBody(\GuzzleHttp\Psr7\stream_for(json_encode($requestData)));
 
         return $fn($oxygenRequest, $options)
-            ->then(function (ResponseInterface $response) use ($request, $options, $responseId, $action) {
+            ->then(function (ResponseInterface $response) use ($site, $request, $options, $responseId, $action) {
                 $responseData = $this->extractData($responseId, $request, $response, $options);
                 $this->validateData($request, $response, $responseData, $options);
                 $reaction = $this->createReaction($action, $responseData);
+                $this->stateTracker->setResult($site, $responseData['stateResult']);
 
                 return $reaction;
             });
@@ -150,21 +160,24 @@ class OxygenProtocolMiddleware
     /**
      * @param RequestInterface  $request
      * @param ResponseInterface $response
-     * @param array             $data
+     * @param array             $responseData
      * @param array             $options
      */
-    private function validateData(RequestInterface $request, ResponseInterface $response, array $data, array $options)
+    private function validateData(RequestInterface $request, ResponseInterface $response, array $responseData, array $options)
     {
         // Was an exception thrown?
-        if (isset($data['exception'])) {
-            throw OxygenException::createFromResponseData('exception', $data['exception'], $request, $response, $options);
+        if (isset($responseData['exception'])) {
+            throw OxygenException::createFromResponseData('exception', $responseData['exception'], $request, $response, $options);
         }
 
         // Does the action result exist?
-        if (!isset($data['actionResult'])
-            || !is_array($data['actionResult'])
-        ) {
+        if (!isset($responseData['actionResult']) || !is_array($responseData['actionResult'])) {
             throw new InvalidBodyException('Unable to find action result.', $request, $response, null, $options);
+        }
+
+        // Does the state result exist?
+        if (!isset($responseData['stateResult']) || !is_array($responseData['stateResult'])) {
+            throw new InvalidBodyException('Unable to find state result.', $request, $response, null, $options);
         }
     }
 

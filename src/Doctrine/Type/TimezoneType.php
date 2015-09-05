@@ -5,10 +5,8 @@ namespace Undine\Doctrine\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\Type;
-use GuzzleHttp\Psr7\Uri;
-use Psr\Http\Message\UriInterface;
 
-class UriType extends Type
+class TimezoneType extends Type
 {
     /**
      * {@inheritdoc}
@@ -31,7 +29,7 @@ class UriType extends Type
      */
     public function getName()
     {
-        return 'uri';
+        return 'timezone';
     }
 
     /**
@@ -39,8 +37,8 @@ class UriType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        /** @var UriInterface|null $value */
-        return ($value === null) ? null : (string)$value;
+        /** @var \DateTimeZone|null $value */
+        return ($value === null) ? null : $value->getName();
     }
 
     /**
@@ -48,14 +46,15 @@ class UriType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        if ($value === null || $value instanceof UriInterface) {
+        if ($value === null || $value instanceof \DateTimeZone) {
             return $value;
         }
 
         try {
-            $val = new Uri($value);
-        } catch (\InvalidArgumentException $e) {
-            throw ConversionException::conversionFailedFormat($value, $this->getName(), 'URI (RFC 3986)');
+            $val = new \DateTimeZone($value);
+        } catch (\Exception $e) {
+            // Exception message example: DateTimeZone::__construct(): Unknown or bad timezone (foobar)
+            throw ConversionException::conversionFailedFormat($value, $this->getName(), 'Valid timezone');
         }
 
         return $val;
