@@ -1,5 +1,5 @@
 <div class="sidebar">
-    <a ui-sref="account" class="user avatar">
+    <a ui-sref="account" ui-sref-active class="user avatar">
         <img gravatar-src="currentUser.emailMd5" class="ui circular image">
     </a>
 
@@ -17,6 +17,11 @@
         <li>
             <a ui-sref="modules" ui-sref-active class="item">
                 <i class="cubes icon"></i>
+            </a>
+        </li>
+        <li>
+            <a ui-sref="add-website" ui-sref-active class="item">
+                <i class="plus icon"></i>
             </a>
         </li>
     </ul>

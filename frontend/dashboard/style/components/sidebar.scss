@@ -11,12 +11,18 @@
 
   .user.avatar {
     text-align: center;
+    display: block;
+    position: relative;
 
     .image {
       display: inline-block;
       box-shadow: 0 0 1px grey;
       width: 90px;
       height: 90px;
+    }
+
+    &:hover .image, &.active .image {
+      opacity: 0.8;
     }
   }
 
