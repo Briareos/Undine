@@ -51,6 +51,7 @@ doctrine:
         charset:  UTF8
         types:
             uri: Undine\Doctrine\Type\UriType
+            timezone: Undine\Doctrine\Type\TimezoneType
     orm:
         filters:
             softdeleteable:

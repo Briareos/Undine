@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd" xmlns:gedmo="http://gediminasm.org/schemas/orm/doctrine-extensions-mapping">
+
+    <entity repository-class="Undine\Repository\SiteExtensionRepository" name="Undine\Model\SiteExtension" change-tracking-policy="DEFERRED_EXPLICIT">
+
+        <id name="site" association-key="true"/>
+        <id name="slug" type="string"/>
+
+        <field name="filename" type="string"/>
+        <field name="type" type="string"/>
+        <field name="parent" type="string" nullable="true"/>
+        <field name="active" type="boolean"/>
+        <field name="name" type="string"/>
+        <field name="description" type="string"/>
+        <field name="package" type="string"/>
+        <field name="version" type="string" nullable="true"/>
+        <field name="required" type="boolean"/>
+        <field name="dependencies" type="simple_array" nullable="true"/>
+        <field name="project" type="string" nullable="true"/>
+
+        <many-to-one target-entity="Undine\Model\Site" field="site" inversed-by="siteExtensions">
+            <join-column nullable="false"/>
+        </many-to-one>
+
+    </entity>
+
+</doctrine-mapping>

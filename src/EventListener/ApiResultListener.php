@@ -18,6 +18,7 @@ use Undine\Api\Exception\ConstraintViolationException;
 use Undine\Api\Result\ResultInterface;
 use Undine\Api\Serializer\Context;
 use Undine\Api\Serializer\Normalizer;
+use Undine\Oxygen\Exception\InvalidBodyException;
 
 class ApiResultListener implements EventSubscriberInterface
 {
@@ -81,7 +82,7 @@ class ApiResultListener implements EventSubscriberInterface
         $data = [];
 
         if ($exception instanceof CommandInvalidException) {
-            $data += ['error' => $exception->getForm()->getErrors(true)->current()->getMessage(), 'verbose'=>$exception->getForm()->getErrors(true,true)->__toString()];
+            $data += ['error' => $exception->getForm()->getErrors(true)->current()->getMessage(), 'verbose' => $exception->getForm()->getErrors(true, true)->__toString()];
         } elseif ($exception instanceof ConstraintViolationException) {
             $data += ['error' => $exception->getConstraintId()];
         } elseif ($exception instanceof UsernameNotFoundException) {
@@ -92,6 +93,8 @@ class ApiResultListener implements EventSubscriberInterface
             } else {
                 $data += ['error' => SecurityConstraint::NOT_AUTHENTICATED];
             }
+        } elseif ($exception instanceof InvalidBodyException) {
+            xdebug_break();
         } else {
             return;
             $data += ['error' => $exception->getMessage()];

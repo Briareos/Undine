@@ -2,7 +2,9 @@
 
 namespace Undine\Model;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Psr\Http\Message\UriInterface;
+use Undine\Model\Site\SiteState;
 use Undine\Uid\UidInterface;
 use Undine\Uid\UidTrait;
 
@@ -26,13 +28,6 @@ class Site implements UidInterface
     private $user;
 
     /**
-     * Drupal's internal "site_key", used for statistic tracking.
-     *
-     * @var string|null
-     */
-    private $siteKey;
-
-    /**
      * @var string
      */
     private $privateKey;
@@ -41,6 +36,16 @@ class Site implements UidInterface
      * @var string
      */
     private $publicKey;
+
+    /**
+     * @var SiteState
+     */
+    private $siteState;
+
+    /**
+     * @var SiteExtension[]
+     */
+    private $siteExtensions;
 
     /**
      * @var \DateTime
@@ -60,10 +65,12 @@ class Site implements UidInterface
      */
     public function __construct(UriInterface $url, User $user, $privateKey, $publicKey)
     {
-        $this->url        = $url;
-        $this->user       = $user;
-        $this->privateKey = $privateKey;
-        $this->publicKey  = $publicKey;
+        $this->url            = $url;
+        $this->user           = $user;
+        $this->privateKey     = $privateKey;
+        $this->publicKey      = $publicKey;
+        $this->siteState      = new SiteState();
+        $this->siteExtensions = new ArrayCollection();
     }
 
     /**
@@ -103,26 +110,6 @@ class Site implements UidInterface
     }
 
     /**
-     * @return string|null
-     */
-    public function getSiteKey()
-    {
-        return $this->siteKey;
-    }
-
-    /**
-     * @param string|null $siteKey
-     *
-     * @return $this
-     */
-    public function setSiteKey($siteKey)
-    {
-        $this->siteKey = $siteKey;
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getPrivateKey()
@@ -136,6 +123,30 @@ class Site implements UidInterface
     public function getPublicKey()
     {
         return $this->publicKey;
+    }
+
+    /**
+     * @return SiteState
+     */
+    public function getSiteState()
+    {
+        return $this->siteState;
+    }
+
+    /**
+     * @return SiteExtension[]
+     */
+    public function getSiteExtensions()
+    {
+        return $this->siteExtensions->toArray();
+    }
+
+    /**
+     * @param SiteExtension[] $siteExtensions
+     */
+    public function setSiteExtensions(array $siteExtensions)
+    {
+        $this->siteExtensions = new ArrayCollection($siteExtensions);
     }
 
     /**

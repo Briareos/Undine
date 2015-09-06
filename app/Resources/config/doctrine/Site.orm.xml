@@ -7,7 +7,7 @@
             <generator strategy="AUTO"/>
         </id>
 
-        <field name="url" type="uri" length="255"/>
+        <field name="url" type="uri" length="300"/>
         <field name="privateKey" type="string" length="1750"/>
         <field name="publicKey" type="string" length="500"/>
         <field name="createdAt" type="datetime">
@@ -19,6 +19,11 @@
 
         <many-to-one target-entity="Undine\Model\User" field="user" inversed-by="sites">
         </many-to-one>
+
+        <one-to-many target-entity="Undine\Model\SiteExtension" field="siteExtensions" mapped-by="site" index-by="slug">
+        </one-to-many>
+
+        <embedded name="siteState" class="Undine\Model\Site\SiteState" column-prefix="state_"/>
 
     </entity>
 

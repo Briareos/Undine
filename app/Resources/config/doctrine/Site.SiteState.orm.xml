@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd" xmlns:gedmo="http://gediminasm.org/schemas/orm/doctrine-extensions-mapping">
+
+    <embeddable name="Undine\Model\Site\SiteState">
+
+        <!-- State fields are considered "user input". It's hard to determine validation constraints on most of them,
+             (even though there are some) so they are all nullable and up to the default 255 characters. -->
+        <field name="phpVersion" type="string" nullable="true"/>
+        <field name="phpVersionId" type="integer" nullable="true"/>
+        <field name="databaseDriver" type="string" nullable="true"/>
+        <field name="databaseDriverVersion" type="string" nullable="true"/>
+        <field name="databaseTablePrefix" type="string" nullable="true"/>
+        <field name="memoryLimit" type="integer" nullable="true"/>
+        <field name="processArchitecture" type="integer" nullable="true"/>
+        <field name="internalIp" type="string" nullable="true"/>
+        <field name="uname" type="string" nullable="true"/>
+        <field name="hostname" type="string" nullable="true"/>
+        <field name="os" type="string" nullable="true"/>
+        <field name="windows" type="boolean" nullable="true"/>
+        <field name="cronKey" type="string" nullable="true"/>
+        <field name="cronLastRunAt" type="datetime" nullable="true"/>
+        <field name="siteName" type="string" nullable="true"/>
+        <field name="siteMail" type="string" nullable="true"/>
+        <field name="siteKey" type="string" nullable="true"/>
+        <field name="siteRoot" type="string" nullable="true"/>
+        <field name="drupalRoot" type="string" nullable="true"/>
+        <field name="drupalVersion" type="string" nullable="true"/>
+        <field name="drupalMajorVersion" type="integer" nullable="true"/>
+        <field name="updateLastCheckAt" type="datetime" nullable="true"/>
+        <field name="timezone" type="timezone" nullable="true"/>
+        <field name="extensionsChecksum" type="string" nullable="true"/>
+
+    </embeddable>
+
+</doctrine-mapping>
