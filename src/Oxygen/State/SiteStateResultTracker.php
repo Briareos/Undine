@@ -49,7 +49,7 @@ class SiteStateResultTracker
      */
     public function setResult(Site $site, array $result)
     {
-        $stateData               = $this->getRootResolver()->resolve($result);
+        $stateData = $this->getRootResolver()->resolve($result);
         foreach ($stateData['extensions'] as &$extensionData) {
             $extensionData = new SiteExtensionResult($this->getExtensionResolver()->resolve($extensionData));
         }
@@ -138,16 +138,16 @@ class SiteStateResultTracker
 
         if ($resolver === null) {
             $resolver = new OptionsResolver();
-            $resolver->setRequired(['filename', 'type', 'slug', 'parent', 'status', 'name', 'description', 'package', 'version', 'required', 'dependencies', 'project']);
+            $resolver->setRequired(['filename', 'type', 'slug', 'parent', 'active', 'name', 'description', 'package', 'version', 'required', 'dependencies', 'project']);
             $resolver->setAllowedTypes('filename', 'string');
             $resolver->setAllowedValues('type', [SiteExtension::TYPE_MODULE, SiteExtension::TYPE_PROFILE, SiteExtension::TYPE_THEME, SiteExtension::TYPE_THEME_EXTENSION]);
             $resolver->setAllowedTypes('slug', 'string');
             $resolver->setAllowedTypes('parent', ['null', 'string']);
-            $resolver->setAllowedTypes('status', 'bool');
+            $resolver->setAllowedTypes('active', 'bool');
             $resolver->setAllowedTypes('name', 'string');
             $resolver->setAllowedTypes('description', 'string');
             $resolver->setAllowedTypes('package', 'string');
-            $resolver->setAllowedTypes('version', 'string');
+            $resolver->setAllowedTypes('version', ['null', 'string']);
             $resolver->setAllowedTypes('required', 'bool');
             $resolver->setAllowedTypes('dependencies', 'array');
             /** @noinspection PhpUnusedParameterInspection */

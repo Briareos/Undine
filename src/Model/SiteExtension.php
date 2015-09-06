@@ -42,7 +42,7 @@ class SiteExtension
     /**
      * @var bool
      */
-    private $status;
+    private $active;
 
     /**
      * @var string
@@ -60,7 +60,7 @@ class SiteExtension
     private $package;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $version;
 
@@ -170,21 +170,21 @@ class SiteExtension
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
-    public function isStatus()
+    public function isActive()
     {
-        return $this->status;
+        return $this->active;
     }
 
     /**
-     * @param boolean $status
+     * @param bool $active
      *
      * @return $this
      */
-    public function setStatus($status)
+    public function setActive($active)
     {
-        $this->status = $status;
+        $this->active = $active;
 
         return $this;
     }
@@ -250,7 +250,7 @@ class SiteExtension
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getVersion()
     {
@@ -258,11 +258,11 @@ class SiteExtension
     }
 
     /**
-     * @param string $version
+     * @param string|null $version
      *
      * @return $this
      */
-    public function setVersion($version)
+    public function setVersion($version = null)
     {
         $this->version = $version;
 
@@ -270,7 +270,7 @@ class SiteExtension
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isRequired()
     {
@@ -278,7 +278,7 @@ class SiteExtension
     }
 
     /**
-     * @param boolean $required
+     * @param bool $required
      *
      * @return $this
      */

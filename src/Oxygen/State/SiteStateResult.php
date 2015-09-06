@@ -51,7 +51,7 @@ class SiteStateResult
     function __get($name)
     {
         if (!array_key_exists($name, $this->data)) {
-            throw new \OutOfBoundsException(sprintf('Property "%s" could not be found.'));
+            throw new \OutOfBoundsException(sprintf('Property "%s" could not be found.', $name));
         }
 
         return $this->data[$name];

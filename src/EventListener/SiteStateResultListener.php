@@ -90,7 +90,7 @@ class SiteStateResultListener
             $extension->setFilename($extensionData->filename)
                 ->setType($extensionData->type)
                 ->setParent($extensionData->parent)
-                ->setStatus($extensionData->status)
+                ->setActive($extensionData->active)
                 ->setName($extensionData->name)
                 ->setDescription($extensionData->description)
                 ->setPackage($extensionData->package)

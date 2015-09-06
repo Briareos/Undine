@@ -7,11 +7,11 @@ namespace Undine\Oxygen\State;
  * @property string      $type
  * @property string      $slug
  * @property string|null $parent
- * @property bool        $status
+ * @property bool        $active
  * @property string      $name
  * @property string      $description
  * @property string      $package
- * @property string      $version
+ * @property string|null $version
  * @property bool        $required
  * @property string[]    $dependencies
  * @property string      $project
@@ -37,7 +37,7 @@ class SiteExtensionResult
     function __get($name)
     {
         if (!array_key_exists($name, $this->data)) {
-            throw new \OutOfBoundsException(sprintf('Property "%s" could not be found.'));
+            throw new \OutOfBoundsException(sprintf('Property "%s" could not be found.', $name));
         }
 
         return $this->data[$name];
