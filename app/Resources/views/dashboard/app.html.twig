@@ -19,6 +19,7 @@
         <script src="/bower_components/angularjs/angular.js"></script>
         <script src="/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
         <script src="/bower_components/semantic-ui/dist/semantic.js"></script>
+        <script src="/bower_components/lodash/lodash.js"></script>
 
         <script src="/tmp/js/dashboard/dashboard-template.js"></script>
         <script src="/tmp/js/dashboard/dashboard.js"></script>
@@ -41,7 +42,28 @@
 <div class="stretched dashboard container">
     <sidebar></sidebar>
     <site-picker></site-picker>
-    <div ui-view state-class class="content main-content"></div>
+    <div class="main content">
+        <div class="content header">
+            <div class="breadcrumbs">
+                <h2>Dashboard</h2>
+            </div>
+
+            <div class="ui huge horizontal divided action list">
+                <div class="item">
+                    <a class="content" ui-sref="account">
+                        <i class="setting icon"></i>
+                    </a>
+                </div>
+                <div class="item">
+                    <a class="content" logout-url>
+                        <i class="sign out icon"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div ui-view state-class class="state content">
+        </div>
+    </div>
 </div>
 
 {% if app.environment == 'dev' %}
