@@ -1,0 +1,6 @@
+.site-picker {
+  @include flex-basis($sitePickerWidth);
+  background-color: $sitePickerBackgroundColor;
+  color: $sitePickerTextColor;
+  padding: 20px 30px;
+}

@@ -34,13 +34,15 @@
     {% endif %}
 
 </head>
-<body>
+<body class="stretched body">
 
 {{ include('dashboard/data.html.twig') }}
 
-<div class="logo-test"></div>
-
-<ui-view></ui-view>
+<div class="stretched dashboard container">
+    <sidebar></sidebar>
+    <site-picker></site-picker>
+    <div ui-view state-class class="content main-content"></div>
+</div>
 
 {% if app.environment == 'dev' %}
     {{ include('live-reload.html.twig') }}

@@ -1,0 +1,16 @@
+
+  .ui.flexed.list {
+  width: 100%;
+  @include display-flex;
+  @include flex-justify-content(space-between);
+
+  .item {
+    margin: 0;
+  }
+
+  &.icon {
+    .icon {
+      margin: 0;
+    }
+  }
+}

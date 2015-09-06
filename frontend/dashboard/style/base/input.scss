@@ -1,0 +1,35 @@
+@mixin placeholder {
+  &::-webkit-input-placeholder {
+    @content;
+  }
+
+  &:-moz-placeholder { /* Firefox 18- */
+    @content;
+  }
+
+  &::-moz-placeholder {  /* Firefox 19+ */
+    @content;
+  }
+
+  &:-ms-input-placeholder {
+    @content;
+  }
+}
+
+@include placeholder {
+  color: white;
+}
+
+.ui.dark.input {
+  input {
+    background-color: #1e252b;
+    color: white;
+    @include placeholder {
+      color: #7d8184;
+    }
+  }
+
+  .icon {
+    color: #7d8184;
+  }
+}
