@@ -3,6 +3,7 @@
     "dependencies": {
         "angularjs": "~1.4.4",
         "angular-ui-router": "~0.2.15",
+        "angular-breadcrumb": "~0.4.1",
         "lodash": "~3.10.1",
         "semantic-ui": "~2.0.8",
         "jquery": "~2.1.4"

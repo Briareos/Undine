@@ -4,29 +4,57 @@ angular.module('undine.dashboard')
         $locationProvider.html5Mode(true);
         $stateProvider
             .state('dashboard', {
-                abstract: true,
                 url: '/',
-                templateUrl: '/layout/dashboard.html'
-            })
-            .state('dashboard.dashboard', {
-                url: '',
                 controller: 'DashboardController',
-                templateUrl: '/page/dashboard/dashboard.html'
+                templateUrl: '/page/dashboard/dashboard.html',
+                ncyBreadcrumb: {
+                    label: 'Dashboard'
+                },
+                data: {
+                    sitePicker: {
+                        visible: true
+                    }
+                }
             })
-            .state('dashboard.module', {
-                url: 'module',
+            .state('module', {
+                url: '/module',
                 controller: 'ModuleController',
-                templateUrl: '/page/module/module.html'
+                templateUrl: '/page/module/module.html',
+                ncyBreadcrumb: {
+                    label: 'Module'
+                },
+                data: {
+                    sitePicker: {
+                        visible: true
+                    }
+                }
             })
-            .state('dashboard.backup', {
-                url: 'backup',
+            .state('backup', {
+                url: '/backup',
                 controller: 'BackupController',
-                templateUrl: '/page/backup/backup.html'
+                templateUrl: '/page/backup/backup.html',
+                ncyBreadcrumb: {
+                    label: 'Backup'
+                },
+                data: {
+                    sitePicker: {
+                        visible: true
+                    }
+                }
             })
-            .state('dashboard.account', {
-                url: 'account',
+            .state('account', {
+                url: '/account',
                 controller: 'ProfileController',
-                templateUrl: '/page/profile/profile.html'
+                templateUrl: '/page/profile/profile.html',
+                ncyBreadcrumb: {
+                    label: 'Account'
+                }
             })
-        ;
+            .state('add-website', {
+                url: '/add-website',
+                templateUrl: '/page/add-website/add-website.html',
+                ncyBreadcrumb: {
+                    label: 'Add Website'
+                }
+            });
     });

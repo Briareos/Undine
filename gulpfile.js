@@ -197,6 +197,7 @@ function buildDashboardTypescript() {
         './frontend/bower_components/jquery/dist/jquery.min.js',
         './frontend/bower_components/angularjs/angular.min.js',
         './frontend/bower_components/angular-ui-router/release/angular-ui-router.min.js',
+        './frontend/bower_components/angular-breadcrumb/dist/angular-breadcrumb.js',
         './frontend/bower_components/semantic-ui/dist/semantic.min.js',
         './frontend/bower_components/lodash/lodash.min.js',
         './frontend/dashboard/app/**/*.html',

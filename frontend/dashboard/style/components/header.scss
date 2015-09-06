@@ -1,0 +1,32 @@
+
+.content.header {
+  @include flex(0, 0, auto);
+  @include flex-basis($headerHeight);
+
+  @include display-flex;
+  @include flex-align-items(center);
+  padding: 0 40px;
+
+  background-color: #55a9d0;
+  color: white;
+
+  .breadcrumb {
+    @include flex-grow(1);
+    margin: 0;
+  }
+
+
+  .action.list, .action.list .icon {
+    margin: 0;
+  }
+
+  // Override semantic specificity
+  .ui.divided.horizontal.list > .item {
+    border-left-width: 2px;
+    border-left-color: rgba(0, 0, 0, 0.1);
+  }
+
+  a.content {
+    color: white;
+  }
+}

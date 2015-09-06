@@ -1,22 +1,22 @@
 <div class="sidebar">
-    <div class="user avatar">
+    <a ui-sref="account" class="user avatar">
         <img gravatar-src="currentUser.emailMd5" class="ui circular image">
-    </div>
+    </a>
 
     <ul class="tools">
         <li>
-            <a ui-sref="dashboard" class="item">
+            <a ui-sref="dashboard" ui-sref-active class="item">
                 <i class="dashboard icon"></i>
             </a>
         </li>
         <li>
-            <a ui-sref="client-report" class="item">
-                <i class="dashboard icon"></i>
+            <a ui-sref="client-report" ui-sref-active class="item">
+                <i class="calendar outline icon"></i>
             </a>
         </li>
         <li>
-            <a ui-sref="manage-plugins" class="item">
-                <i class="dashboard icon"></i>
+            <a ui-sref="modules" ui-sref-active class="item">
+                <i class="cubes icon"></i>
             </a>
         </li>
     </ul>
