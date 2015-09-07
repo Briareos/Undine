@@ -9,6 +9,7 @@ use Undine\Event\SiteStateResultEvent;
 use Undine\Model\Site;
 use Undine\Model\Site\SiteState;
 use Undine\Model\SiteExtension;
+use Undine\Model\SiteUpdate;
 
 class SiteStateResultTracker
 {
@@ -53,6 +54,9 @@ class SiteStateResultTracker
         foreach ($stateData['extensions'] as &$extensionData) {
             $extensionData = new SiteExtensionResult($this->getExtensionResolver()->resolve($extensionData));
         }
+        foreach ($stateData['updates'] as &$updateData) {
+            $updateData = new SiteUpdateResult($this->getUpdateResolver()->resolve($updateData));
+        }
         foreach ($stateData as $key => $value) {
             // @TODO think of a better way to do safe-guard against long data.
             if (is_string($value) && mb_strlen($value) > 255) {
@@ -76,57 +80,59 @@ class SiteStateResultTracker
         static $resolver;
 
         if ($resolver === null) {
-            $resolver = new OptionsResolver();
-            $resolver->setRequired(['siteKey', 'cronKey', 'cronLastRunAt', 'siteMail', 'siteName', 'siteRoot', 'drupalRoot', 'drupalVersion', 'drupalMajorVersion', 'updateLastCheckAt', 'timezone', 'phpVersion', 'phpVersionId', 'databaseDriver', 'databaseDriverVersion', 'databaseTablePrefix', 'memoryLimit', 'processArchitecture', 'internalIp', 'uname', 'hostname', 'os', 'windows', 'extensionsChecksum', 'extensionsCacheHit', 'extensions']);
-            $resolver->addAllowedTypes('siteKey', 'string');
-            $resolver->addAllowedTypes('cronKey', 'string');
-            $resolver->addAllowedTypes('cronLastRunAt', 'int');
-            /** @noinspection PhpUnusedParameterInspection */
-            $resolver->setNormalizer('cronLastRunAt', function (OptionsResolver $resolver, $timestamp) {
-                return new \DateTime('@'.$timestamp);
-            });
-            $resolver->addAllowedTypes('siteMail', 'string');
-            $resolver->addAllowedTypes('siteName', 'string');
-            $resolver->addAllowedTypes('siteRoot', 'string');
-            $resolver->addAllowedTypes('drupalRoot', 'string');
-            $resolver->addAllowedTypes('drupalVersion', 'string');
-            $resolver->addAllowedValues('drupalMajorVersion', [7, 8]);
-            $resolver->addAllowedTypes('updateLastCheckAt', 'int');
-            /** @noinspection PhpUnusedParameterInspection */
-            $resolver->setNormalizer('updateLastCheckAt', function (OptionsResolver $resolver, $timestamp) {
-                return new \DateTime('@'.$timestamp);
-            });
-            $timezones = \DateTimeZone::listIdentifiers();
+            $allowedTimezones = \DateTimeZone::listIdentifiers();
             // Allow empty timezone.
-            $timezones[] = '';
-            $resolver->addAllowedValues('timezone', $timezones);
-            /** @noinspection PhpUnusedParameterInspection */
-            $resolver->setNormalizer('timezone', function (OptionsResolver $resolver, $timezone) {
-                if ($timezone === '') {
-                    return null;
-                }
+            $allowedTimezones[] = '';
 
-                return new \DateTimeZone($timezone);
-            });
-            $resolver->addAllowedTypes('phpVersion', 'string');
-            $resolver->addAllowedTypes('phpVersionId', 'int');
-            $resolver->addAllowedValues('databaseDriver', [
-                SiteState::DATABASE_DRIVER_MYSQL,
-                SiteState::DATABASE_DRIVER_PGSQL,
-                SiteState::DATABASE_DRIVER_SQLITE,
-            ]);
-            $resolver->addAllowedTypes('databaseDriverVersion', 'string');
-            $resolver->addAllowedTypes('databaseTablePrefix', 'string');
-            $resolver->addAllowedTypes('memoryLimit', 'int');
-            $resolver->addAllowedValues('processArchitecture', [32, 64]);
-            $resolver->addAllowedTypes('internalIp', 'string');
-            $resolver->addAllowedTypes('uname', 'string');
-            $resolver->addAllowedTypes('hostname', 'string');
-            $resolver->addAllowedTypes('os', 'string');
-            $resolver->addAllowedTypes('windows', 'bool');
-            $resolver->addAllowedTypes('extensionsChecksum', 'string');
-            $resolver->addAllowedTypes('extensionsCacheHit', 'bool');
-            $resolver->addAllowedTypes('extensions', 'array');
+            $resolver = (new OptionsResolver())
+                ->setRequired(['siteKey', 'cronKey', 'cronLastRunAt', 'siteMail', 'siteName', 'siteRoot', 'drupalRoot', 'drupalVersion', 'drupalMajorVersion', 'updatesLastCheckAt', 'timezone', 'phpVersion', 'phpVersionId', 'databaseDriver', 'databaseDriverVersion', 'databaseTablePrefix', 'memoryLimit', 'processArchitecture', 'internalIp', 'uname', 'hostname', 'os', 'windows', 'extensionsChecksum', 'extensionsCacheHit', 'extensions', 'updates'])
+                ->setAllowedTypes('siteKey', 'string')
+                ->setAllowedTypes('cronKey', 'string')
+                ->setAllowedTypes('cronLastRunAt', 'int')
+                /** @noinspection PhpUnusedParameterInspection */
+                ->setNormalizer('cronLastRunAt', function (OptionsResolver $resolver, $timestamp) {
+                    return new \DateTime('@'.$timestamp);
+                })
+                ->setAllowedTypes('siteMail', 'string')
+                ->setAllowedTypes('siteName', 'string')
+                ->setAllowedTypes('siteRoot', 'string')
+                ->setAllowedTypes('drupalRoot', 'string')
+                ->setAllowedTypes('drupalVersion', 'string')
+                ->setAllowedValues('drupalMajorVersion', [7, 8])
+                ->setAllowedTypes('updatesLastCheckAt', 'int')
+                /** @noinspection PhpUnusedParameterInspection */
+                ->setNormalizer('updatesLastCheckAt', function (OptionsResolver $resolver, $timestamp) {
+                    return new \DateTime('@'.$timestamp);
+                })
+                ->setAllowedValues('timezone', $allowedTimezones)
+                /** @noinspection PhpUnusedParameterInspection */
+                ->setNormalizer('timezone', function (OptionsResolver $resolver, $timezone) {
+                    if ($timezone === '') {
+                        return null;
+                    }
+
+                    return new \DateTimeZone($timezone);
+                })
+                ->setAllowedTypes('phpVersion', 'string')
+                ->setAllowedTypes('phpVersionId', 'int')
+                ->setAllowedValues('databaseDriver', [
+                    SiteState::DATABASE_DRIVER_MYSQL,
+                    SiteState::DATABASE_DRIVER_PGSQL,
+                    SiteState::DATABASE_DRIVER_SQLITE,
+                ])
+                ->setAllowedTypes('databaseDriverVersion', 'string')
+                ->setAllowedTypes('databaseTablePrefix', 'string')
+                ->setAllowedTypes('memoryLimit', 'int')
+                ->setAllowedValues('processArchitecture', [32, 64])
+                ->setAllowedTypes('internalIp', 'string')
+                ->setAllowedTypes('uname', 'string')
+                ->setAllowedTypes('hostname', 'string')
+                ->setAllowedTypes('os', 'string')
+                ->setAllowedTypes('windows', 'bool')
+                ->setAllowedTypes('extensionsChecksum', 'string')
+                ->setAllowedTypes('extensionsCacheHit', 'bool')
+                ->setAllowedTypes('extensions', 'array')
+                ->setAllowedTypes('updates', 'array');
         }
 
         return $resolver;
@@ -137,32 +143,72 @@ class SiteStateResultTracker
         static $resolver;
 
         if ($resolver === null) {
-            $resolver = new OptionsResolver();
-            $resolver->setRequired(['filename', 'type', 'slug', 'parent', 'active', 'name', 'description', 'package', 'version', 'required', 'dependencies', 'project']);
-            $resolver->setAllowedTypes('filename', 'string');
-            $resolver->setAllowedValues('type', [SiteExtension::TYPE_MODULE, SiteExtension::TYPE_PROFILE, SiteExtension::TYPE_THEME, SiteExtension::TYPE_THEME_EXTENSION]);
-            $resolver->setAllowedTypes('slug', 'string');
-            $resolver->setAllowedTypes('parent', ['null', 'string']);
-            $resolver->setAllowedTypes('active', 'bool');
-            $resolver->setAllowedTypes('name', 'string');
-            $resolver->setAllowedTypes('description', 'string');
-            $resolver->setAllowedTypes('package', 'string');
-            $resolver->setAllowedTypes('version', ['null', 'string']);
-            $resolver->setAllowedTypes('required', 'bool');
-            $resolver->setAllowedTypes('dependencies', 'array');
-            /** @noinspection PhpUnusedParameterInspection */
-            $resolver->setNormalizer('dependencies', function (OptionsResolver $resolver, array $dependencies) {
-                foreach ($dependencies as $dependency) {
-                    if (!is_string($dependency)) {
-                        throw new \InvalidArgumentException('Dependencies are expected to be strings.');
-                    }
-                }
-
-                return $dependencies;
-            });
-            $resolver->setAllowedTypes('project', ['null', 'string']);
+            $resolver = (new OptionsResolver())
+                ->setRequired(['filename', 'type', 'slug', 'parent', 'enabled', 'name', 'description', 'package', 'version', 'required', 'dependencies', 'project'])
+                ->setAllowedTypes('filename', 'string')
+                ->setAllowedValues('type', [SiteExtension::TYPE_MODULE, SiteExtension::TYPE_PROFILE, SiteExtension::TYPE_THEME, SiteExtension::TYPE_THEME_EXTENSION])
+                ->setAllowedTypes('slug', 'string')
+                ->setAllowedTypes('parent', ['null', 'string'])
+                ->setAllowedTypes('enabled', 'bool')
+                ->setAllowedTypes('name', 'string')
+                ->setAllowedTypes('description', 'string')
+                ->setAllowedTypes('package', ['null', 'string'])
+                ->setAllowedTypes('version', ['null', 'string'])
+                ->setAllowedTypes('required', 'bool')
+                ->setAllowedTypes('dependencies', 'array')
+                /** @noinspection PhpUnusedParameterInspection */
+                ->setNormalizer('dependencies', $this->createStringNormalizer('dependencies'))
+                ->setAllowedTypes('project', ['null', 'string']);
         }
 
         return $resolver;
+    }
+
+    private function getUpdateResolver()
+    {
+        static $resolver;
+
+        if ($resolver === null) {
+            $resolver = (new OptionsResolver())
+                ->setRequired(['slug', 'type', 'name', 'project', 'package', 'existingVersion', 'recommendedVersion', 'recommendedDownloadLink', 'status', 'includes', 'enabled', 'baseThemes', 'subThemes'])
+                ->setAllowedTypes('slug', 'string')
+                ->setAllowedValues('type', [SiteUpdate::TYPE_CORE, SiteUpdate::TYPE_MODULE, SiteUpdate::TYPE_THEME])
+                ->setAllowedTypes('name', 'string')
+                ->setAllowedTypes('project', ['null', 'string'])
+                ->setAllowedTypes('package', ['null', 'string'])
+                ->setAllowedTypes('existingVersion', 'string')
+                ->setAllowedTypes('recommendedVersion', 'string')
+                ->setAllowedTypes('recommendedDownloadLink', 'string')
+                ->setAllowedValues('status', SiteUpdate::getStatuses())
+                ->setAllowedTypes('includes', 'array')
+                ->setNormalizer('includes', $this->createStringNormalizer('includes'))
+                ->setAllowedTypes('enabled', 'bool')
+                ->setAllowedTypes('baseThemes', 'array')
+                ->setNormalizer('baseThemes', $this->createStringNormalizer('baseThemes'))
+                ->setAllowedTypes('subThemes', 'array')
+                ->setNormalizer('subThemes', $this->createStringNormalizer('subThemes'));
+        }
+
+        return $resolver;
+    }
+
+    /**
+     * @param string $optionName
+     *
+     * @return callable
+     */
+    private function createStringNormalizer($optionName)
+    {
+        /** @noinspection PhpUnusedParameterInspection */
+        /** @noinspection PhpDocSignatureInspection */
+        return function (OptionsResolver $resolver, array $values) use ($optionName) {
+            foreach ($values as $value) {
+                if (!is_string($value)) {
+                    throw new \InvalidArgumentException(sprintf('Option "%s" is expected to hold only strings.', $optionName));
+                }
+            }
+
+            return $values;
+        };
     }
 }

@@ -42,7 +42,7 @@ class SiteExtension
     /**
      * @var bool
      */
-    private $active;
+    private $enabled;
 
     /**
      * @var string
@@ -55,7 +55,7 @@ class SiteExtension
     private $description;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $package;
 
@@ -172,19 +172,19 @@ class SiteExtension
     /**
      * @return bool
      */
-    public function isActive()
+    public function isEnabled()
     {
-        return $this->active;
+        return $this->enabled;
     }
 
     /**
-     * @param bool $active
+     * @param bool $enabled
      *
      * @return $this
      */
-    public function setActive($active)
+    public function setEnabled($enabled)
     {
-        $this->active = $active;
+        $this->enabled = $enabled;
 
         return $this;
     }
@@ -230,7 +230,7 @@ class SiteExtension
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getPackage()
     {
@@ -238,11 +238,11 @@ class SiteExtension
     }
 
     /**
-     * @param string $package
+     * @param string|null $package
      *
      * @return $this
      */
-    public function setPackage($package)
+    public function setPackage($package = null)
     {
         $this->package = $package;
 

@@ -48,6 +48,11 @@ class Site implements UidInterface
     private $siteExtensions;
 
     /**
+     * @var SiteUpdate[]
+     */
+    private $siteUpdates;
+
+    /**
      * @var \DateTime
      */
     private $createdAt;
@@ -71,6 +76,7 @@ class Site implements UidInterface
         $this->publicKey      = $publicKey;
         $this->siteState      = new SiteState();
         $this->siteExtensions = new ArrayCollection();
+        $this->siteUpdates    = new ArrayCollection();
     }
 
     /**
@@ -143,10 +149,34 @@ class Site implements UidInterface
 
     /**
      * @param SiteExtension[] $siteExtensions
+     *
+     * @return $this
      */
     public function setSiteExtensions(array $siteExtensions)
     {
         $this->siteExtensions = new ArrayCollection($siteExtensions);
+
+        return $this;
+    }
+
+    /**
+     * @return SiteUpdate[]
+     */
+    public function getSiteUpdates()
+    {
+        return $this->siteUpdates->toArray();
+    }
+
+    /**
+     * @param SiteUpdate[] $siteUpdates
+     *
+     * @return $this
+     */
+    public function setSiteUpdates(array $siteUpdates)
+    {
+        $this->siteUpdates = new ArrayCollection($siteUpdates);
+
+        return $this;
     }
 
     /**

@@ -9,10 +9,10 @@
         <field name="filename" type="string"/>
         <field name="type" type="string"/>
         <field name="parent" type="string" nullable="true"/>
-        <field name="active" type="boolean"/>
+        <field name="enabled" type="boolean"/>
         <field name="name" type="string"/>
         <field name="description" type="string"/>
-        <field name="package" type="string"/>
+        <field name="package" type="string" nullable="true"/>
         <field name="version" type="string" nullable="true"/>
         <field name="required" type="boolean"/>
         <field name="dependencies" type="simple_array" nullable="true"/>

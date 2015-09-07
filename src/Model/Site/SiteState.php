@@ -134,7 +134,7 @@ class SiteState
     /**
      * @var \DateTime|null
      */
-    private $updateLastCheckAt;
+    private $updatesLastCheckAt;
 
     /**
      * @var \DateTimeZone|null
@@ -569,19 +569,19 @@ class SiteState
     /**
      * @return \DateTime|null
      */
-    public function getUpdateLastCheckAt()
+    public function getUpdatesLastCheckAt()
     {
-        return $this->updateLastCheckAt;
+        return $this->updatesLastCheckAt;
     }
 
     /**
-     * @param \DateTime|null $updateLastCheckAt
+     * @param \DateTime|null $updatesLastCheckAt
      *
      * @return $this
      */
-    public function setUpdateLastCheckAt(\DateTime $updateLastCheckAt = null)
+    public function setUpdatesLastCheckAt(\DateTime $updatesLastCheckAt = null)
     {
-        $this->updateLastCheckAt = $updateLastCheckAt;
+        $this->updatesLastCheckAt = $updatesLastCheckAt;
 
         return $this;
     }
