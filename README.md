@@ -70,3 +70,25 @@ Currently, it's too early for migrations. Just run `php bin/console doctrine:sch
 update the schema.
 
 To load the fixtures run `php bin/console doctrine:fixtures:load`.
+
+### Notes on semantic-ui
+
+Semantic UI uses gulp 3, so the tasks in `frontend/semantic/tasks/*` have been ported to gulp 4. Tasks have been modified too:
+
+- Replace `gulp.start(task)` with `gulp.series(task)()`
+- Remove `gulp-help` module usages and set description to tasks
+	```
+	task.description = 'Description';
+	gulp.task('taskName', task);
+	```
+- Remove `runSequence` imports and replace usage with `gulp.series`
+    ```
+    runSequence(tasks);
+    runSequence(['task1', 'task2', callback]);
+    // replace with
+    gulp.series.apply(gulp, tasks)();
+    gulp.series.apply(gulp, tasks.concat(function(done) {
+		done();
+		callback();
+    }))();
+    ```
