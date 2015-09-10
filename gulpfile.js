@@ -16,6 +16,8 @@ var autoprefixer = require('gulp-autoprefixer');
 var typescript = require('gulp-typescript');
 var del = require('del');
 var debug = require('gulp-debug');
+var semanticWatch = require('./frontend/semantic/tasks/watch');
+var semanticBuild = require('./frontend/semantic/tasks/build');
 
 var minifyImages = require('gulp-imagemin');
 var minifyCss = require('gulp-minify-css');
@@ -90,7 +92,7 @@ function buildDashboardCss() {
 
     return gulp.src([
         './frontend/dashboard/style/dashboard.scss',
-        './frontend/bower_components/semantic-ui/dist/semantic.min.css'
+        './var/tmp/semantic-ui/semantic.min.css'
     ])
         .pipe(filterScss)
         .pipe(sass().on('error', sass.logError))
@@ -109,7 +111,7 @@ function buildAdminCss() {
 
     return gulp.src([
         './frontend/admin/style/admin.scss',
-        './frontend/bower_components/semantic-ui/dist/semantic.min.css'
+        './var/tmp/semantic-ui/semantic.min.css'
     ])
         .pipe(filterScss)
         .pipe(sass().on('error', sass.logError))
@@ -128,7 +130,7 @@ function buildWebCss() {
 
     return gulp.src([
         './frontend/admin/style/admin.scss',
-        './frontend/bower_components/semantic-ui/dist/semantic.min.css'
+        './var/tmp/semantic-ui/semantic.min.css'
     ])
         .pipe(filterScss)
         .pipe(sass().on('error', sass.logError))
@@ -189,16 +191,16 @@ function buildWebTypescriptDev() {
 }
 
 function buildDashboardTypescript() {
-    var typescriptFilter = filter('dashboard/app/**/*.ts', {restore: true});
-    var htmlFilter = filter('dashboard/app/**/*.html', {restore: true});
-    var vendorFilter = filter('bower_components/**/*.js', {restore: true});
+    var typescriptFilter = filter('frontend/dashboard/app/**/*.ts', {restore: true});
+    var htmlFilter = filter('frontend/dashboard/app/**/*.html', {restore: true});
+    var vendorFilter = filter(['frontend/bower_components/**/*.js', 'var/tmp/semantic-ui/*.js'], {restore: true});
 
     return gulp.src([
         './frontend/bower_components/jquery/dist/jquery.min.js',
         './frontend/bower_components/angularjs/angular.min.js',
         './frontend/bower_components/angular-ui-router/release/angular-ui-router.min.js',
         './frontend/bower_components/angular-breadcrumb/dist/angular-breadcrumb.js',
-        './frontend/bower_components/semantic-ui/dist/semantic.min.js',
+        './var/tmp/semantic-ui/semantic.min.js',
         './frontend/bower_components/lodash/lodash.min.js',
         './frontend/dashboard/app/**/*.html',
         './frontend/dashboard/app/all.ts',
@@ -206,13 +208,12 @@ function buildDashboardTypescript() {
         './frontend/dashboard/app/states.ts',
         './frontend/dashboard/app/run.ts',
         './frontend/dashboard/app/*/**/*.ts'
-    ], {base: './frontend'})
+    ], {base: __dirname})
         .pipe(vendorFilter)
         .pipe(concat('vendor.js'))
         .pipe(vendorFilter.restore)
         .pipe(htmlFilter)
         .pipe(minifyHtml())
-        .pipe(debug({minimal: false}))
         .pipe(ngTemplate({
             filename: 'dashboard-template.js',
             module: 'undine.dashboard.template',
@@ -236,21 +237,21 @@ function buildDashboardTypescript() {
 }
 
 function buildAdminTypescript() {
-    var typescriptFilter = filter('admin/app/**/*.ts', {restore: true});
-    var htmlFilter = filter('admin/app/**/*.html', {restore: true});
-    var vendorFilter = filter('bower_components/**/*.js', {restore: true});
+    var typescriptFilter = filter('frontend/admin/app/**/*.ts', {restore: true});
+    var htmlFilter = filter('frontend/admin/app/**/*.html', {restore: true});
+    var vendorFilter = filter(['frontend/bower_components/**/*.js', 'var/tmp/semantic-ui/*.js'], {restore: true});
 
     return gulp.src([
         './frontend/bower_components/jquery/dist/jquery.min.js',
         './frontend/bower_components/angularjs/angular.min.js',
-        './frontend/bower_components/semantic-ui/dist/semantic.min.js',
+        './var/tmp/semantic-ui/semantic.min.js',
         './frontend/bower_components/lodash/lodash.min.js',
         './frontend/admin/app/**/*.html',
         './frontend/admin/app/all.ts',
         './frontend/admin/app/app.ts',
         './frontend/admin/app/run.ts',
         './frontend/admin/app/*/**/*.ts'
-    ], {base: './frontend'})
+    ], {base: __dirname})
         .pipe(vendorFilter)
         .pipe(concat('vendor.js'))
         .pipe(vendorFilter.restore)
@@ -279,21 +280,21 @@ function buildAdminTypescript() {
 }
 
 function buildWebTypescript() {
-    var typescriptFilter = filter('web/app/**/*.ts', {restore: true});
-    var htmlFilter = filter('web/app/**/*.html', {restore: true});
-    var vendorFilter = filter('bower_components/**/*.js', {restore: true});
+    var typescriptFilter = filter('frontend/web/app/**/*.ts', {restore: true});
+    var htmlFilter = filter('frontend/web/app/**/*.html', {restore: true});
+    var vendorFilter = filter(['frontend/bower_components/**/*.js', 'var/tmp/semantic-ui/*.js'], {restore: true});
 
     return gulp.src([
         './frontend/bower_components/jquery/dist/jquery.min.js',
         './frontend/bower_components/angularjs/angular.min.js',
-        './frontend/bower_components/semantic-ui/dist/semantic.min.js',
         './frontend/bower_components/lodash/lodash.min.js',
+        './var/tmp/semantic-ui/semantic.min.js',
         './frontend/web/app/**/*.html',
         './frontend/web/app/all.ts',
         './frontend/web/app/app.ts',
         './frontend/web/app/run.ts',
         './frontend/web/app/*/**/*.ts'
-    ], {base: './frontend'})
+    ], {base: __dirname})
         .pipe(vendorFilter)
         .pipe(concat('vendor.js'))
         .pipe(vendorFilter.restore)
@@ -370,10 +371,14 @@ function buildWebIndex(cb) {
 }
 
 function buildSemanticTheme() {
-    return gulp.src('./frontend/bower_components/semantic-ui/dist/themes/default/**', {base: './frontend/bower_components/semantic-ui/dist'})
+    return gulp.src('./var/tmp/semantic-ui/themes/default/**', {base: './var/tmp/semantic-ui'})
         .pipe(gulp.dest('./web/css/dashboard'))
         .pipe(gulp.dest('./web/css/admin'))
         .pipe(gulp.dest('./web/css/web'));
+}
+
+function buildSemantic(cb) {
+    semanticBuild(cb);
 }
 
 var reload = noop;
@@ -396,6 +401,10 @@ function reloadComponent(component) {
 }
 
 function watchDev() {
+    semanticWatch(function (component) {
+        reloadComponent(component);
+    });
+
     watch('./frontend/dashboard/image/**/*', gulp.series(reloadComponent.bind(null, 'html')));
 
     watch('./frontend/dashboard/style/**/*', gulp.series(buildDashboardCssDev, reloadComponent.bind(null, 'css')));
@@ -418,6 +427,8 @@ gulp.task('default',
     gulp.series(
         cleanDev,
         gulp.parallel(
+            buildSemantic,
+
             buildDashboardCssDev,
             buildDashboardTemplateDev,
             buildDashboardTypescriptDev,
@@ -442,7 +453,10 @@ gulp.task('build',
     gulp.series(
         clean,
         buildImage,
+        buildSemantic,
         gulp.parallel(
+            buildSemanticTheme,
+
             buildDashboardCss,
             buildDashboardTypescript,
             buildDashboardIndex,
@@ -453,9 +467,7 @@ gulp.task('build',
 
             buildWebCss,
             buildWebTypescript,
-            buildWebIndex,
-
-            buildSemanticTheme
+            buildWebIndex
         )
     )
 );

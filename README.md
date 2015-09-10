@@ -38,7 +38,11 @@ This development setup guide is geared toward the [Legend](https://github.com/Br
 
 Add this to Nginx configuration for development environment:
 
-    location ~ ^/tmp/(css|js)/(.*\.(css|js))$ {
+	location ~ ^/tmp/(css|js|semantic-ui)/ {
+        root /home/vagrant/www/undine/var/;
+	}
+
+    location ~ ^/tmp/(css|js|semantic-ui)/(.*)$ {
         root /home/vagrant/www/undine;
         try_files /var/tmp/$1/$2 =404;
     }
@@ -70,3 +74,17 @@ Currently, it's too early for migrations. Just run `php bin/console doctrine:sch
 update the schema.
 
 To load the fixtures run `php bin/console doctrine:fixtures:load`.
+
+### Notes on semantic-ui
+
+Semantic UI uses gulp 3, so the tasks in `frontend/semantic/tasks/*` have been ported to gulp 4. Tasks have been modified too:
+
+- Use `require('./path/to/gulp3')` instead of `require('gulp')` and `require('gulp-help')(require('gulp'))`. `gulp3.js` is a wrapper around gulp4 with a wrapper API which matches gulp3.
+- Use `require('./path/to/run-sequence')` instead of `require('run-sequence')`. `run-sequence.js` is a wrapper around gulp4 with a wrapper API which matches `run-sequence` behavior
+- `runSequence(tasks, callback);` has been changed to:
+	```
+	runSequence(tasks, function(done) {
+		done();
+		callback();
+	});
+	```
