@@ -94,7 +94,8 @@ class ApiResultListener implements EventSubscriberInterface
                 $data += ['error' => SecurityConstraint::NOT_AUTHENTICATED];
             }
         } elseif ($exception instanceof InvalidBodyException) {
-            xdebug_break();
+            //xdebug_break();
+            return;
         } else {
             return;
             $data += ['error' => $exception->getMessage()];

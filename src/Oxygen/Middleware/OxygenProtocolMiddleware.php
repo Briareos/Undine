@@ -196,10 +196,7 @@ class OxygenProtocolMiddleware
         }
         /** @var ReactionInterface $reaction */
         $reaction = new $reactionClass();
-        $resolver = new OptionsResolver();
-        $reaction->configureOptions($resolver);
-        $parsedData = $resolver->resolve($data['actionResult']);
-        $reaction->setData($parsedData);
+        $reaction->setData($data['actionResult']);
 
         return $reaction;
     }

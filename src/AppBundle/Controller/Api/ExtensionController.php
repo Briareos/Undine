@@ -12,9 +12,12 @@ use Undine\AppBundle\Controller\AppController;
 use Undine\Configuration\ApiCommand;
 use Undine\Configuration\ApiResult;
 use Undine\Model\Site;
+use Undine\Oxygen\Action\DatabaseListMigrationsAction;
+use Undine\Oxygen\Action\DatabaseRunMigrationAction;
 use Undine\Oxygen\Action\ExtensionDownloadFromUrlAction;
 use Undine\Oxygen\Action\ExtensionDownloadUpdateFromUrlAction;
 use Undine\Oxygen\Action\ExtensionUpdateAction;
+use Undine\Oxygen\Reaction\DatabaseListMigrationsReaction;
 use Undine\Oxygen\Reaction\ExtensionDownloadFromUrlReaction;
 use Undine\Oxygen\Reaction\ExtensionDownloadUpdateFromUrlReaction;
 use Undine\Oxygen\Reaction\ExtensionUpdateReaction;
@@ -50,14 +53,23 @@ class ExtensionController extends AppController
         $extension = $command->getExtension();
         $url       = $updates[$command->getExtension()]->getRecommendedDownloadLink();
 
-        $this->oxygenClient
+        $reaction = $this->oxygenClient
             ->sendAsync($site, new ExtensionDownloadUpdateFromUrlAction($extension, $url))
             ->then(function (ExtensionDownloadUpdateFromUrlReaction $reaction) use ($site, $extension) {
                 return $this->oxygenClient->sendAsync($site, new ExtensionUpdateAction($extension));
             })
-//            ->then(function (ExtensionUpdateReaction $reaction) use ($site) {
-//                return $this->oxygenClient->sendAsync($site, new DatabaseMigrateAction());
-//            })
+            ->then(function (ExtensionUpdateReaction $reaction) use ($site) {
+                return $this->oxygenClient->sendAsync($site, new DatabaseListMigrationsAction());
+            })
+            ->then(function (DatabaseListMigrationsReaction $reaction) use ($site) {
+                $migrationGenerator = function () use ($site, $reaction) {
+                    foreach ($reaction->getMigrations() as $migration) {
+                        yield $this->oxygenClient->sendAsync($site, new DatabaseRunMigrationAction($migration['module'], $migration['number'], $migration['dependencyMap']));
+                    }
+                };
+
+                return \GuzzleHttp\Promise\each_limit_all($migrationGenerator(), 1);
+            })
             ->wait();
 
         return new ExtensionUpdateResult();
