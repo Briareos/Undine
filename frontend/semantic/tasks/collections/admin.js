@@ -32,30 +32,18 @@ module.exports = function(gulp) {
   ;
 
   /* Release */
-  initDistributions.description = 'Grabs each component from GitHub';
-  createDistributions.description = 'Updates files in each repo';
-  initComponents.description = 'Grabs each component from GitHub';
-  createComponents.description = 'Updates files in each repo';
-
-  gulp.task('init distributions', initDistributions);
-  gulp.task('create distributions', createDistributions);
-  gulp.task('init components', initComponents);
-  gulp.task('create components', createComponents);
+  gulp.task('init distributions', 'Grabs each component from GitHub', initDistributions);
+  gulp.task('create distributions', 'Updates files in each repo', createDistributions);
+  gulp.task('init components', 'Grabs each component from GitHub', initComponents);
+  gulp.task('create components', 'Updates files in each repo', createComponents);
 
   /* Publish */
-  updateDistributions.description = 'Commits component updates from create to GitHub';
-  updateComponents.description = 'Commits component updates from create to GitHub';
-
-  gulp.task('update distributions', updateDistributions);
-  gulp.task('update components', updateComponents);
+  gulp.task('update distributions', 'Commits component updates from create to GitHub', updateDistributions);
+  gulp.task('update components', 'Commits component updates from create to GitHub', updateComponents);
 
   /* Tasks */
-  release.description = 'Stages changes in GitHub repos for all distributions';
-  release.publish = 'Publishes all releases (components, package)';
-  release.register = 'Registers all packages with NPM';
-
-  gulp.task('release', release);
-  gulp.task('publish', publish);
-  gulp.task('register', register);
+  gulp.task('release', 'Stages changes in GitHub repos for all distributions', release);
+  gulp.task('publish', 'Publishes all releases (components, package)', publish);
+  gulp.task('register', 'Registers all packages with NPM', register);
 
 };

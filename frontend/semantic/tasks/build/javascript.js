@@ -3,7 +3,7 @@
 *******************************/
 
 var
-  gulp         = require('gulp'),
+  gulp         = require('../../gulp3'),
 
   // node dependencies
   console      = require('better-console'),
@@ -68,8 +68,8 @@ module.exports = function(callback) {
     .pipe(gulpif(config.hasPermission, chmod(config.permission)))
     .pipe(print(log.created))
     .on('end', function() {
-      gulp.series('package compressed js')();
-      gulp.series('package uncompressed js')();
+      gulp.start('package compressed js');
+      gulp.start('package uncompressed js');
       callback();
     })
   ;

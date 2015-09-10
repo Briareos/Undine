@@ -13,7 +13,7 @@
 */
 
 var
-  gulp      = require('gulp'),
+  gulp      = require('../../../gulp3'),
 
   // node dependencies
   console   = require('better-console'),

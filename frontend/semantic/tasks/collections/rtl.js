@@ -10,10 +10,7 @@ module.exports = function(gulp) {
     watchRTL     = require('./../rtl/watch')
   ;
 
-  watchRTL.description = 'Build all files as RTL';
-  buildRTL.description = 'Watch files as RTL';
-
-  gulp.task('watch-rtl', watchRTL);
-  gulp.task('build-rtl', buildRTL);
+  gulp.task('watch-rtl', 'Build all files as RTL', watchRTL);
+  gulp.task('build-rtl', 'Watch files as RTL ', buildRTL);
 
 };

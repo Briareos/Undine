@@ -75,20 +75,12 @@ To load the fixtures run `php bin/console doctrine:fixtures:load`.
 
 Semantic UI uses gulp 3, so the tasks in `frontend/semantic/tasks/*` have been ported to gulp 4. Tasks have been modified too:
 
-- Replace `gulp.start(task)` with `gulp.series(task)()`
-- Remove `gulp-help` module usages and set description to tasks
+- Use `require('./path/to/gulp3')` instead of `require('gulp')` and `require('gulp-help')(require('gulp'))`. `gulp3.js` is a wrapper around gulp4 with a wrapper API which matches gulp3.
+- Use `require('./path/to/run-sequence')` instead of `require('run-sequence')`. `run-sequence.js` is a wrapper around gulp4 with a wrapper API which matches `run-sequence` behavior
+- `runSequence(tasks, callback);` has been changed to:
 	```
-	task.description = 'Description';
-	gulp.task('taskName', task);
-	```
-- Remove `runSequence` imports and replace usage with `gulp.series`
-    ```
-    runSequence(tasks);
-    runSequence(['task1', 'task2', callback]);
-    // replace with
-    gulp.series.apply(gulp, tasks)();
-    gulp.series.apply(gulp, tasks.concat(function(done) {
+	runSequence(tasks, function(done) {
 		done();
 		callback();
-    }))();
-    ```
+	});
+	```

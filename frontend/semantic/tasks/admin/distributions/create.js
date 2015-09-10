@@ -10,13 +10,14 @@
 */
 
 var
-  gulp            = require('gulp'),
+  gulp            = require('../../../gulp3'),
 
   // node dependencies
   console         = require('better-console'),
   del             = require('del'),
   fs              = require('fs'),
   path            = require('path'),
+  runSequence     = require('../../../run-sequence'),
   mergeStream     = require('merge-stream'),
 
   // admin dependencies
@@ -214,11 +215,8 @@ module.exports = function(callback) {
 
     })(distribution);
   }
-
-  gulp.series.apply(
-    gulp.series, tasks.concat(function(done) {
-      done();
-      callback();
-    })
-  )();
+  runSequence(tasks, function(done) {
+    done();
+    callback();
+  });
 };

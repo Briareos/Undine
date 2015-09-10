@@ -3,7 +3,7 @@
 *******************************/
 
 var
-  gulp         = require('gulp'),
+  gulp         = require('../../gulp3'),
 
   // node dependencies
   fs           = require('fs'),
@@ -86,7 +86,7 @@ module.exports = function(callback) {
     .pipe(gulp.dest(output.uncompressed))
     .pipe(print(log.created))
     .on('end', function() {
-      gulp.series('package uncompressed rtl css')();
+      gulp.start('package uncompressed rtl css');
     })
   ;
 
@@ -101,7 +101,7 @@ module.exports = function(callback) {
     .pipe(print(log.created))
     .on('end', function() {
       callback();
-      gulp.series('package compressed rtl css')();
+      gulp.start('package compressed rtl css');
     })
   ;
 
@@ -124,8 +124,8 @@ module.exports = function(callback) {
     .pipe(gulp.dest(output.compressed))
     .pipe(print(log.created))
     .on('end', function() {
-      gulp.series('package compressed js')();
-      gulp.series('package uncompressed js')();
+      gulp.start('package compressed js');
+      gulp.start('package uncompressed js');
     })
   ;
 

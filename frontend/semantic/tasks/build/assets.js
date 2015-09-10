@@ -3,7 +3,7 @@
 *******************************/
 
 var
-  gulp         = require('gulp'),
+  gulp         = require('../../gulp3'),
 
   // gulp dependencies
   chmod        = require('gulp-chmod'),

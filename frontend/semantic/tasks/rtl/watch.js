@@ -3,7 +3,7 @@
 *******************************/
 
 var
-  gulp         = require('gulp'),
+  gulp         = require('../../gulp3'),
 
   // node deps
   console      = require('better-console'),
@@ -102,7 +102,7 @@ module.exports = function(callback) {
       if(isConfig) {
         console.log('Change detected in theme config');
         // cant tell which theme was changed in theme.config, rebuild all
-        gulp.series('build')();
+        gulp.start('build');
       }
       else if(isPackagedTheme) {
         console.log('Change detected in packaged theme');
@@ -150,7 +150,7 @@ module.exports = function(callback) {
           .pipe(gulp.dest(output.uncompressed))
           .pipe(print(log.created))
           .on('end', function() {
-            gulp.series('package uncompressed rtl css')();
+            gulp.start('package uncompressed rtl css');
           })
         ;
 
@@ -163,7 +163,7 @@ module.exports = function(callback) {
           .pipe(gulp.dest(output.compressed))
           .pipe(print(log.created))
           .on('end', function() {
-            gulp.series('package compressed rtl css')();
+            gulp.start('package compressed rtl css');
           })
         ;
 
@@ -193,8 +193,8 @@ module.exports = function(callback) {
         .pipe(gulp.dest(output.compressed))
         .pipe(print(log.created))
         .on('end', function() {
-          gulp.series('package compressed js')();
-          gulp.series('package uncompressed js')();
+          gulp.start('package compressed js');
+          gulp.start('package uncompressed js');
         })
       ;
     })

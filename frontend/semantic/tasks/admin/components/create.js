@@ -15,13 +15,14 @@
 */
 
 var
-  gulp            = require('gulp'),
+  gulp            = require('../../../gulp3'),
 
   // node dependencies
   console         = require('better-console'),
   del             = require('del'),
   fs              = require('fs'),
   path            = require('path'),
+  runSequence     = require('../../../run-sequence'),
 
   // admin dependencies
   concatFileNames = require('gulp-concat-filenames'),
@@ -310,7 +311,7 @@ module.exports = function(callback) {
 
       // synchronous tasks in orchestrator? I think not
       gulp.task(task.all, false, function(callback) {
-        gulp.series(
+        runSequence([
           task.repo,
           task.npm,
           task.bower,
@@ -318,12 +319,11 @@ module.exports = function(callback) {
           task.package,
           task.composer,
           task.notes,
-          task.meteor,
-          function(done) {
-            done();
-            callback();
-          }
-        )();
+          task.meteor
+        ], function(done) {
+          done();
+          callback();
+        });
       });
 
       tasks.push(task.all);
@@ -331,8 +331,8 @@ module.exports = function(callback) {
     })(component);
   }
 
-  gulp.series.apply(gulp.series, tasks.concat(function(done) {
+  runSequence(tasks, function(done) {
     done();
     callback();
-  }))();
+  });
 };

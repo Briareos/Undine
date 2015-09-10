@@ -16,6 +16,8 @@ var autoprefixer = require('gulp-autoprefixer');
 var typescript = require('gulp-typescript');
 var del = require('del');
 var debug = require('gulp-debug');
+var semanticWatch = require('./frontend/semantic/tasks/watch');
+var semanticBuild = require('./frontend/semantic/tasks/build');
 
 var minifyImages = require('gulp-imagemin');
 var minifyCss = require('gulp-minify-css');
@@ -369,11 +371,15 @@ function buildWebIndex(cb) {
     fs.utimes(__dirname + '/app/Resources/views/web/layout.html.twig', new Date(), new Date(), cb);
 }
 
-function buildSemanticTheme() {
-    return gulp.src('./frontend/bower_components/semantic-ui/dist/themes/default/**', {base: './frontend/bower_components/semantic-ui/dist'})
-        .pipe(gulp.dest('./web/css/dashboard'))
-        .pipe(gulp.dest('./web/css/admin'))
-        .pipe(gulp.dest('./web/css/web'));
+//function buildSemanticTheme() {
+//    return gulp.src('./frontend/bower_components/semantic-ui/dist/themes/default/**', {base: './frontend/bower_components/semantic-ui/dist'})
+//        .pipe(gulp.dest('./web/css/dashboard'))
+//        .pipe(gulp.dest('./web/css/admin'))
+//        .pipe(gulp.dest('./web/css/web'));
+//}
+
+function buildSemantic(cb) {
+    semanticBuild(cb);
 }
 
 var reload = noop;
@@ -396,6 +402,9 @@ function reloadComponent(component) {
 }
 
 function watchDev() {
+    semanticWatch();
+    //gulp.series(semanticWatch, )
+
     watch('./frontend/dashboard/image/**/*', gulp.series(reloadComponent.bind(null, 'html')));
 
     watch('./frontend/dashboard/style/**/*', gulp.series(buildDashboardCssDev, reloadComponent.bind(null, 'css')));
@@ -418,6 +427,8 @@ gulp.task('default',
     gulp.series(
         cleanDev,
         gulp.parallel(
+            buildSemantic,
+
             buildDashboardCssDev,
             buildDashboardTemplateDev,
             buildDashboardTypescriptDev,
@@ -453,9 +464,7 @@ gulp.task('build',
 
             buildWebCss,
             buildWebTypescript,
-            buildWebIndex,
-
-            buildSemanticTheme
+            buildWebIndex
         )
     )
 );

@@ -55,7 +55,8 @@ module.exports = function(gulp) {
       .pipe(plumber())
       .pipe(dedupe())
       .pipe(replace(assets.uncompressed, assets.packaged))
-      .pipe(concatCSS(filenames.concatenatedCSS))
+      // Note - replaced to concat instead of concatCSS
+      .pipe(concat(filenames.concatenatedCSS))
         .pipe(gulpif(config.hasPermission, chmod(config.permission)))
         .pipe(header(banner, settings.header))
         .pipe(gulp.dest(output.packaged))

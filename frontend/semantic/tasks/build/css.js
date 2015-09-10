@@ -3,7 +3,7 @@
 *******************************/
 
 var
-  gulp         = require('gulp'),
+  gulp         = require('../../gulp3'),
 
   // node dependencies
   console      = require('better-console'),
@@ -82,7 +82,7 @@ module.exports = function(callback) {
     .pipe(gulp.dest(output.uncompressed))
     .pipe(print(log.created))
     .on('end', function() {
-      gulp.series('package uncompressed css')();
+      gulp.start('package uncompressed css');
     })
   ;
 
@@ -97,7 +97,7 @@ module.exports = function(callback) {
     .pipe(gulp.dest(output.compressed))
     .pipe(print(log.created))
     .on('end', function() {
-      gulp.series('package compressed css')();
+      gulp.start('package compressed css');
       callback();
     })
   ;

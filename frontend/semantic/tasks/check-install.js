@@ -4,7 +4,7 @@
 
 var
   // node dependencies
-  gulp         = require('gulp'),
+  gulp         = require('../gulp3'),
   fs           = require('fs'),
   console      = require('better-console'),
   install      = require('./config/project/install')
@@ -16,11 +16,11 @@ module.exports = function() {
   setTimeout(function() {
     if( !install.isSetup() ) {
       console.log('Starting install...');
-      gulp.series('install')();
+      gulp.start('install');
       return;
     }
     else {
-      gulp.series('watch')();
+      gulp.start('watch');
     }
   }, 50); // Delay to allow console.clear to remove messages from check event
 

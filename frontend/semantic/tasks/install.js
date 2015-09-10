@@ -15,7 +15,7 @@
 */
 
 var
-  gulp           = require('gulp'),
+  gulp           = require('../gulp3'),
 
   // node dependencies
   console        = require('better-console'),
@@ -23,6 +23,7 @@ var
   fs             = require('fs'),
   mkdirp         = require('mkdirp'),
   path           = require('path'),
+  runSequence    = require('../run-sequence'),
 
   // gulp dependencies
   chmod          = require('gulp-chmod'),
@@ -393,14 +394,14 @@ gulp.task('create install files', function(callback) {
 
   });
 
-  gulp.series(
+  runSequence(
     'create theme.config',
     'create semantic.json',
     function(done) {
       done();
       callback();
     }
-  )();
+  );
 
 });
 
@@ -423,13 +424,13 @@ gulp.task('clean up install', function() {
         del(install.setupFiles);
       }
       if(answers.build == 'yes') {
-        gulp.series('build');
+        gulp.start('build');
       }
     }))
   ;
 });
 
-gulp.series(
+runSequence(
   'run setup',
   'create install files',
   'clean up install',
@@ -437,6 +438,6 @@ gulp.series(
     done();
     callback();
   }
-)();
+);
 
 };

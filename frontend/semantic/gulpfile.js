@@ -3,7 +3,7 @@
 *******************************/
 
 var
-  gulp         = require('gulp'),
+  gulp         = require('./gulp3'),
 
   // read user config to know what task to load
   config       = require('./tasks/config/user'),
@@ -53,7 +53,7 @@ gulp.task('build-assets', buildAssets);
 gulp.task('clean', clean);
 gulp.task('version', version);
 
-gulp.task('default', gulp.series('watch'));
+gulp.task('default', watch);
 
 /*--------------
       Docs

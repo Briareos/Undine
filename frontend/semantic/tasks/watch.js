@@ -3,7 +3,7 @@
 *******************************/
 
 var
-  gulp         = require('gulp'),
+  gulp         = require('../gulp3'),
 
   // node dependencies
   console      = require('better-console'),
@@ -61,10 +61,10 @@ module.exports = function(callback) {
 
   // check for right-to-left (RTL) language
   if(config.rtl == 'both') {
-    gulp.series('watch-rtl')();
+    gulp.start('watch-rtl');
   }
   if(config.rtl === true || config.rtl === 'Yes') {
-    gulp.series('watch-rtl')();
+    gulp.start('watch-rtl');
     return;
   }
 
@@ -114,7 +114,7 @@ module.exports = function(callback) {
       if(isConfig) {
         console.info('Rebuilding all UI');
         // impossible to tell which file was updated in theme.config, rebuild all
-        gulp.series('build-css')();
+        gulp.start('build-css');
         return;
       }
       else if(isPackagedTheme) {
@@ -150,31 +150,12 @@ module.exports = function(callback) {
           .pipe(replace(comments.tiny.in, comments.tiny.out))
           .pipe(autoprefixer(settings.prefix))
           .pipe(gulpif(config.hasPermission, chmod(config.permission)))
-        ;
-
-        // use 2 concurrent streams from same pipe
-        uncompressedStream = stream.pipe(clone());
-        compressedStream   = stream.pipe(clone());
-
-        uncompressedStream
           .pipe(plumber())
           .pipe(replace(assets.source, assets.uncompressed))
           .pipe(gulp.dest(output.uncompressed))
           .pipe(print(log.created))
           .on('end', function() {
-            gulp.series('package uncompressed css')();
-          })
-        ;
-
-        compressedStream = stream
-          .pipe(plumber())
-          .pipe(replace(assets.source, assets.compressed))
-          .pipe(minifyCSS(settings.minify))
-          .pipe(rename(settings.rename.minCSS))
-          .pipe(gulp.dest(output.compressed))
-          .pipe(print(log.created))
-          .on('end', function() {
-            gulp.series('package compressed css')();
+            gulp.start('package uncompressed css');
           })
         ;
       }
@@ -203,7 +184,8 @@ module.exports = function(callback) {
         .pipe(gulp.dest(output.compressed))
         .pipe(print(log.created))
         .on('end', function() {
-          gulp.series('package compressed js', 'package uncompressed js')();
+          gulp.start('package compressed js');
+          gulp.start('package uncompressed js');
         })
       ;
     })
