@@ -38,7 +38,7 @@ This development setup guide is geared toward the [Legend](https://github.com/Br
 
 Add this to Nginx configuration for development environment:
 
-    location ~ ^/tmp/(css|js)/(.*\.(css|js))$ {
+    location ~ ^/tmp/(css|js|semantic-ui)/(.*)$ {
         root /home/vagrant/www/undine;
         try_files /var/tmp/$1/$2 =404;
     }
