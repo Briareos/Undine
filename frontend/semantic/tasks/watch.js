@@ -68,8 +68,23 @@ module.exports = function(callback) {
     return;
   }
 
-  //console.clear();
   console.log('Watching source files for changes');
+
+  /*--------------
+      Reload CSS
+   --------------*/
+
+  function reloadCss() {
+    callback('css');
+  }
+
+  function reloadJs() {
+    callback('js');
+  }
+
+  function reloadHtml() {
+    callback('html');
+  }
 
   /*--------------
       Watch CSS
@@ -87,8 +102,6 @@ module.exports = function(callback) {
         lessPath,
 
         stream,
-        compressedStream,
-        uncompressedStream,
 
         isDefinition,
         isPackagedTheme,
@@ -114,7 +127,7 @@ module.exports = function(callback) {
       if(isConfig) {
         console.info('Rebuilding all UI');
         // impossible to tell which file was updated in theme.config, rebuild all
-        gulp.start('build-css');
+        gulp.start('build-css', reloadCss);
         return;
       }
       else if(isPackagedTheme) {
@@ -155,7 +168,7 @@ module.exports = function(callback) {
           .pipe(gulp.dest(output.uncompressed))
           .pipe(print(log.created))
           .on('end', function() {
-            gulp.start('package uncompressed css');
+            gulp.start('package uncompressed css', reloadCss);
           })
         ;
       }
@@ -185,7 +198,7 @@ module.exports = function(callback) {
         .pipe(print(log.created))
         .on('end', function() {
           gulp.start('package compressed js');
-          gulp.start('package uncompressed js');
+          gulp.start('package uncompressed js', reloadJs);
         })
       ;
     })
@@ -205,6 +218,7 @@ module.exports = function(callback) {
         .pipe(gulpif(config.hasPermission, chmod(config.permission)))
         .pipe(gulp.dest(output.themes))
         .pipe(print(log.created))
+        .on('end', reloadJs);
       ;
     })
   ;

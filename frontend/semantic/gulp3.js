@@ -1,8 +1,15 @@
 var gulp = require('gulp');
 
 module.exports = {
-    start: function (task) {
-        return gulp.series(task)();
+    start: function (task, callback) {
+        if (!callback) {
+            return gulp.series(task)();
+        } else {
+            return gulp.series(task, function(done) {
+                done();
+                callback();
+            })();
+        }
     },
     src: function () {
         return gulp.src.apply(gulp, arguments);
