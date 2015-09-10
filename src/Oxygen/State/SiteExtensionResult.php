@@ -7,10 +7,10 @@ namespace Undine\Oxygen\State;
  * @property string      $type
  * @property string      $slug
  * @property string|null $parent
- * @property bool        $active
+ * @property bool        $enabled
  * @property string      $name
  * @property string      $description
- * @property string      $package
+ * @property string|null $package
  * @property string|null $version
  * @property bool        $required
  * @property string[]    $dependencies
@@ -18,36 +18,5 @@ namespace Undine\Oxygen\State;
  */
 class SiteExtensionResult
 {
-    /**
-     * @var array
-     */
-    private $data;
-
-    /**
-     * @param array $data
-     */
-    public function __construct(array $data)
-    {
-        $this->data = $data;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    function __get($name)
-    {
-        if (!array_key_exists($name, $this->data)) {
-            throw new \OutOfBoundsException(sprintf('Property "%s" could not be found.', $name));
-        }
-
-        return $this->data[$name];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    function __isset($name)
-    {
-        return array_key_exists($this->data, $name);
-    }
+    use StateResultTrait;
 }

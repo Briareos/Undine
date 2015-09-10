@@ -4,17 +4,17 @@ namespace Undine\Oxygen\Action;
 
 use Psr\Http\Message\UriInterface;
 
-class ProjectInstallFromUrlAction extends AbstractAction
+class ExtensionDownloadFromUrlAction extends AbstractAction
 {
     /**
-     * @var UriInterface
+     * @var string
      */
     private $url;
 
     /**
-     * @param UriInterface $url
+     * @param string $url
      */
-    public function __construct(UriInterface $url)
+    public function __construct($url)
     {
         $this->url = $url;
     }
@@ -24,7 +24,7 @@ class ProjectInstallFromUrlAction extends AbstractAction
      */
     public function getName()
     {
-        return 'project.installFromUrl';
+        return 'extension.downloadFromUrl';
     }
 
     /**
@@ -33,7 +33,7 @@ class ProjectInstallFromUrlAction extends AbstractAction
     public function getParameters()
     {
         return [
-            'url' => (string)$this->url,
+            'url' => $this->url,
         ];
     }
 }

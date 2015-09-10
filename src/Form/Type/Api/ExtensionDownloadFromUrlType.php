@@ -8,17 +8,16 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Url;
-use Undine\Api\Command\ProjectInstallFromUrlCommand;
-use Undine\Form\Transformer\StringToUriTransformer;
+use Undine\Api\Command\ExtensionDownloadFromUrlCommand;
 
-class ProjectInstallFromUrlType extends AbstractType
+class ExtensionDownloadFromUrlType extends AbstractType
 {
     /**
      * {@inheritdoc}
      */
     public function getName()
     {
-        return 'api__project_install_from_url';
+        return 'api__extension_download_from_url';
     }
 
     /**
@@ -32,7 +31,6 @@ class ProjectInstallFromUrlType extends AbstractType
                 new Url(),
             ],
         ]);
-        $builder->get('url')->addViewTransformer(new StringToUriTransformer());
     }
 
     /**
@@ -41,9 +39,9 @@ class ProjectInstallFromUrlType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => ProjectInstallFromUrlCommand::class,
+            'data_class' => ExtensionDownloadFromUrlCommand::class,
             'empty_data' => function (FormInterface $form) {
-                return new ProjectInstallFromUrlCommand($form->get('url')->getData());
+                return new ExtensionDownloadFromUrlCommand($form->get('url')->getData());
             },
         ]);
     }

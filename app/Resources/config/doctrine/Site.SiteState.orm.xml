@@ -26,7 +26,7 @@
         <field name="drupalRoot" type="string" nullable="true"/>
         <field name="drupalVersion" type="string" nullable="true"/>
         <field name="drupalMajorVersion" type="integer" nullable="true"/>
-        <field name="updateLastCheckAt" type="datetime" nullable="true"/>
+        <field name="updatesLastCheckAt" type="datetime" nullable="true"/>
         <field name="timezone" type="timezone" nullable="true"/>
         <field name="extensionsChecksum" type="string" nullable="true"/>
 

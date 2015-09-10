@@ -18,8 +18,12 @@
             <tag name="form.type" alias="api__module_disable"/>
         </service>
 
-        <service id="undine.form.type.api.project_install_from_url" class="Undine\Form\Type\Api\ProjectInstallFromUrlType">
-            <tag name="form.type" alias="api__project_install_from_url"/>
+        <service id="undine.form.type.api.extension_install_from_url" class="Undine\Form\Type\Api\ExtensionDownloadFromUrlType">
+            <tag name="form.type" alias="api__extension_install_from_url"/>
+        </service>
+
+        <service id="undine.form.type.api.extension_update" class="Undine\Form\Type\Api\ExtensionUpdateType">
+            <tag name="form.type" alias="api__extension_update"/>
         </service>
 
     </services>

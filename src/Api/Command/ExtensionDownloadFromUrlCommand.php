@@ -4,7 +4,7 @@ namespace Undine\Api\Command;
 
 use Psr\Http\Message\UriInterface;
 
-class ProjectInstallFromUrlCommand extends AbstractCommand
+class ExtensionDownloadFromUrlCommand extends AbstractCommand
 {
     /**
      * @var UriInterface

@@ -4,7 +4,7 @@ namespace Undine\Oxygen\Reaction;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ProjectInstallFromUrlReaction extends AbstractReaction
+class ExtensionDownloadUpdateFromUrlReaction extends AbstractReaction
 {
     /**
      * {@inheritdoc}

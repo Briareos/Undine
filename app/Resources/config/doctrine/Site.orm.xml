@@ -22,6 +22,8 @@
 
         <one-to-many target-entity="Undine\Model\SiteExtension" field="siteExtensions" mapped-by="site" index-by="slug">
         </one-to-many>
+        <one-to-many target-entity="Undine\Model\SiteUpdate" field="siteUpdates" mapped-by="site" index-by="slug">
+        </one-to-many>
 
         <embedded name="siteState" class="Undine\Model\Site\SiteState" column-prefix="state_"/>
 
