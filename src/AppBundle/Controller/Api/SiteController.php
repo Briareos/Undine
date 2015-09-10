@@ -48,9 +48,6 @@ class SiteController extends AppController
     {
         $this->oxygenClient->send($site, new SitePingAction());
 
-        $this->em->persist($site);
-        $this->em->flush($site);
-
         return new SiteConnectResult($site);
     }
 
@@ -65,6 +62,7 @@ class SiteController extends AppController
 
         $this->dispatcher->dispatch(new SiteDisconnectEvent($site), Events::SITE_DISCONNECT);
 
+        // @todo: Chain extensions/updates/etc. removal.
         $this->em->remove($site);
         $this->em->flush($site);
 

@@ -97,7 +97,7 @@ class SiteUpdate
      *
      * @var string[]
      */
-    private $includes;
+    private $includes = [];
 
     /**
      * @var bool
@@ -109,14 +109,14 @@ class SiteUpdate
      *
      * @var string[]
      */
-    private $baseThemes;
+    private $baseThemes = [];
 
     /**
      * Array of project slugs.
      *
      * @var string[]
      */
-    private $subThemes;
+    private $subThemes = [];
 
     /**
      * @param Site   $site
@@ -381,7 +381,7 @@ class SiteUpdate
      *
      * @return $this
      */
-    public function setBaseThemes($baseThemes)
+    public function setBaseThemes(array $baseThemes)
     {
         $this->baseThemes = $baseThemes;
 
