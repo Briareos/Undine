@@ -42,11 +42,6 @@ Add this to Nginx configuration for development environment:
         root /home/vagrant/www/undine/var/;
 	}
 
-    location ~ ^/tmp/(css|js|semantic-ui)/(.*)$ {
-        root /home/vagrant/www/undine;
-        try_files /var/tmp/$1/$2 =404;
-    }
-
     location ~ ^/tmp/image/(.*\.(jpg|png))$ {
         root /home/vagrant/www/undine;
         try_files /frontend/image/$1 =404;
