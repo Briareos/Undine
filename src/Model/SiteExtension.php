@@ -8,10 +8,6 @@ class SiteExtension
 
     const TYPE_THEME = 'theme';
 
-    const TYPE_PROFILE = 'profile';
-
-    const TYPE_THEME_EXTENSION = 'theme_extension';
-
     /**
      * @var Site
      */

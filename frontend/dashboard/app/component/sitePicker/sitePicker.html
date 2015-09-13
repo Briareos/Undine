@@ -8,4 +8,11 @@
         <i class="plus icon"></i>
         Add Website
     </a>
+
+    <div class="ui list">
+        <div class="item" ng-repeat="site in sites track by site.uid">
+            <a class="fluid large ui black button" ui-sref="siteDashboard({uid:site.uid})">{{ site.url }}</a>
+        </div>
+    </div>
+
 </div>

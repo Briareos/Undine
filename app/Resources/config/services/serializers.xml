@@ -31,6 +31,18 @@
             <tag name="serializer.transformer" alias="Undine\Model\Site"/>
         </service>
 
+        <service id="undine.serializer.transformer.site_update" class="Undine\Api\Transformer\SiteUpdateTransformer" public="false" lazy="true">
+            <tag name="serializer.transformer" alias="Undine\Model\SiteUpdate"/>
+        </service>
+
+        <service id="undine.serializer.transformer.site_extension" class="Undine\Api\Transformer\SiteExtensionTransformer" public="false" lazy="true">
+            <tag name="serializer.transformer" alias="Undine\Model\SiteExtension"/>
+        </service>
+
+        <service id="undine.serializer.transformer.site_state" class="Undine\Api\Transformer\SiteStateTransformer" public="false" lazy="true">
+            <tag name="serializer.transformer" alias="Undine\Model\Site\SiteState"/>
+        </service>
+
     </services>
 
 </container>

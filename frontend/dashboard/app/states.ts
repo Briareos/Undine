@@ -16,6 +16,16 @@ angular.module('undine.dashboard')
                     }
                 }
             })
+            .state('siteDashboard', {
+                url: '/site/{uid}/dashboard',
+                controller: 'SiteDashboardController',
+                templateUrl: '/page/site/dashboard.html',
+                resolve: {
+                    Site: function(Dashboard:Dashboard, $stateParams:ng.ui.IStateParamsService) {
+                        return _.find(Dashboard.sites, {uid:$stateParams['uid']});
+                    }
+                }
+            })
             .state('module', {
                 url: '/module',
                 controller: 'ModuleController',

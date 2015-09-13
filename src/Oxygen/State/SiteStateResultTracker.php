@@ -146,7 +146,7 @@ class SiteStateResultTracker
             $resolver = (new OptionsResolver())
                 ->setRequired(['filename', 'type', 'slug', 'parent', 'enabled', 'name', 'description', 'package', 'version', 'required', 'dependencies', 'project'])
                 ->setAllowedTypes('filename', 'string')
-                ->setAllowedValues('type', [SiteExtension::TYPE_MODULE, SiteExtension::TYPE_PROFILE, SiteExtension::TYPE_THEME, SiteExtension::TYPE_THEME_EXTENSION])
+                ->setAllowedValues('type', [SiteExtension::TYPE_MODULE, SiteExtension::TYPE_THEME])
                 ->setAllowedTypes('slug', 'string')
                 ->setAllowedTypes('parent', ['null', 'string'])
                 ->setAllowedTypes('enabled', 'bool')
