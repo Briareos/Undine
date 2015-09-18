@@ -1,8 +1,19 @@
 class SitePicker {
     private _visible:boolean = false;
+    private _filteredSites:Array<Site> = [];
 
-    constructor(Dashboard:DashboardInterface) {
+    constructor(private Dashboard:Dashboard, private $rootScope:ng.IRootScopeService) {
+    }
 
+    public subscribeScope(scope:ng.IScope, callback:any) {
+        callback();
+        var unsubscribe:any = this.$rootScope.$on('site-picker.change', callback);
+        scope.$on('destroy', unsubscribe);
+    }
+
+    public subscribe(callback:any):Function {
+        callback();
+        return this.$rootScope.$on('site-picker.change', callback);
     }
 
     public get visible():boolean {
@@ -11,14 +22,31 @@ class SitePicker {
 
     public set visible(visible:boolean) {
         this._visible = visible;
+        if (visible) {
+            this.update();
+        }
+    }
+
+    public get filteredSites():Array<Site> {
+        return this._filteredSites;
+    }
+
+    public update() {
+        this._filteredSites = this.Dashboard.sites.filter(function (site:Site) {
+            return true;
+        });
+    }
+
+    private broadcastChange() {
+        this.$rootScope.$broadcast('site-picker.change');
     }
 }
 
 angular.module('undine.dashboard')
-    .service('SitePicker', function (Dashboard:DashboardInterface) {
-        return new SitePicker(Dashboard);
+    .service('SitePicker', function (Dashboard:Dashboard, $rootScope:ng.IRootScopeService) {
+        return new SitePicker(Dashboard, $rootScope);
     })
-    .run(function (SitePicker:SitePicker, $rootScope:ng.IRootScopeService) {
+    .run(function (SitePicker:SitePicker, Dashboard:Dashboard, $rootScope:ng.IRootScopeService) {
         $rootScope.$on('$stateChangeSuccess', function ($event:ng.IAngularEvent, toState:ng.ui.IState) {
             var stateData = toState.data;
 
@@ -28,5 +56,9 @@ angular.module('undine.dashboard')
             else {
                 SitePicker.visible = !!stateData.sitePicker.visible;
             }
+        });
+
+        Dashboard.subscribe(() => {
+            SitePicker.update();
         });
     });

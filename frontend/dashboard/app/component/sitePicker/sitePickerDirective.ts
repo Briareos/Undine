@@ -1,5 +1,5 @@
 angular.module('undine.dashboard')
-    .directive('sitePicker', function (SitePicker:SitePicker, Dashboard:DashboardInterface) {
+    .directive('sitePicker', function (SitePicker:SitePicker, Dashboard:Dashboard) {
         return {
             scope: true,
             replace: true,

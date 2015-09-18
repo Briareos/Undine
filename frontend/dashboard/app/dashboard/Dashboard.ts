@@ -1,18 +1,8 @@
-interface DashboardInterface {
-    sites:Array<Site>;
-    user:User;
-    load():ng.IPromise<DashboardInterface>;
-}
-
-class Dashboard implements DashboardInterface {
+class Dashboard {
     private _user:User;
     private _sites:Array<Site>;
-    private _deferred:ng.IDeferred<Dashboard>;
-    private _initialPromise:ng.IPromise<Dashboard>;
 
-    constructor(private Api:Api, private $q:ng.IQService) {
-        this._deferred = $q.defer();
-        this._initialPromise = this._deferred.promise;
+    constructor(private Api:Api, private $q:ng.IQService, private $rootScope:ng.IRootScopeService) {
     }
 
     /**
@@ -20,33 +10,42 @@ class Dashboard implements DashboardInterface {
      *
      * @internal
      */
-    initialize(user:User) {
+    public initialize(user:User) {
         this._user = user;
         this._sites = user.sites;
+        this.$rootScope.$broadcast('dashboard.change');
     }
 
-
-    load():ng.IPromise<DashboardInterface> {
-        return this._initialPromise;
+    public subscribeScope(scope:ng.IScope, callback:any) {
+        var unsubscribe:any = this.$rootScope.$on('dashboard.change', callback);
+        scope.$on('destroy', unsubscribe);
     }
 
-    get sites() {
+    public subscribe(callback:any):Function {
+        return this.$rootScope.$on('dashboard.change', callback);
+    }
+
+    public get sites() {
         return this._sites;
     }
 
-    get user() {
+    public get user() {
         return this._user;
     }
 
-    refreshDashboard() {
-        // TODO: implement
-        this._deferred.resolve(this);
+    private broadcastChange() {
+        this.$rootScope.$broadcast('dashboard.change');
     }
+
+    //refreshDashboard() {
+    // TODO: implement
+    //this._deferred.resolve(this);
+    //}
 }
 
 angular.module('undine.dashboard')
-    .service('Dashboard', function (Api:Api, $q:ng.IQService) {
-        return new Dashboard(Api, $q);
+    .service('Dashboard', function (Api:Api, $q:ng.IQService, $rootScope:ng.IRootScopeService) {
+        return new Dashboard(Api, $q, $rootScope);
     })
     .run(function (Dashboard:Dashboard, AppData:AppData) {
         Dashboard.initialize(AppData.currentUser);
