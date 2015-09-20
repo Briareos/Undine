@@ -24,6 +24,14 @@ angular.module('undine.dashboard')
             Site: function (Dashboard:Dashboard, $stateParams:ng.ui.IStateParamsService) {
                 return _.find(Dashboard.sites, {uid: $stateParams['uid']});
             }
+        },
+        nycBreadcrumb: {
+            label: 'Site Dashboard'
+        },
+        data: {
+            sitePicker: {
+                visible: true
+            }
         }
     })
         .state('module', {

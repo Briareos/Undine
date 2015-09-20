@@ -4,29 +4,11 @@
         <i class="search icon"></i>
     </div>
 
-    <a ui-sref="connectWebsite.new" class="fluid large ui light gray button margin-bottom-40">
+    <a ui-sref="connectWebsite.new" class="fluid large ui light gray button margin-bottom-20">
         <i class="plus icon"></i>
         Connect Website
     </a>
 
     <site-picker-site-list></site-picker-site-list>
-    <!--<ul class="site-list">-->
-    <!--<li>-->
-    <!--<span>-->
-    <!--Hello world-->
-    <!--</span>-->
-    <!---->
-    <!--<div class="ui checkbox">-->
-    <!--<input type="checkbox">-->
-    <!--<label></label>-->
-    <!--</div>-->
-    <!--</li>-->
-    <!--</ul>-->
-
-    <div class="ui list">
-        <div class="item" ng-repeat="site in sites track by site.uid">
-            <a class="fluid large ui black button" ui-sref="siteDashboard({uid:site.uid})">{{ site.url }}</a>
-        </div>
-    </div>
 
 </div>

@@ -1,6 +1,7 @@
 class Dashboard {
     private _user:User;
     private _sites:Array<Site>;
+    private _initialized:boolean = false;
 
     constructor(private Api:Api, private $q:ng.IQService, private $rootScope:ng.IRootScopeService) {
     }
@@ -13,15 +14,24 @@ class Dashboard {
     public initialize(user:User) {
         this._user = user;
         this._sites = user.sites;
+        this._initialized = true;
         this.$rootScope.$broadcast('dashboard.change');
     }
 
     public subscribeScope(scope:ng.IScope, callback:any) {
         var unsubscribe:any = this.$rootScope.$on('dashboard.change', callback);
         scope.$on('destroy', unsubscribe);
+
+        if (this._initialized) {
+            callback();
+        }
     }
 
     public subscribe(callback:any):Function {
+        if (this._initialized) {
+            callback();
+        }
+
         return this.$rootScope.$on('dashboard.change', callback);
     }
 
@@ -36,11 +46,6 @@ class Dashboard {
     private broadcastChange() {
         this.$rootScope.$broadcast('dashboard.change');
     }
-
-    //refreshDashboard() {
-    // TODO: implement
-    //this._deferred.resolve(this);
-    //}
 }
 
 angular.module('undine.dashboard')

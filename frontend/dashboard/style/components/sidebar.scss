@@ -1,5 +1,5 @@
 .sidebar {
-  @include flex-basis($sidebarWidth);
+  @include flex(0, 0, $sidebarWidth);
   background-color: $sidebarBackgroundColor;
   color: $sidebarTextColor;
   text-align: center;

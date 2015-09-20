@@ -1,18 +1,25 @@
 class SitePicker {
     private _visible:boolean = false;
     private _filteredSites:Array<Site> = [];
+    private _initialized:boolean = false;
 
     constructor(private Dashboard:Dashboard, private $rootScope:ng.IRootScopeService) {
     }
 
     public subscribeScope(scope:ng.IScope, callback:any) {
-        callback();
         var unsubscribe:any = this.$rootScope.$on('site-picker.change', callback);
         scope.$on('destroy', unsubscribe);
+
+        if (this._initialized) {
+            callback();
+        }
     }
 
     public subscribe(callback:any):Function {
-        callback();
+        if (this._initialized) {
+            callback();
+        }
+
         return this.$rootScope.$on('site-picker.change', callback);
     }
 
@@ -32,6 +39,7 @@ class SitePicker {
     }
 
     public update() {
+        this._initialized = true;
         this._filteredSites = this.Dashboard.sites.filter(function (site:Site) {
             return true;
         });

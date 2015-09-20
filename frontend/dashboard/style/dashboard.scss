@@ -10,12 +10,13 @@
 body.stretched.body {
   @include display-flex;
   @include flex-direction(column);
-  min-height: 100vh;
+  height: 100vh;
 }
 
 .stretched.dashboard.container {
   @include display-flex;
   @include flex-grow(1);
+  height: 100vh;
 }
 
 .main.content {
@@ -24,10 +25,13 @@ body.stretched.body {
   @include flex-grow(1);
 
   .state.content {
+    @include flex-grow(1);
+    overflow: auto;
     padding: 50px 40px;
   }
 }
 
 @import "components/header";
 @import "components/sidebar";
+@import "components/site-status-icons";
 @import "components/site-picker";

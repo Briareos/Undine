@@ -4,15 +4,15 @@ $marginSizes: 5, 10, 15, 20, 25, 30, 35, 40, 45, 50;
   $margin: nth($marginSizes, $i);
 
   .margin-top-#{$margin} {
-    margin-top: $margin + 0px;
+    margin-top: $margin + 0px !important;
   }
   .margin-bottom-#{$margin} {
-    margin-bottom: $margin + 0px;
+    margin-bottom: $margin + 0px !important;
   }
   .margin-left-#{$margin} {
-    margin-left: $margin + 0px;
+    margin-left: $margin + 0px !important;
   }
   .margin-right-#{$margin} {
-    margin-right: $margin + 0px;
+    margin-right: $margin + 0px !important;
   }
 }

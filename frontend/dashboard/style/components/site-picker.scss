@@ -1,6 +1,35 @@
 .site-picker {
-  @include flex-basis($sitePickerWidth);
+  @include flex(0, 0, $sitePickerWidth);
   background-color: $sitePickerBackgroundColor;
   color: $sitePickerTextColor;
   padding: 20px 30px;
+}
+
+.ui.site.list {
+  .site-name {
+    @include display-flex;
+    @include flex-align-items(center);
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: white;
+    border-radius: 5px;
+    padding: 10px;
+    font-weight: bold;
+
+    &:hover {
+      background-color: #303d45;
+    }
+
+    .status {
+      display: block;
+      @include flex(0, 0, 20px);
+    }
+
+    .name {
+      display: block;
+      @include flex-grow(1);
+    }
+  }
 }
