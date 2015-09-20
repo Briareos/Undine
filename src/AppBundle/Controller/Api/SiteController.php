@@ -187,8 +187,10 @@ class SiteController extends AppController
                         return new SiteConnectResult($site);
                     }
                     // We did not find a login form.
+                    throw new ConstraintViolationException(new OxygenAlreadyConnectedConstraint(true, false));
                 }
                 // We did not look for a login form.
+                throw new ConstraintViolationException(new OxygenAlreadyConnectedConstraint(false, false));
             }
             throw new ConstraintViolationException(new ProtocolErrorConstraint($oxygenException->getCode(), $oxygenException->getType()));
         } elseif ($result[0]['reason'] instanceof RequestException) {
