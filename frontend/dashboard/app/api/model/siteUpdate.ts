@@ -1,28 +1,30 @@
-enum SiteUpdateType {
-    core,
-    module,
-    theme,
+class SiteUpdateType {
+    static CORE = 'core';
+    static MODULE = 'module';
+    static THEME = 'theme';
 }
 
-enum SiteUpdateStatus {
-    not_secure,
-    revoked,
-    not_supported,
-    not_current,
-    current,
-    not_checked,
-    unknown,
-    not_fetched,
-    fetch_pending,
+class SiteUpdateStatus {
+    static NOT_SECURE = 'not_secure';
+    static REVOKED = 'revoked';
+    static NOT_SUPPORTED = 'not_supported';
+    static NOT_CURRENT = 'not_current';
+    static CURRENT = 'current';
+    static NOT_CHECKED = 'not_checked';
+    static UNKNOWN = 'unknown';
+    static NOT_FETCHED = 'not_fetched';
+    static FETCH_PENDING = 'fetch_pending';
 }
 
 interface SiteUpdate {
-    type:SiteUpdateType,
+    // One of SiteUpdateType.
+    type:string,
     name:string,
     slug:string,
     existingVersion:string,
     recommendedVersion:string,
-    status:SiteUpdateStatus,
+    // One of SiteUpdateStatus.
+    status:string,
     enabled:boolean,
     package?:string,
     project?:string,
@@ -31,18 +33,18 @@ interface SiteUpdate {
     subThemes:Array<string>,
 }
 
-interface CoreUpdate extends SiteUpdate{
+interface CoreUpdate extends SiteUpdate {
     name:string,
     existingVersion:string
     recommendedVersion:string
-    status:SiteUpdateStatus,
+    status:string,
 }
 
 interface ModuleUpdate extends SiteUpdate {
     name:string,
     slug:string,
     existingVersion:string,
-    status:SiteUpdateStatus,
+    status:string,
     enabled:boolean,
     package?:string,
     project?:string,
@@ -53,7 +55,7 @@ interface ThemeUpdate extends SiteUpdate {
     name:string,
     slug:string,
     existingVersion:string,
-    status:SiteUpdateStatus,
+    status:string,
     enabled:boolean,
     baseThemes:Array<string>,
     subThemes:Array<string>,

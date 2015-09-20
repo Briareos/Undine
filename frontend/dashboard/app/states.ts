@@ -75,12 +75,21 @@ angular.module('undine.dashboard')
         templateUrl: '/page/connect-website/new.html',
     })
         .state('connectWebsite.instructions', {
-        url: '/instructions?url',
+        url: '/instructions?url&lookedForLoginForm&loginFormFound&alreadyConnected',
         controller: 'ConnectWebsiteInstructionsController',
         templateUrl: '/page/connect-website/instructions.html',
         resolve: {
-            url: function ($state:ng.ui.IStateService, $stateParams:ng.ui.IStateParamsService) {
+            url: function ($stateParams:ng.ui.IStateParamsService) {
                 return decodeURIComponent($stateParams['url']);
+            },
+            lookedForLoginForm: function($stateParams:ng.ui.IStateParamsService) {
+                return $stateParams['lookedForLoginForm'] === 'true';
+            },
+            loginFormFound: function($stateParams:ng.ui.IStateParamsService) {
+                return $stateParams['loginFormFound'] === 'true';
+            },
+            alreadyConnected: function($stateParams:ng.ui.IStateParamsService) {
+                return $stateParams['alreadyConnected'] === 'true';
             }
         }
     })
@@ -88,9 +97,10 @@ angular.module('undine.dashboard')
         url: '/http-credentials',
         templateUrl: '/page/connect-website/http-credentials.html',
     })
-        .state('connectWebsite.userCredentials', {
-        url: '/user-credentials',
-        templateUrl: '/page/connect-website/user-credentials.html',
+        .state('connectWebsite.adminCredentials', {
+        url: '/admin-credentials',
+        controller: 'ConnectWebsiteAdminCredentialsController',
+        templateUrl: '/page/connect-website/admin-credentials.html',
     })
         .state('connectWebsite.finish', {
         url: '/connected',
