@@ -13,5 +13,4 @@ class HttpAuthenticationFailedConstraint extends AbstractConstraint
     {
         return 'site.http_authentication_failed';
     }
-
 }

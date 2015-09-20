@@ -26,7 +26,6 @@ class NoResponseConstraint extends AbstractConstraint
         $this->message = $message;
     }
 
-
     /**
      * {@inheritdoc}
      */

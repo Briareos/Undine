@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "6af25f8a4730a59f4f6feb1d60c4d1f6",
-    "content-hash": "a63d6dd8676cea43b243fff0c2c0a304",
+    "hash": "23b117e8e77003100d3d94f466812d69",
+    "content-hash": "5eb051912ea7a95d68e893a2ddc8fcfc",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -934,55 +934,6 @@
                 "orm"
             ],
             "time": "2015-08-31 12:59:39"
-        },
-        {
-            "name": "fabpot/goutte",
-            "version": "v3.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/FriendsOfPHP/Goutte.git",
-                "reference": "751a3dc5c4d86ec3e97c9f27133ef9694d9243cc"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfPHP/Goutte/zipball/751a3dc5c4d86ec3e97c9f27133ef9694d9243cc",
-                "reference": "751a3dc5c4d86ec3e97c9f27133ef9694d9243cc",
-                "shasum": ""
-            },
-            "require": {
-                "guzzlehttp/guzzle": "^6.0",
-                "php": ">=5.5.0",
-                "symfony/browser-kit": "~2.1",
-                "symfony/css-selector": "~2.1",
-                "symfony/dom-crawler": "~2.1"
-            },
-            "type": "application",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.1-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Goutte\\": "Goutte"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                }
-            ],
-            "description": "A simple PHP Web Scraper",
-            "homepage": "https://github.com/FriendsOfPHP/Goutte",
-            "keywords": [
-                "scraper"
-            ],
-            "time": "2015-08-29 16:16:56"
         },
         {
             "name": "gedmo/doctrine-extensions",
