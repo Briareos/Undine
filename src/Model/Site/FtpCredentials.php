@@ -39,7 +39,7 @@ class FtpCredentials
     private $port;
 
     /**
-     * @return string|null
+     * @return null|string
      */
     public function getMethod()
     {
@@ -47,25 +47,7 @@ class FtpCredentials
     }
 
     /**
-     * @param string|null $method
-     *
-     * @return $this
-     */
-    public function setMethod($method = null)
-    {
-        // Support automatic default port mapping.
-        if (isset(self::$defaultPortMap[$this->method]) && $this->port === self::$defaultPortMap[$this->method]) {
-            // The old port number was mapped to the default transfer port number, re-map it here.
-            $this->port = $method === null ? null : self::$defaultPortMap[$method];
-        }
-
-        $this->method = $method;
-
-        return $this;
-    }
-
-    /**
-     * @return string|null
+     * @return null|string
      */
     public function getUsername()
     {
@@ -73,19 +55,7 @@ class FtpCredentials
     }
 
     /**
-     * @param string|null $username
-     *
-     * @return $this
-     */
-    public function setUsername($username = null)
-    {
-        $this->username = $username;
-
-        return $this;
-    }
-
-    /**
-     * @return string|null
+     * @return null|string
      */
     public function getPassword()
     {
@@ -93,35 +63,11 @@ class FtpCredentials
     }
 
     /**
-     * @param string|null $password
-     *
-     * @return $this
-     */
-    public function setPassword($password = null)
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    /**
-     * @return string|null
+     * @return null|string
      */
     public function getHost()
     {
         return $this->host;
-    }
-
-    /**
-     * @param string|null $host
-     *
-     * @return $this
-     */
-    public function setHost($host = null)
-    {
-        $this->host = $host;
-
-        return $this;
     }
 
     /**
@@ -133,14 +79,53 @@ class FtpCredentials
     }
 
     /**
-     * @param int|null $port
-     *
-     * @return $this
+     * @param string   $method Transfer method ('ftp' or 'ssh').
+     * @param string   $username
+     * @param string   $password
+     * @param string   $host
+     * @param int|null $port   Set to null to use the default port for the transfer method.
      */
-    public function setPort($port = null)
+    public function set($method, $username, $password, $host = null, $port = null)
     {
-        $this->port = $port;
+        // Since we're relying on this information to be 100% consistent, do additional checks.
+        if ($method !== self::METHOD_FTP && $method !== self::METHOD_SSH) {
+            throw new \InvalidArgumentException('Method must be either "ftp" or "ssh".');
+        }
+        if (!strlen($username)) {
+            throw new \InvalidArgumentException('Username can not be empty.');
+        }
+        if ($port !== null && (!ctype_digit((string)$port) || $port < 0 || $port > 0xffff)) {
+            throw new \InvalidArgumentException('Port must be a null or a number between 0 and 65535.');
+        }
 
-        return $this;
+        $this->method   = $method;
+        $this->username = (string)$username;
+        $this->password = (string)$password;
+        $this->host     = strlen($host) ? (string)$host : 'localhost';
+
+        if ($port === null) {
+            $this->port = self::$defaultPortMap[$method];
+        } else {
+            $this->port = (int)$port;
+        }
+    }
+
+    public function fillWith(FtpCredentials $credentials)
+    {
+        if ($credentials->present()) {
+            $this->set($credentials->getMethod(), $credentials->getUsername(), $credentials->getPassword(), $credentials->getHost(), $credentials->getPort());
+        } else {
+            $this->clear();
+        }
+    }
+
+    public function clear()
+    {
+        $this->method = $this->username = $this->password = $this->host = $this->port = null;
+    }
+
+    public function present()
+    {
+        return $this->method !== null;
     }
 }

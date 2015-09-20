@@ -79,7 +79,7 @@ angular.module('undine.dashboard')
         controller: 'ConnectWebsiteInstructionsController',
         templateUrl: '/page/connect-website/instructions.html',
         resolve: {
-            url: function($state:ng.ui.IStateService, $stateParams:ng.ui.IStateParamsService) {
+            url: function ($state:ng.ui.IStateService, $stateParams:ng.ui.IStateParamsService) {
                 return decodeURIComponent($stateParams['url']);
             }
         }

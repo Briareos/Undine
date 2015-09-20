@@ -8,6 +8,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Constraints\Url;
 use Undine\Api\Command\SiteConnectCommand;
 use Undine\Api\Constraint\Site\EmptyUrlConstraint;
@@ -16,6 +17,7 @@ use Undine\Api\Constraint\Site\UrlInvalidConstraint;
 use Undine\Api\Constraint\Site\UrlTooLongConstraint;
 use Undine\Api\Constraint\SiteConstraint;
 use Undine\Form\Transformer\StringToUriTransformer;
+use Undine\Model\Site\FtpCredentials;
 
 class SiteConnectType extends AbstractType
 {
@@ -54,6 +56,22 @@ class SiteConnectType extends AbstractType
         $builder->add('httpPassword', 'text');
         $builder->add('adminUsername', 'text');
         $builder->add('adminPassword', 'text');
+        $builder->add('ftpMethod', 'choice', [
+            'choices' => [
+                FtpCredentials::METHOD_FTP => 'FTP',
+                FtpCredentials::METHOD_SSH => 'SSH',
+            ],
+        ]);
+        $builder->add('ftpUsername', 'text');
+        $builder->add('ftpPassword', 'text');
+        $builder->add('ftpHost', 'text');
+        $builder->add('ftpPort', 'text', [
+            'constraints' => [
+                new Regex([
+                    'pattern' => '/^\d+$/',
+                ]),
+            ],
+        ]);
     }
 
     /**
@@ -72,7 +90,12 @@ class SiteConnectType extends AbstractType
                     $form->get('httpUsername')->getData(),
                     $form->get('httpPassword')->getData(),
                     $form->get('adminUsername')->getData(),
-                    $form->get('adminPassword')->getData()
+                    $form->get('adminPassword')->getData(),
+                    $form->get('ftpMethod')->getData(),
+                    $form->get('ftpUsername')->getData(),
+                    $form->get('ftpPassword')->getData(),
+                    $form->get('ftpHost')->getData(),
+                    $form->get('ftpPort')->getData()
                 );
             },
         ]);

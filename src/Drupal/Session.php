@@ -3,10 +3,12 @@
 namespace Undine\Drupal;
 
 use GuzzleHttp\Cookie\CookieJarInterface;
+use Undine\Model\Site\FtpCredentials;
+use Undine\Model\Site\HttpCredentials;
 
 
 /**
- * This class complies with RequestOptions, hence the inconsistent return values (sometimes null, sometimes false).
+ * This class complies with RequestOptions, hence the inconsistent return values (sometimes null, other times false).
  * Just making the life easier, I hope.
  *
  * @see RequestOptions
@@ -19,25 +21,25 @@ class Session
     private $cookieJar;
 
     /**
-     * @var string|null
+     * @var HttpCredentials|null
      */
-    private $httpUsername;
+    private $httpCredentials;
 
     /**
-     * @var string|null
+     * @var FtpCredentials|null
      */
-    private $httpPassword;
+    private $ftpCredentials;
 
     /**
      * @param CookieJarInterface|null $cookieJar
-     * @param string|null             $httpUsername
-     * @param string|null             $httpPassword
+     * @param HttpCredentials|null    $httpCredentials
+     * @param FtpCredentials|null     $ftpCredentials
      */
-    public function __construct(CookieJarInterface $cookieJar = null, $httpUsername = null, $httpPassword = null)
+    public function __construct(CookieJarInterface $cookieJar = null, HttpCredentials $httpCredentials = null, FtpCredentials $ftpCredentials = null)
     {
-        $this->cookieJar    = $cookieJar;
-        $this->httpUsername = $httpUsername;
-        $this->httpPassword = $httpPassword;
+        $this->cookieJar       = $cookieJar;
+        $this->httpCredentials = $httpCredentials;
+        $this->ftpCredentials  = $ftpCredentials;
     }
 
     /**
@@ -45,14 +47,22 @@ class Session
      */
     public function getCookieJar()
     {
-        return $this->cookieJar === null ? false : $this->cookieJar;
+        return $this->cookieJar ?: false;
     }
 
     /**
      * @return string[]|null
      */
-    public function getHttpCredentials()
+    public function getAuthData()
     {
-        return strlen($this->httpUsername) ? [$this->httpUsername, $this->httpPassword] : null;
+        return ($this->httpCredentials && $this->httpCredentials->present()) ? [$this->httpCredentials->getUsername(), $this->httpCredentials->getPassword()] : null;
+    }
+
+    /**
+     * @return FtpCredentials|null
+     */
+    public function getFtpCredentials()
+    {
+        return $this->ftpCredentials ?: false;
     }
 }

@@ -10,7 +10,21 @@
             <argument>now</argument>
         </service>
 
+        <service id="undine.drupal_client.middleware.ftp_credentials" class="Undine\Drupal\FtpCredentialsMiddleware" factory-class="Undine\Drupal\FtpCredentialsMiddleware" factory-method="create" public="false">
+        </service>
+
+        <service id="undine.drupal_client.handler" class="GuzzleHttp\HandlerStack" factory-class="GuzzleHttp\HandlerStack" factory-method="create" public="false">
+            <call method="after">
+                <argument>cookies</argument>
+                <argument type="service" id="undine.drupal_client.middleware.ftp_credentials"/>
+                <argument>ftp_credentials</argument>
+            </call>
+        </service>
+
         <service id="undine.drupal_client.guzzle" class="GuzzleHttp\Client" public="false">
+            <argument type="collection">
+                <argument key="handler" type="service" id="undine.drupal_client.handler"/>
+            </argument>
         </service>
 
         <service id="undine.drupal_client" class="Undine\Drupal\Client">
