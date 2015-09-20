@@ -1,6 +1,7 @@
 angular.module('undine.dashboard', ['undine.dashboard.template', 'ui.router', 'ncy-angular-breadcrumb'])
     .config(function ($httpProvider:ng.IHttpProvider) {
         $httpProvider.interceptors.push('AuthenticationInterceptor');
+        $httpProvider.interceptors.push('ConstraintInterceptor');
     })
     .config(function ($breadcrumbProvider) {
         $breadcrumbProvider.setOptions({

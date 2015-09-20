@@ -11,6 +11,8 @@ use Symfony\Component\DomCrawler\Form;
 use Undine\Api\Command\SiteConnectCommand;
 use Undine\Api\Constraint\Site\CanNotInstallOxygenConstraint;
 use Undine\Api\Constraint\Site\CanNotResolveHostConstraint;
+use Undine\Api\Constraint\Site\FtpCredentialsErrorConstraint;
+use Undine\Api\Constraint\Site\FtpCredentialsRequiredConstraint;
 use Undine\Api\Constraint\Site\GotHttpAuthenticationConstraint;
 use Undine\Api\Constraint\Site\HttpAuthenticationFailedConstraint;
 use Undine\Api\Constraint\Site\InvalidCredentialsConstraint;
@@ -18,8 +20,10 @@ use Undine\Api\Constraint\Site\InvalidHttpStatusCodeConstraint;
 use Undine\Api\Constraint\Site\NoResponseConstraint;
 use Undine\Api\Constraint\Site\OxygenAlreadyConnectedConstraint;
 use Undine\Api\Constraint\Site\OxygenNotEnabledConstraint;
+use Undine\Api\Constraint\Site\OxygenPageNotFoundConstraint;
 use Undine\Api\Constraint\Site\ProtocolErrorConstraint;
 use Undine\Api\Exception\ConstraintViolationException;
+use Undine\Api\Exception\RejectedPromiseException;
 use Undine\Api\Result\SiteConnectResult;
 use Undine\Api\Result\SiteLoginResult;
 use Undine\Api\Result\SiteLogoutResult;
@@ -27,9 +31,12 @@ use Undine\AppBundle\Controller\AppController;
 use Undine\Configuration\ApiCommand;
 use Undine\Configuration\ApiResult;
 use Undine\Drupal\Data\ModuleList;
+use Undine\Drupal\Exception\FtpCredentialsErrorException;
+use Undine\Drupal\Exception\FtpCredentialsRequiredException;
 use Undine\Drupal\Exception\InvalidCredentialsException;
 use Undine\Drupal\Exception\LoginFormNotFoundException;
 use Undine\Drupal\Exception\ModulesFormNotFoundException;
+use Undine\Drupal\Exception\OxygenPageNotFoundException;
 use Undine\Drupal\Session;
 use Undine\Event\Events;
 use Undine\Event\SiteDisconnectEvent;
@@ -52,11 +59,11 @@ class SiteController extends AppController
     {
         list($privateKey, $publicKey) = \Undine\Functions\openssl_generate_rsa_key_pair();
         $site = (new Site($command->getUrl(), $this->getUser(), $privateKey, $publicKey))
-            ->setHttpUsername($command->getHttpUsername())
-            ->setHttpPassword($command->getHttpPassword());
+            ->setHttpCredentials($command->getHttpCredentials())
+            ->setFtpCredentials($command->getFtpCredentials());
 
         $drupalClient  = $this->get('undine.drupal_client');
-        $drupalSession = new Session(new CookieJar(), $command->getHttpUsername(), $command->getHttpPassword());
+        $drupalSession = new Session(new CookieJar(), $command->getHttpCredentials(), $command->getFtpCredentials());
         // This promise can be present or not, we create a reference here so we can cancel it if it proves to be unnecessary (ie. we're already connected).
         $findLoginForm = null;
 
@@ -98,7 +105,7 @@ class SiteController extends AppController
                     }
                     // We got admin credentials provided; log in and install the Oxygen module.
                     try {
-                        $drupalClient->login($form, $command->getAdminUsername(), $command->getAdminPassword(), $drupalSession);
+                        $drupalClient->login($form, $command->getAdminCredentials()->getUsername(), $command->getAdminCredentials()->getPassword(), $drupalSession);
                     } catch (InvalidCredentialsException $e) {
                         throw new ConstraintViolationException(new InvalidCredentialsConstraint());
                     }
@@ -118,7 +125,13 @@ class SiteController extends AppController
                     $oxygenModule = $moduleList->find('oxygen');
                     if ($oxygenModule === null) {
                         // Oxygen module is not installed; install it now.
-                        $drupalClient->installExtensionFromUrl($command->getUrl(), $this->getParameter('oxygen_zip_url'), $drupalSession);
+                        try {
+                            $drupalClient->installExtensionFromUrl($command->getUrl(), $this->getParameter('oxygen_zip_url'), $drupalSession);
+                        } catch (FtpCredentialsRequiredException $e) {
+                            throw new ConstraintViolationException(new FtpCredentialsRequiredConstraint());
+                        } catch (FtpCredentialsErrorException $e) {
+                            throw new ConstraintViolationException(new FtpCredentialsErrorConstraint($e->getClientMessage()));
+                        }
                         $modulesForm   = $drupalClient->getModulesForm($command->getUrl(), $drupalSession);
                         $newModuleList = ModuleList::createFromForm($modulesForm);
                         $oxygenModule  = $newModuleList->find('oxygen');
@@ -157,11 +170,15 @@ class SiteController extends AppController
                             throw new ConstraintViolationException(new OxygenAlreadyConnectedConstraint(true, true));
                         }
                         try {
-                            $drupalClient->login($loginForm, $command->getAdminUsername(), $command->getAdminPassword(), $drupalSession);
+                            $drupalClient->login($loginForm, $command->getAdminCredentials()->getUsername(), $command->getAdminCredentials()->getPassword(), $drupalSession);
                         } catch (InvalidCredentialsException $e) {
                             throw new ConstraintViolationException(new InvalidCredentialsConstraint());
                         }
-                        $drupalClient->disconnectOxygen($command->getUrl(), $drupalSession);
+                        try {
+                            $drupalClient->disconnectOxygen($command->getUrl(), $drupalSession);
+                        } catch (OxygenPageNotFoundException $e) {
+                            throw new ConstraintViolationException(new OxygenPageNotFoundConstraint());
+                        }
                         // @todo: Make sure the module is at the latest version.
                         $this->oxygenClient->send($site, new SitePingAction());
                         // Site connection was fully successful.
@@ -170,8 +187,10 @@ class SiteController extends AppController
                         return new SiteConnectResult($site);
                     }
                     // We did not find a login form.
+                    throw new ConstraintViolationException(new OxygenAlreadyConnectedConstraint(true, false));
                 }
                 // We did not look for a login form.
+                throw new ConstraintViolationException(new OxygenAlreadyConnectedConstraint(false, false));
             }
             throw new ConstraintViolationException(new ProtocolErrorConstraint($oxygenException->getCode(), $oxygenException->getType()));
         } elseif ($result[0]['reason'] instanceof RequestException) {
@@ -195,17 +214,18 @@ class SiteController extends AppController
                 }
                 throw new ConstraintViolationException($violation);
             } elseif ($connectException->getResponse()->getStatusCode() === 413 && $connectException->getResponse()->hasHeader('www-authenticate')) {
+                // We got HTTP's "authorization required" page.
                 if ($command->hasHttpCredentials()) {
                     throw new ConstraintViolationException(new HttpAuthenticationFailedConstraint());
                 }
                 throw new ConstraintViolationException(new GotHttpAuthenticationConstraint());
             } else {
+                // We got an invalid (or rather unhandled) HTTP status code.
                 throw new ConstraintViolationException(new InvalidHttpStatusCodeConstraint($connectException->getCode()));
             }
         } else {
             // This is an application-level exception; users should never see them, so don't attempt to silence them here.
-            // @todo: The 'reason' can be anything, not only null or Exception; should wrap it here.
-            throw new \RuntimeException('A promise was rejected with an unexpected exception.', 0, $result[0]['reason']);
+            throw new \RuntimeException('A promise was rejected with an unexpected exception.', 0, RejectedPromiseException::wrap($result[0]['reason']));
         }
     }
 

@@ -5,6 +5,7 @@ namespace Undine\Model;
 use Doctrine\Common\Collections\ArrayCollection;
 use Psr\Http\Message\UriInterface;
 use Undine\Model\Site\FtpCredentials;
+use Undine\Model\Site\HttpCredentials;
 use Undine\Model\Site\SiteState;
 use Undine\Uid\UidInterface;
 use Undine\Uid\UidTrait;
@@ -49,6 +50,11 @@ class Site implements UidInterface
     private $ftpCredentials;
 
     /**
+     * @var HttpCredentials
+     */
+    private $httpCredentials;
+
+    /**
      * @var SiteExtension[]
      */
     private $siteExtensions;
@@ -57,16 +63,6 @@ class Site implements UidInterface
      * @var SiteUpdate[]
      */
     private $siteUpdates;
-
-    /**
-     * @var string|null
-     */
-    private $httpUsername;
-
-    /**
-     * @var string|null
-     */
-    private $httpPassword;
 
     /**
      * @var \DateTime
@@ -86,14 +82,15 @@ class Site implements UidInterface
      */
     public function __construct(UriInterface $url, User $user, $privateKey, $publicKey)
     {
-        $this->url            = $url;
-        $this->user           = $user;
-        $this->privateKey     = $privateKey;
-        $this->publicKey      = $publicKey;
-        $this->siteState      = new SiteState();
-        $this->ftpCredentials = new FtpCredentials();
-        $this->siteExtensions = new ArrayCollection();
-        $this->siteUpdates    = new ArrayCollection();
+        $this->url             = $url;
+        $this->user            = $user;
+        $this->privateKey      = $privateKey;
+        $this->publicKey       = $publicKey;
+        $this->siteState       = new SiteState();
+        $this->ftpCredentials  = new FtpCredentials();
+        $this->httpCredentials = new HttpCredentials();
+        $this->siteExtensions  = new ArrayCollection();
+        $this->siteUpdates     = new ArrayCollection();
     }
 
     /**
@@ -157,11 +154,67 @@ class Site implements UidInterface
     }
 
     /**
+     * @return bool
+     */
+    public function hasFtpCredentials()
+    {
+        return $this->ftpCredentials->present();
+    }
+
+    /**
      * @return FtpCredentials
      */
     public function getFtpCredentials()
     {
         return $this->ftpCredentials;
+    }
+
+    /**
+     * @param FtpCredentials|null $credentials
+     *
+     * @return $this
+     */
+    public function setFtpCredentials(FtpCredentials $credentials = null)
+    {
+        if ($credentials === null) {
+            $this->ftpCredentials->clear();
+        } else {
+            $this->ftpCredentials->fillWith($credentials);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasHttpCredentials()
+    {
+        return $this->httpCredentials->present();
+    }
+
+    /**
+     * @return HttpCredentials
+     */
+    public function getHttpCredentials()
+    {
+        return $this->httpCredentials;
+    }
+
+    /**
+     * @param HttpCredentials|null $credentials
+     *
+     * @return $this
+     */
+    public function setHttpCredentials(HttpCredentials $credentials = null)
+    {
+        if ($credentials === null) {
+            $this->httpCredentials->clear();
+        } else {
+            $this->httpCredentials->fillWith($credentials);
+        }
+
+        return $this;
     }
 
     /**
@@ -200,46 +253,6 @@ class Site implements UidInterface
     public function setSiteUpdates(array $siteUpdates)
     {
         $this->siteUpdates = new ArrayCollection($siteUpdates);
-
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getHttpUsername()
-    {
-        return $this->httpUsername;
-    }
-
-    /**
-     * @param string|null $httpUsername
-     *
-     * @return $this
-     */
-    public function setHttpUsername($httpUsername = null)
-    {
-        $this->httpUsername = $httpUsername;
-
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getHttpPassword()
-    {
-        return $this->httpPassword;
-    }
-
-    /**
-     * @param string|null $httpPassword
-     *
-     * @return $this
-     */
-    public function setHttpPassword($httpPassword = null)
-    {
-        $this->httpPassword = $httpPassword;
 
         return $this;
     }

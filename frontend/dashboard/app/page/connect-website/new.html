@@ -6,11 +6,11 @@
 
     <div class="field">
         <label for="site-url">Website URL</label>
-        <input type="text" name="url" id="site-url" placeholder="http://example.com" ng-model="newFormData.url" autofocus>
+        <input required type="text" name="url" id="site-url" placeholder="http://example.com" ng-model="newFormData.url" autofocus>
     </div>
 
-    <button class="ui submit button">
-        <i class="right chevron icon"></i>
+    <button class="ui primary labeled icon submit button" ng-class="{loading:newFormLoading}">
+        <i class="linkify icon"></i>
         Connect Website
     </button>
 

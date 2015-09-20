@@ -11,6 +11,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\DomCrawler\Form;
+use Undine\Drupal\Exception\FtpCredentialsErrorException;
+use Undine\Drupal\Exception\FtpCredentialsRequiredException;
 use Undine\Drupal\Exception\InstallExtensionException;
 use Undine\Drupal\Exception\InvalidCredentialsException;
 use Undine\Drupal\Exception\LoginFormNotFoundException;
@@ -59,7 +61,7 @@ class Client
     {
         return $this->client->getAsync($url->withQuery(\GuzzleHttp\Psr7\build_query(['q' => 'user/login'])), [
             RequestOptions::COOKIES => $session->getCookieJar(),
-            RequestOptions::AUTH    => $session->getHttpCredentials(),
+            RequestOptions::AUTH    => $session->getAuthData(),
         ])
             ->then(function (ResponseInterface $response) use ($url) {
                 $crawler = new Crawler((string)$response->getBody(), (string)$url);
@@ -105,7 +107,7 @@ class Client
 
         return $this->client->requestAsync($form->getMethod(), $form->getUri(), [
             RequestOptions::COOKIES         => $session->getCookieJar(),
-            RequestOptions::AUTH            => $session->getHttpCredentials(),
+            RequestOptions::AUTH            => $session->getAuthData(),
             RequestOptions::FORM_PARAMS     => $form->getPhpValues(),
             RequestOptions::HEADERS         => [
                 'referer' => $form->getUri(),
@@ -143,11 +145,11 @@ class Client
      * @throws RequestException
      * @throws ModulesFormNotFoundException
      */
-    private function getModulesFormAsync(UriInterface $url, Session $session)
+    public function getModulesFormAsync(UriInterface $url, Session $session)
     {
         return $this->client->getAsync($url->withQuery(\GuzzleHttp\Psr7\build_query(['q' => 'admin/modules'])), [
             RequestOptions::COOKIES => $session->getCookieJar(),
-            RequestOptions::AUTH    => $session->getHttpCredentials(),
+            RequestOptions::AUTH    => $session->getAuthData(),
         ])->then(function (ResponseInterface $response) use ($url) {
             $crawler = new Crawler((string)$response->getBody(), (string)$url);
             try {
@@ -163,6 +165,8 @@ class Client
      * @param string  $package
      * @param string  $slug
      * @param Session $session
+     *
+     * @throws RequestException
      */
     public function enableModule(Form $form, $package, $slug, Session $session)
     {
@@ -176,6 +180,8 @@ class Client
      * @param Session $session
      *
      * @return Promise Resolves to null.
+     *
+     * @throws RequestException
      */
     public function enableModuleAsync(Form $form, $package, $slug, Session $session)
     {
@@ -190,7 +196,7 @@ class Client
 
         return $this->client->requestAsync($form->getMethod(), $form->getUri(), [
             RequestOptions::COOKIES         => $session->getCookieJar(),
-            RequestOptions::AUTH            => $session->getHttpCredentials(),
+            RequestOptions::AUTH            => $session->getAuthData(),
             RequestOptions::FORM_PARAMS     => $formData,
             RequestOptions::HEADERS         => [
                 'referer' => $form->getUri(),
@@ -206,6 +212,8 @@ class Client
      * @param string  $package
      * @param string  $slug
      * @param Session $session
+     *
+     * @throws RequestException
      */
     public function disableModule(Form $form, $package, $slug, Session $session)
     {
@@ -219,6 +227,8 @@ class Client
      * @param Session $session
      *
      * @return Promise Resolves to null.
+     *
+     * @throws RequestException
      */
     public function disableModuleAsync(Form $form, $package, $slug, Session $session)
     {
@@ -233,7 +243,7 @@ class Client
 
         return $this->client->requestAsync($form->getMethod(), $form->getUri(), [
             RequestOptions::COOKIES         => $session->getCookieJar(),
-            RequestOptions::AUTH            => $session->getHttpCredentials(),
+            RequestOptions::AUTH            => $session->getAuthData(),
             RequestOptions::FORM_PARAMS     => $formData,
             RequestOptions::HEADERS         => [
                 'referer' => $form->getUri(),
@@ -248,6 +258,10 @@ class Client
      * @param UriInterface $url
      * @param string       $extensionUrl
      * @param Session      $session
+     *
+     * @throws RequestException
+     * @throws FtpCredentialsRequiredException
+     * @throws FtpCredentialsErrorException
      */
     public function installExtensionFromUrl(UriInterface $url, $extensionUrl, Session $session)
     {
@@ -260,12 +274,16 @@ class Client
      * @param Session      $session
      *
      * @return Promise Resolves to null.
+     *
+     * @throws RequestException
+     * @throws FtpCredentialsRequiredException
+     * @throws FtpCredentialsErrorException
      */
     public function installExtensionFromUrlAsync(UriInterface $url, $extensionUrl, Session $session)
     {
         return $this->client->getAsync($url->withQuery(\GuzzleHttp\Psr7\build_query(['q' => 'admin/modules/install'])), [
             RequestOptions::COOKIES => $session->getCookieJar(),
-            RequestOptions::AUTH    => $session->getHttpCredentials(),
+            RequestOptions::AUTH    => $session->getAuthData(),
         ])->then(function (ResponseInterface $response) use ($url, $extensionUrl, $session) {
             $crawler = new Crawler((string)$response->getBody(), (string)$url);
             try {
@@ -277,12 +295,13 @@ class Client
             }
 
             return $this->client->requestAsync($form->getMethod(), $form->getUri(), [
-                RequestOptions::COOKIES     => $session->getCookieJar(),
-                RequestOptions::AUTH        => $session->getHttpCredentials(),
-                RequestOptions::HEADERS     => [
+                RequestOptions::COOKIES        => $session->getCookieJar(),
+                RequestOptions::AUTH           => $session->getAuthData(),
+                RequestOptions::HEADERS        => [
                     'referer' => $form->getUri(),
                 ],
-                RequestOptions::FORM_PARAMS => $form->getPhpValues(),
+                RequestOptions::FORM_PARAMS    => $form->getPhpValues(),
+                ClientOptions::FTP_CREDENTIALS => $session->getFtpCredentials(),
             ]);
         })->then(function (ResponseInterface $response) use ($session) {
             // Drupal uses batch processing when installing extensions, so follow the regular user steps.
@@ -295,7 +314,8 @@ class Client
 
                 return $this->client->getAsync(html_entity_decode($matches[2]), [
                     RequestOptions::COOKIES => $session->getCookieJar(),
-                    RequestOptions::AUTH    => $session->getHttpCredentials(),
+                    RequestOptions::AUTH    => $session->getAuthData(),
+                    // Most of the time (always?), delay will be 0, but respect it either way.
                     RequestOptions::DELAY   => (int)$matches[1] * 1000,
                 ]);
             };
@@ -306,7 +326,7 @@ class Client
                 if ($response !== null) {
                     $promises->append($generateRequest($response));
                 }
-                // Resolve to null.
+                // Resolve to null when there are no more responses generated, or more specifically, we get FulfilledPromise(null) from above.
             });
         });
     }
@@ -316,6 +336,9 @@ class Client
      * @param Session      $session
      *
      * @return bool True if the module was just disconnected, false if it was already disconnected.
+     *
+     * @throws RequestException
+     * @throws OxygenPageNotFoundException
      */
     public function disconnectOxygen(UriInterface $url, Session $session)
     {
@@ -327,12 +350,15 @@ class Client
      * @param Session      $session
      *
      * @return Promise Resolves to boolean.
+     *
+     * @throws RequestException
+     * @throws OxygenPageNotFoundException
      */
-    private function disconnectOxygenAsync(UriInterface $url, Session $session)
+    public function disconnectOxygenAsync(UriInterface $url, Session $session)
     {
         return $this->client->getAsync($url->withQuery(\GuzzleHttp\Psr7\build_query(['q' => 'admin/config/oxygen/disconnect'])), [
             RequestOptions::COOKIES => $session->getCookieJar(),
-            RequestOptions::AUTH    => $session->getHttpCredentials(),
+            RequestOptions::AUTH    => $session->getAuthData(),
         ])->then(function (ResponseInterface $response) use ($url, $session) {
             $crawler = new Crawler((string)$response->getBody(), (string)$url);
             try {
@@ -340,7 +366,7 @@ class Client
                 if ($form->get('oxygen_connected')->getValue() === 'yes') {
                     return $this->client->requestAsync($form->getMethod(), $form->getUri(), [
                         RequestOptions::COOKIES     => $session->getCookieJar(),
-                        RequestOptions::AUTH        => $session->getHttpCredentials(),
+                        RequestOptions::AUTH        => $session->getAuthData(),
                         RequestOptions::HEADERS     => [
                             'referer' => $form->getUri(),
                         ],
