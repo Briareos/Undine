@@ -2,7 +2,7 @@
 
 namespace Undine\Api\Constraint;
 
-final class SiteConstraint extends AbstractConstraint
+final class SiteConstraint
 {
     const URL_BLANK = 'site.url_blank';
     const URL_INVALID = 'site.url_invalid';

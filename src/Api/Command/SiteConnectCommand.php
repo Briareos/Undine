@@ -12,6 +12,11 @@ class SiteConnectCommand extends AbstractCommand
     private $url;
 
     /**
+     * @var bool
+     */
+    private $checkUrl;
+
+    /**
      * @var string|null
      */
     private $httpUsername;
@@ -25,7 +30,6 @@ class SiteConnectCommand extends AbstractCommand
      * @var string|null
      */
     private $adminUsername;
-
     /**
      * @var string|null
      */
@@ -33,14 +37,16 @@ class SiteConnectCommand extends AbstractCommand
 
     /**
      * @param UriInterface $url
+     * @param bool         $checkUrl
      * @param string|null  $httpUsername
      * @param string|null  $httpPassword
      * @param string|null  $adminUsername
      * @param string|null  $adminPassword
      */
-    public function __construct($url, $httpUsername = null, $httpPassword = null, $adminUsername = null, $adminPassword = null)
+    public function __construct($url, $checkUrl = false, $httpUsername = null, $httpPassword = null, $adminUsername = null, $adminPassword = null)
     {
         $this->url           = $url;
+        $this->checkUrl      = $checkUrl;
         $this->httpUsername  = $httpUsername;
         $this->httpPassword  = $httpPassword;
         $this->adminUsername = $adminUsername;
@@ -53,6 +59,14 @@ class SiteConnectCommand extends AbstractCommand
     public function getUrl()
     {
         return $this->url;
+    }
+
+    /**
+     * @return bool
+     */
+    public function checkUrl()
+    {
+        return $this->checkUrl;
     }
 
     /**

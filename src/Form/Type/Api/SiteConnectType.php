@@ -10,6 +10,10 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Url;
 use Undine\Api\Command\SiteConnectCommand;
+use Undine\Api\Constraint\Site\EmptyUrlConstraint;
+use Undine\Api\Constraint\Site\UrlEmptyConstraint;
+use Undine\Api\Constraint\Site\UrlInvalidConstraint;
+use Undine\Api\Constraint\Site\UrlTooLongConstraint;
 use Undine\Api\Constraint\SiteConstraint;
 use Undine\Form\Transformer\StringToUriTransformer;
 
@@ -31,20 +35,21 @@ class SiteConnectType extends AbstractType
         $builder->add('url', 'url', [
             'constraints'     => [
                 new NotBlank([
-                    'message' => SiteConstraint::URL_BLANK,
+                    'message' => new UrlEmptyConstraint(),
                 ]),
                 new Url([
-                    'message'    => SiteConstraint::URL_INVALID,
+                    'message' => new UrlInvalidConstraint(),
                 ]),
                 new Length([
                     'max'        => 255,
-                    'maxMessage' => SiteConstraint::URL_TOO_LONG,
+                    'maxMessage' => new UrlTooLongConstraint(),
                 ]),
             ],
             'invalid_message' => SiteConstraint::URL_INVALID,
         ]);
         $builder->get('url')->addViewTransformer(new StringToUriTransformer());
 
+        $builder->add('checkUrl', 'checkbox');
         $builder->add('httpUsername', 'text');
         $builder->add('httpPassword', 'text');
         $builder->add('adminUsername', 'text');
@@ -63,6 +68,7 @@ class SiteConnectType extends AbstractType
             'empty_data' => function (FormInterface $form) {
                 return new SiteConnectCommand(
                     $form->get('url')->getData(),
+                    $form->get('checkUrl')->getData(),
                     $form->get('httpUsername')->getData(),
                     $form->get('httpPassword')->getData(),
                     $form->get('adminUsername')->getData(),

@@ -276,8 +276,8 @@ class OxygenException extends ProtocolException
             throw new InvalidBodyException(sprintf('%s.message should be a string, got %s.', $path, gettype($responseData['message'])), $request, $response, null, $requestOptions);
         }
 
-        if (!isset($responseData['code']) || !is_int($responseData['code'])) {
-            throw new InvalidBodyException(sprintf('%s.code should be an integer, got %s.', $path, gettype($responseData['code'])), $request, $response, null, $requestOptions);
+        if (!isset($responseData['code']) || is_array($responseData['code'])) {
+            throw new InvalidBodyException(sprintf('%s.code should not be an array.', $path), $request, $response, null, $requestOptions);
         }
 
         if (isset($responseData['file']) && !is_string($responseData['file'])) {

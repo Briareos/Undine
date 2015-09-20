@@ -24,3 +24,5 @@ parameters:
     domain:                 managedrupal.com
 
     mailer_no_reply_address: no-reply@%domain%
+
+    oxygen_zip_url: https://www.dropbox.com/s/gfm8qzaowqsut7s/oxygen.zip?dl=1

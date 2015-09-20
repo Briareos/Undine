@@ -2,9 +2,21 @@
 
 namespace Undine\Api\Constraint;
 
-class AbstractConstraint implements ConstraintInterface
+abstract class AbstractConstraint implements ConstraintInterface
 {
-    private function __construct()
+    /**
+     * {@inheritdoc}
+     */
+    public function getData()
     {
+        return [];
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getName();
     }
 }
