@@ -12,6 +12,10 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
+use Undine\Api\Constraint\ConstraintInterface;
+use Undine\Api\Constraint\Security\BadCredentialsConstraint;
+use Undine\Api\Constraint\Security\NotAuthenticatedConstraint;
+use Undine\Api\Constraint\Security\NotAuthorizedConstraint;
 use Undine\Api\Constraint\SecurityConstraint;
 use Undine\Api\Exception\CommandInvalidException;
 use Undine\Api\Exception\ConstraintViolationException;
@@ -84,25 +88,34 @@ class ApiResultListener implements EventSubscriberInterface
         if ($exception instanceof CommandInvalidException) {
             $data += ['error' => $exception->getForm()->getErrors(true)->current()->getMessage(), 'verbose' => $exception->getForm()->getErrors(true, true)->__toString()];
         } elseif ($exception instanceof ConstraintViolationException) {
-            $data += ['error' => $exception->getConstraintId()];
+            $this->mergeConstraintData($data, $exception->getConstraint());
         } elseif ($exception instanceof UsernameNotFoundException) {
-            $data += ['error' => SecurityConstraint::BAD_CREDENTIALS];
+            $this->mergeConstraintData($data, new BadCredentialsConstraint());
         } elseif ($exception instanceof AccessDeniedException) {
             if ($this->tokenStorage->getToken() && $this->tokenStorage->getToken()->getRoles()) {
-                $data += ['error' => SecurityConstraint::NOT_AUTHORIZED];
+                $this->mergeConstraintData($data, new NotAuthorizedConstraint());
             } else {
-                $data += ['error' => SecurityConstraint::NOT_AUTHENTICATED];
+                $this->mergeConstraintData($data, new NotAuthenticatedConstraint());
             }
-        } elseif ($exception instanceof InvalidBodyException) {
-            //xdebug_break();
-            return;
         } else {
+            // Show full exceptions for now.
             return;
-            $data += ['error' => $exception->getMessage()];
         }
 
         $response = new JsonResponse(array_merge(['ok' => false], $data), 200, ['x-status-code' => 200]);
 
         $event->setResponse($response);
+    }
+
+    /**
+     * @param array               $data
+     * @param ConstraintInterface $constraint
+     */
+    private function mergeConstraintData(array &$data, ConstraintInterface $constraint)
+    {
+        $data['error'] = $constraint->getName();
+        if ($constraint->getData()) {
+            $data = array_merge($data, $constraint->getData());
+        }
     }
 }

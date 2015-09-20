@@ -9,7 +9,7 @@ angular.module('undine.dashboard')
             // temporarily disabled
             return;
 
-            if (Dashboard.sites.length || toState.name === 'add-website') {
+            if (Dashboard.sites.length || toState.name === 'connectWebsite') {
                 return;
             }
 
@@ -20,6 +20,6 @@ angular.module('undine.dashboard')
             }
 
             $event.preventDefault();
-            $state.go('add-website');
+            $state.go('connectWebsite.new');
         });
     });

@@ -12,17 +12,18 @@ use Symfony\Component\Form\FormTypeInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Undine\Email\EmailFactory;
 use Undine\Model\User;
-use Undine\Oxygen\Client;
+use Undine\Oxygen\Client as OxygenClient;
 use Undine\Oxygen\LoginUrlGenerator;
 use Undine\Repository\StaffRepository;
 use Undine\Repository\UserRepository;
+use Undine\Security\Authentication\Token\ApiToken;
 
 /**
  * @property EntityManager            $em
  * @property UserRepository           $userRepository
  * @property StaffRepository          $staffRepository
  * @property EventDispatcherInterface $dispatcher
- * @property Client                   $oxygenClient
+ * @property OxygenClient             $oxygenClient
  * @property LoginUrlGenerator        $oxygenLoginUrlGenerator
  * @property \DateTime                $currentTime
  * @property EmailFactory             $emailFactory
@@ -97,5 +98,13 @@ abstract class AppController extends Controller
     protected function createNamedFormBuilder($name, $data = null, array $options = [])
     {
         return $this->get('form.factory')->createNamedBuilder($name, 'form', $data, $options);
+    }
+
+    /**
+     * @return bool Whether the current call is stateless (should not use sessions).
+     */
+    protected function isStateless()
+    {
+        return ($this->get('security.token_storage')->getToken() instanceof ApiToken);
     }
 }

@@ -26,6 +26,7 @@
         </one-to-many>
 
         <embedded name="siteState" class="Undine\Model\Site\SiteState" column-prefix="state_"/>
+        <embedded name="ftpCredentials" class="Undine\Model\Site\FtpCredentials" column-prefix="ftp_"/>
 
     </entity>
 

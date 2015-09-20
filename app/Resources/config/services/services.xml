@@ -10,6 +10,13 @@
             <argument>now</argument>
         </service>
 
+        <service id="undine.drupal_client.guzzle" class="GuzzleHttp\Client" public="false">
+        </service>
+
+        <service id="undine.drupal_client" class="Undine\Drupal\Client">
+            <argument type="service" id="undine.drupal_client.guzzle"/>
+        </service>
+
         <service id="web_debug_toolbar.angular_profiler" class="Undine\AppBundle\DataCollector\AngularDataCollector">
             <tag name="data_collector" template="views/toolbar/angular.html.twig" id="angular"/>
         </service>
