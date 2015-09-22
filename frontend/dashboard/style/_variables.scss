@@ -1,7 +1,8 @@
 /**
  Layout
  **/
-$sidebarWidth: 128px;
+$sidebarWidth: 110px;
+$sidebarItemHeight: 100px;
 $sitePickerWidth: 295px;
 $headerHeight: 75px;
 /**
@@ -9,10 +10,12 @@ $headerHeight: 75px;
  **/
 
 // Sidebar
-$sidebarBackgroundColor: #303c45;
-$sidebarTextColor: white;
-$sidebarLinkHoverColor: #ededed;
+$sidebarItemActiveBackgroundColor: #207fc7;
+$sidebarItemHoverBackgroundColor: #1678c2;
+$sidebarBackgroundColor: #313541;
+$sidebarTextColor: #6a7582;
+$sidebarLinkHoverColor: white;
 
 // Site picker
-$sitePickerBackgroundColor: #283037;
+$sitePickerBackgroundColor: #282c37;
 $sitePickerTextColor: white;
