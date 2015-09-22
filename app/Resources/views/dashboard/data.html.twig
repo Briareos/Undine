@@ -2,6 +2,8 @@
     window.appData = {
         apiUrl: {{ (app.request.baseUrl~'/api/')|json_encode|raw }},
         logoutUrl: {{ logout_url('web')|json_encode|raw }},
-        currentUser: {{ render(controller('AppBundle:Api/Api:me',{'include':'sites,sites.state,sites.modules,sites.themes,sites.coreUpdates,sites.moduleUpdates,sites.themeUpdates'})) }}.user
+        currentUser: {{ render(controller('AppBundle:Api/Api:me',{'include':'sites,sites.state,sites.modules,sites.themes,sites.coreUpdates,sites.moduleUpdates,sites.themeUpdates'})) }}.user,
+        brand: {{ brand|json_encode|raw }},
+        oxygenZipUrl: {{ oxygenZipUrl|json_encode|raw }}
     }
 </script>

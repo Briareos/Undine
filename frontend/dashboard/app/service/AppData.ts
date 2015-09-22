@@ -1,7 +1,8 @@
 interface AppData {
-    apiUrl: string;
-    logoutUrl: string;
-    currentUser: User;
+    apiUrl: string
+    logoutUrl: string
+    currentUser: User
+    oxygenZipUrl: string
 }
 
 angular.module('undine.dashboard')

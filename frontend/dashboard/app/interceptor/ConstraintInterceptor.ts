@@ -12,6 +12,21 @@ angular.module('undine.dashboard')
                     case 'site.already_connected':
                         response.data = new AlreadyConnectedConstraint(response.data);
                         break;
+                    case 'site.invalid_credentials':
+                        response.data = new InvalidCredentialsConstraint(response.data);
+                        break;
+                    case 'site.oxygen_not_enabled':
+                        response.data = new OxygenNotEnabledConstraint(response.data);
+                        break;
+                    case 'site.ftp_credentials_required':
+                        response.data = new FtpCredentialsRequiredConstraint(response.data);
+                        break;
+                    case 'site.ftp_credentials_error':
+                        response.data = new FtpCredentialsErrorConstraint(response.data);
+                        break;
+                    case 'site.can_not_install_oxygen':
+                        response.data = new CanNotInstallOxygenConstraint(response.data);
+                        break;
                     default:
                         response.data = new Constraint(response.data);
                 }

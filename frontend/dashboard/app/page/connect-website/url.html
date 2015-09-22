@@ -1,0 +1,17 @@
+<form class="ui form" ng-submit="urlFormSubmit(urlForm)" name="urlForm">
+
+    <p>
+        Enter the URL of the website you would like to connect to the dashboard.
+    </p>
+
+    <div class="field">
+        <label for="site-url">Website URL</label>
+        <input required type="text" name="url" id="site-url" placeholder="http://example.com" ng-model="urlFormData.url" autofocus>
+    </div>
+
+    <button class="ui primary labeled icon submit button" ng-class="{loading:urlFormLoading}" ng-disabled="urlFormLoading">
+        <i class="linkify icon"></i>
+        Connect Website
+    </button>
+
+</form>

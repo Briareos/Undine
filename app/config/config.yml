@@ -38,6 +38,7 @@ twig:
     globals:
         domain: %domain%
         brand: %brand%
+        oxygenZipUrl: %oxygen_zip_url%
 
 # Doctrine Configuration
 doctrine:

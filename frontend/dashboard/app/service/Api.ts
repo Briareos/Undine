@@ -6,7 +6,7 @@ class Api {
         return this.$http.post(this.endpoint + command, parameters);
     }
 
-    siteConnect(url:string, checkUrl:boolean, httpUsername?:string, httpPassword?:string, adminUsername?:string, adminPassword?:string, ftpMethod?:string, ftpUsername?:string, ftpPassword?:string, ftpHost?:string, ftpPort?:number):ng.IHttpPromise<SiteConnectResult> {
+    siteConnect(url:string, checkUrl:boolean=false, httpUsername?:string, httpPassword?:string, adminUsername?:string, adminPassword?:string, ftpMethod?:string, ftpUsername?:string, ftpPassword?:string, ftpHost?:string, ftpPort?:number):ng.IHttpPromise<SiteConnectResult> {
         return this.command('site.connect', {
             url: url,
             checkUrl: checkUrl,

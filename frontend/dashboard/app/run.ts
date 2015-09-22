@@ -20,6 +20,6 @@ angular.module('undine.dashboard')
             }
 
             $event.preventDefault();
-            $state.go('connectWebsite.new');
+            $state.go('connectWebsite.url');
         });
     });

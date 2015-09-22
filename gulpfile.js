@@ -197,7 +197,7 @@ function buildDashboardTypescript() {
 
     return gulp.src([
         './frontend/bower_components/jquery/dist/jquery.min.js',
-        './frontend/bower_components/angularjs/angular.min.js',
+        './frontend/bower_components/angular/angular.min.js',
         './frontend/bower_components/angular-ui-router/release/angular-ui-router.min.js',
         './frontend/bower_components/angular-breadcrumb/dist/angular-breadcrumb.js',
         './var/tmp/semantic-ui/semantic.min.js',
@@ -243,7 +243,7 @@ function buildAdminTypescript() {
 
     return gulp.src([
         './frontend/bower_components/jquery/dist/jquery.min.js',
-        './frontend/bower_components/angularjs/angular.min.js',
+        './frontend/bower_components/angular/angular.min.js',
         './var/tmp/semantic-ui/semantic.min.js',
         './frontend/bower_components/lodash/lodash.min.js',
         './frontend/admin/app/**/*.html',
@@ -286,7 +286,7 @@ function buildWebTypescript() {
 
     return gulp.src([
         './frontend/bower_components/jquery/dist/jquery.min.js',
-        './frontend/bower_components/angularjs/angular.min.js',
+        './frontend/bower_components/angular/angular.min.js',
         './frontend/bower_components/lodash/lodash.min.js',
         './var/tmp/semantic-ui/semantic.min.js',
         './frontend/web/app/**/*.html',

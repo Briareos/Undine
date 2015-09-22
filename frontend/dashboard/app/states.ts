@@ -76,16 +76,16 @@ angular.module('undine.dashboard')
         },
         abstract: true
     })
-        .state('connectWebsite.new', {
+        .state('connectWebsite.url', {
         // Empty URL will make the state take the URL of the parent.
         url: '',
-        controller: 'ConnectWebsiteNewController',
-        templateUrl: '/page/connect-website/new.html',
+        controller: 'ConnectWebsiteUrlController',
+        templateUrl: '/page/connect-website/url.html',
     })
-        .state('connectWebsite.instructions', {
-        url: '/instructions?url&lookedForLoginForm&loginFormFound&alreadyConnected',
-        controller: 'ConnectWebsiteInstructionsController',
-        templateUrl: '/page/connect-website/instructions.html',
+        .state('connectWebsite.reconnect', {
+        url: '/reconnect?url&lookedForLoginForm&loginFormFound',
+        controller: 'ReconnectWebsiteController',
+        templateUrl: '/page/connect-website/reconnect.html',
         resolve: {
             url: function ($stateParams:ng.ui.IStateParamsService) {
                 return decodeURIComponent($stateParams['url']);
@@ -95,9 +95,22 @@ angular.module('undine.dashboard')
             },
             loginFormFound: function($stateParams:ng.ui.IStateParamsService) {
                 return $stateParams['loginFormFound'] === 'true';
+            }
+        }
+    })
+        .state('connectWebsite.new', {
+        url: '/new?url&lookedForLoginForm&loginFormFound',
+        controller: 'ConnectWebsiteNewController',
+        templateUrl: '/page/connect-website/new.html',
+        resolve: {
+            url: function ($stateParams:ng.ui.IStateParamsService) {
+                return decodeURIComponent($stateParams['url']);
             },
-            alreadyConnected: function($stateParams:ng.ui.IStateParamsService) {
-                return $stateParams['alreadyConnected'] === 'true';
+            lookedForLoginForm: function($stateParams:ng.ui.IStateParamsService) {
+                return $stateParams['lookedForLoginForm'] === 'true';
+            },
+            loginFormFound: function($stateParams:ng.ui.IStateParamsService) {
+                return $stateParams['loginFormFound'] === 'true';
             }
         }
     })

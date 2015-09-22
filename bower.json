@@ -1,7 +1,7 @@
 {
     "name": "undine",
     "dependencies": {
-        "angularjs": "~1.4.4",
+        "angular": "~1.4.6",
         "angular-ui-router": "~0.2.15",
         "angular-breadcrumb": "~0.4.1",
         "lodash": "~3.10.1",

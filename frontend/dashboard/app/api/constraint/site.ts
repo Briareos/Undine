@@ -3,7 +3,6 @@ class CanNotInstallOxygenConstraint extends Constraint {
     static STEP_SEARCH_UPDATE_MODULE = 'search_update_module';
     static STEP_SEARCH_OXYGEN_MODULE = 'search_oxygen_module';
 
-    // One of CanNotInstallOxygenConstraintStep.
     get step():string {
         return this.data.step;
     }
@@ -16,5 +15,27 @@ class AlreadyConnectedConstraint extends Constraint {
 
     get loginFormFound():boolean {
         return this.data.loginFormFound;
+    }
+}
+
+class InvalidCredentialsConstraint extends Constraint {
+}
+
+class OxygenNotEnabledConstraint extends Constraint {
+    get lookedForLoginForm():boolean {
+        return this.data.lookedForLoginForm;
+    }
+
+    get loginFormFound():boolean {
+        return this.data.loginFormFound;
+    }
+}
+
+class FtpCredentialsRequiredConstraint extends Constraint {
+}
+
+class FtpCredentialsErrorConstraint extends Constraint {
+    get ftpError():string {
+        return this.data.ftpError;
     }
 }

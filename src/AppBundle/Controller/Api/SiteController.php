@@ -142,6 +142,12 @@ class SiteController extends AppController
                     if (!$oxygenModule->isEnabled()) {
                         $drupalClient->enableModule($modulesForm, $oxygenModule->getPackage(), $oxygenModule->getSlug(), $drupalSession);
                     }
+                    try {
+                        // The module might have already been connected to an account - clear its key.
+                        $drupalClient->disconnectOxygen($command->getUrl(), $drupalSession);
+                    } catch (OxygenPageNotFoundException $e) {
+                        throw new ConstraintViolationException(new OxygenPageNotFoundConstraint());
+                    }
                     // @todo: Make sure the module is at the latest version.
                     $this->oxygenClient->send($site, new SitePingAction());
                     // Site connection was fully successful.
