@@ -90,10 +90,10 @@ angular.module('undine.dashboard')
             url: function ($stateParams:ng.ui.IStateParamsService) {
                 return decodeURIComponent($stateParams['url']);
             },
-            lookedForLoginForm: function($stateParams:ng.ui.IStateParamsService) {
+            lookedForLoginForm: function ($stateParams:ng.ui.IStateParamsService) {
                 return $stateParams['lookedForLoginForm'] === 'true';
             },
-            loginFormFound: function($stateParams:ng.ui.IStateParamsService) {
+            loginFormFound: function ($stateParams:ng.ui.IStateParamsService) {
                 return $stateParams['loginFormFound'] === 'true';
             }
         }
@@ -114,10 +114,10 @@ angular.module('undine.dashboard')
             url: function ($stateParams:ng.ui.IStateParamsService) {
                 return decodeURIComponent($stateParams['url']);
             },
-            lookedForLoginForm: function($stateParams:ng.ui.IStateParamsService) {
+            lookedForLoginForm: function ($stateParams:ng.ui.IStateParamsService) {
                 return $stateParams['lookedForLoginForm'] === 'true';
             },
-            loginFormFound: function($stateParams:ng.ui.IStateParamsService) {
+            loginFormFound: function ($stateParams:ng.ui.IStateParamsService) {
                 return $stateParams['loginFormFound'] === 'true';
             }
         },
