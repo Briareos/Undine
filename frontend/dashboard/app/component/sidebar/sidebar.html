@@ -1,28 +1,20 @@
 <div class="sidebar">
-    <a ui-sref="account" ui-sref-active class="user avatar">
-        <img gravatar-src="currentUser.emailMd5" class="ui circular image">
-    </a>
-
-    <ul class="tools">
-        <li>
-            <a ui-sref="dashboard" ui-sref-active class="item">
-                <i class="dashboard icon"></i>
-            </a>
-        </li>
-        <li>
-            <a ui-sref="client-report" ui-sref-active class="item">
-                <i class="calendar outline icon"></i>
-            </a>
-        </li>
-        <li>
-            <a ui-sref="modules" ui-sref-active class="item">
-                <i class="cubes icon"></i>
-            </a>
-        </li>
-        <li>
-            <a ui-sref="connectWebsite.url" ui-sref-active class="item">
-                <i class="plus icon"></i>
-            </a>
-        </li>
-    </ul>
+    <div class="tools">
+        <a ui-sref="dashboard" ui-sref-active class="tool">
+            <i class="dashboard icon"></i>
+            Dashboard
+        </a>
+        <a ui-sref="client-report" ui-sref-active class="tool">
+            <i class="calendar outline icon"></i>
+            Client Report
+        </a>
+        <a ui-sref="modules" ui-sref-active class="tool">
+            <i class="cubes icon"></i>
+            Modules
+        </a>
+        <a ui-sref="connectWebsite.new" ui-sref-active class="tool">
+            <i class="plus icon"></i>
+            Connect Website
+        </a>
+    </div>
 </div>

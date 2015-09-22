@@ -50,17 +50,13 @@
             <div class="breadcrumbs" ncy-breadcrumb>
             </div>
 
-            <div class="ui huge horizontal divided action list">
-                <div class="item">
-                    <a class="content" ui-sref="account">
-                        <i class="setting icon"></i>
-                    </a>
-                </div>
-                <div class="item">
-                    <a class="content" logout-url>
-                        <i class="sign out icon"></i>
-                    </a>
-                </div>
+            <div class="ui secondary icon action menu">
+                <a class="item" ui-sref="account" ui-sref-active>
+                    <i class="setting icon"></i>
+                </a>
+                <a class="item" logout-url>
+                    <i class="sign out icon"></i>
+                </a>
             </div>
         </div>
         <div ui-view state-class class="state content">

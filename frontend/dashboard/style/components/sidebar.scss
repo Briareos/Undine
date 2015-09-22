@@ -3,55 +3,36 @@
   background-color: $sidebarBackgroundColor;
   color: $sidebarTextColor;
   text-align: center;
-  padding-top: 30px;
 
-  a {
+  a.tool {
     color: $sidebarTextColor;
-  }
-
-  .user.avatar {
+    min-height: $sidebarItemHeight;
+    padding: 1rem .5rem;
     text-align: center;
-    display: block;
-    position: relative;
+    font-weight: 600;
+    font-size: .9rem;
+    line-height: 1rem;
 
-    .image {
-      display: inline-block;
-      box-shadow: 0 0 1px grey;
-      width: 90px;
-      height: 90px;
+    @include display-flex;
+    @include flex-direction(column);
+    @include flex-justify-content(center);
+    @include flex-align-items(center);
+
+    .icon {
+      font-size: 1.71428571em !important;
+      margin: 0 auto 0.5rem !important;
     }
 
-    &:hover .image, &.active .image {
-      opacity: 0.8;
-    }
-  }
-
-  .tools {
-    margin: 50px 0 0 0;
-    padding: 0;
-    font-size: 1.3rem;
-
-    li {
-      list-style-type: none;
-      margin-bottom: 5px;
+    &:hover, &:active, &.active {
+      color: $sidebarLinkHoverColor;
     }
 
-    .item {
-      margin: 0 auto;
-      width: 70px;
-      display: block;
-      padding: 15px 20px;
-      border-radius: 5px;
+    &:active, &.active {
+      background-color: $sidebarItemActiveBackgroundColor;
+    }
 
-      .icon {
-        margin: 0;
-      }
-
-      &:hover, &:active, &.active {
-        background-color: #263037;
-        box-shadow: inset 0 2px 0 1px #212a31;
-        transition: all 0.1s ease;
-      }
+    &:hover {
+      background-color: $sidebarItemHoverBackgroundColor;
     }
   }
 }

@@ -102,6 +102,14 @@ angular.module('undine.dashboard')
         url: '/new?url&lookedForLoginForm&loginFormFound',
         controller: 'ConnectWebsiteNewController',
         templateUrl: '/page/connect-website/new.html',
+        ncyBreadcrumb: {
+            label: 'Connect Website'
+        }
+    })
+        .state('connectWebsite.instructions', {
+        url: '/instructions?url&lookedForLoginForm&loginFormFound&alreadyConnected',
+        controller: 'ConnectWebsiteInstructionsController',
+        templateUrl: '/page/connect-website/instructions.html',
         resolve: {
             url: function ($stateParams:ng.ui.IStateParamsService) {
                 return decodeURIComponent($stateParams['url']);
@@ -112,20 +120,32 @@ angular.module('undine.dashboard')
             loginFormFound: function($stateParams:ng.ui.IStateParamsService) {
                 return $stateParams['loginFormFound'] === 'true';
             }
+        },
+        ncyBreadcrumb: {
+            label: 'Connect Website'
         }
     })
         .state('connectWebsite.httpCredentials', {
         url: '/http-credentials',
         templateUrl: '/page/connect-website/http-credentials.html',
+        ncyBreadcrumb: {
+            label: 'Connect Website'
+        }
     })
         .state('connectWebsite.adminCredentials', {
         url: '/admin-credentials',
         controller: 'ConnectWebsiteAdminCredentialsController',
         templateUrl: '/page/connect-website/admin-credentials.html',
+        ncyBreadcrumb: {
+            label: 'Connect Website'
+        }
     })
         .state('connectWebsite.finish', {
         url: '/connected',
         templateUrl: '/page/connect-website/connected.html',
+        ncyBreadcrumb: {
+            label: 'Connect Website'
+        }
     })
     ;
 });
