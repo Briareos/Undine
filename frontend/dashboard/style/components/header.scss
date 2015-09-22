@@ -5,28 +5,40 @@
 
   @include display-flex;
   @include flex-align-items(center);
-  padding: 0 40px;
+  padding: 0 0 0 40px;
 
-  background-color: #55a9d0;
-  color: white;
+  color: #a2aab7;
+  border-bottom: 2px solid #eeeff3;
 
   .breadcrumb {
     @include flex-grow(1);
     margin: 0;
   }
 
-
-  .action.list, .action.list .icon {
+  .action.menu {
     margin: 0;
-  }
+    height: 75px;
 
-  // Override semantic specificity
-  .ui.divided.horizontal.list > .item {
-    border-left-width: 2px;
-    border-left-color: rgba(0, 0, 0, 0.1);
-  }
+    .item {
+      @include flex-justify-content(center);
 
-  a.content {
-    color: white;
+      color: #9ba3af;
+      font-size: 1.4rem;
+      height: 75px;
+      width: 75px;
+      margin: 0;
+      border-radius: 0;
+
+      border-left: 1px solid #eaedf0;
+      border-right: 1px solid #eaedf0;
+
+      &:hover, &:active, &.active {
+        transition-property: none;
+        background-color: #24a5f7;
+        border-left-color: #229be7;
+        border-right-color: #229be7;
+        color: white;
+      }
+    }
   }
 }
