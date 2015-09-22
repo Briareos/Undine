@@ -81,6 +81,9 @@ angular.module('undine.dashboard')
         url: '',
         controller: 'ConnectWebsiteNewController',
         templateUrl: '/page/connect-website/new.html',
+        ncyBreadcrumb: {
+            label: 'Connect Website'
+        }
     })
         .state('connectWebsite.instructions', {
         url: '/instructions?url&lookedForLoginForm&loginFormFound&alreadyConnected',
@@ -99,20 +102,32 @@ angular.module('undine.dashboard')
             alreadyConnected: function($stateParams:ng.ui.IStateParamsService) {
                 return $stateParams['alreadyConnected'] === 'true';
             }
+        },
+        ncyBreadcrumb: {
+            label: 'Connect Website'
         }
     })
         .state('connectWebsite.httpCredentials', {
         url: '/http-credentials',
         templateUrl: '/page/connect-website/http-credentials.html',
+        ncyBreadcrumb: {
+            label: 'Connect Website'
+        }
     })
         .state('connectWebsite.adminCredentials', {
         url: '/admin-credentials',
         controller: 'ConnectWebsiteAdminCredentialsController',
         templateUrl: '/page/connect-website/admin-credentials.html',
+        ncyBreadcrumb: {
+            label: 'Connect Website'
+        }
     })
         .state('connectWebsite.finish', {
         url: '/connected',
         templateUrl: '/page/connect-website/connected.html',
+        ncyBreadcrumb: {
+            label: 'Connect Website'
+        }
     })
     ;
 });
