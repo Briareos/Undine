@@ -2,6 +2,7 @@
 
 namespace Undine\Oxygen\Middleware;
 
+use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
@@ -56,13 +57,13 @@ class OxygenProtocolMiddleware
     private $nextHandler;
 
     /**
-     * @param string                $moduleVersion
-     * @param SecureRandomInterface $secureRandom
-     * @param \DateTime             $currentTime
-     * @param string                $handshakeKeyName
-     * @param string                $handshakeKeyValue
-     * @param SiteStateResultTracker      $stateTracker
-     * @param callable              $nextHandler
+     * @param string                 $moduleVersion
+     * @param SecureRandomInterface  $secureRandom
+     * @param \DateTime              $currentTime
+     * @param string                 $handshakeKeyName
+     * @param string                 $handshakeKeyValue
+     * @param SiteStateResultTracker $stateTracker
+     * @param callable               $nextHandler
      */
     public function __construct($moduleVersion, SecureRandomInterface $secureRandom, \DateTime $currentTime, $handshakeKeyName, $handshakeKeyValue, SiteStateResultTracker $stateTracker, callable $nextHandler)
     {
@@ -146,6 +147,10 @@ class OxygenProtocolMiddleware
         $oxygenRequest = $request
             ->withHeader('accept', 'text/html,application/json,application/oxygen')
             ->withBody(\GuzzleHttp\Psr7\stream_for(json_encode($requestData)));
+
+        if ($site->hasHttpCredentials()) {
+            $oxygenRequest = $oxygenRequest->withHeader('Authorization', 'Basic '.base64_encode(sprintf('%s:%s', $site->getHttpCredentials()->getUsername(), $site->getHttpCredentials()->getPassword())));
+        }
 
         return $fn($oxygenRequest, $options)
             ->then(function (ResponseInterface $response) use ($site, $request, $options, $responseId, $action) {

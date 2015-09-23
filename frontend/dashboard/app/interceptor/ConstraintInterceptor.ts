@@ -27,6 +27,12 @@ angular.module('undine.dashboard')
                     case 'site.can_not_install_oxygen':
                         response.data = new CanNotInstallOxygenConstraint(response.data);
                         break;
+                    case 'site.http_authentication_required':
+                        response.data = new HttpAuthenticationRequiredConstraint(response.data);
+                        break;
+                    case 'site.http_authentication_failed':
+                        response.data = new HttpAuthenticationFailedConstraint(response.data);
+                        break;
                     default:
                         response.data = new Constraint(response.data);
                 }

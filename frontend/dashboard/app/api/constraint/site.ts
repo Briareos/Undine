@@ -39,3 +39,9 @@ class FtpCredentialsErrorConstraint extends Constraint {
         return this.data.ftpError;
     }
 }
+
+class HttpAuthenticationRequiredConstraint extends Constraint {
+}
+
+class HttpAuthenticationFailedConstraint extends Constraint {
+}

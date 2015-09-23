@@ -13,7 +13,7 @@ use Undine\Api\Constraint\Site\CanNotInstallOxygenConstraint;
 use Undine\Api\Constraint\Site\CanNotResolveHostConstraint;
 use Undine\Api\Constraint\Site\FtpCredentialsErrorConstraint;
 use Undine\Api\Constraint\Site\FtpCredentialsRequiredConstraint;
-use Undine\Api\Constraint\Site\GotHttpAuthenticationConstraint;
+use Undine\Api\Constraint\Site\HttpAuthenticationRequiredConstraint;
 use Undine\Api\Constraint\Site\HttpAuthenticationFailedConstraint;
 use Undine\Api\Constraint\Site\InvalidCredentialsConstraint;
 use Undine\Api\Constraint\Site\InvalidHttpStatusCodeConstraint;
@@ -93,6 +93,16 @@ class SiteController extends AppController
 
             return new SiteConnectResult($site);
         } elseif ($result[0]['reason'] instanceof InvalidBodyException) {
+            /** @var InvalidBodyException $invalidBodyException */
+            $invalidBodyException = $result[0]['reason'];
+            if ($invalidBodyException->getResponse()->hasHeader('www-authenticate')) {
+                // We got HTTP's "authorization required" page.
+                if ($command->hasHttpCredentials()) {
+                    throw new ConstraintViolationException(new HttpAuthenticationFailedConstraint());
+                }
+                throw new ConstraintViolationException(new HttpAuthenticationRequiredConstraint());
+            }
+
             // The Oxygen module is not enabled.
             if ($findLoginForm !== null) {
                 // We did look for a login form.
@@ -154,7 +164,7 @@ class SiteController extends AppController
                     $this->persistSite($site);
 
                     return new SiteConnectResult($site);
-                } elseif ($result[1]['reason'] instanceof LoginFormNotFoundException) {
+                } elseif ($invalidBodyException instanceof LoginFormNotFoundException) {
                     // No login form found, is this even a Drupal website?
                     throw new ConstraintViolationException(new OxygenNotEnabledConstraint(true, false));
                 }
@@ -219,12 +229,6 @@ class SiteController extends AppController
                         $violation = new NoResponseConstraint($context['errno'], $context['error']);
                 }
                 throw new ConstraintViolationException($violation);
-            } elseif ($connectException->getResponse()->getStatusCode() === 413 && $connectException->getResponse()->hasHeader('www-authenticate')) {
-                // We got HTTP's "authorization required" page.
-                if ($command->hasHttpCredentials()) {
-                    throw new ConstraintViolationException(new HttpAuthenticationFailedConstraint());
-                }
-                throw new ConstraintViolationException(new GotHttpAuthenticationConstraint());
             } else {
                 // We got an invalid (or rather unhandled) HTTP status code.
                 throw new ConstraintViolationException(new InvalidHttpStatusCodeConstraint($connectException->getCode()));

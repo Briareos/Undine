@@ -3,14 +3,22 @@ interface ConnectWebsiteUrlScope extends ng.IScope {
     urlFormSubmit(form:ConnectWebsiteUrlForm)
     urlFormData:ConnectWebsiteUrlFormData
     urlFormLoading:boolean
+    httpAuthenticationRequired:boolean
+    connectWebsiteErrors:{
+        httpAuthenticationFailed:boolean
+    }
 }
 
 interface ConnectWebsiteUrlForm extends ng.IFormController {
     url:ng.INgModelController
+    httpUsername:ng.INgModelController
+    httpPassword:ng.INgModelController
 }
 
 interface ConnectWebsiteUrlFormData {
     url:string
+    httpUsername:string
+    httpPassword:string
 }
 
 interface ReconnectWebsiteScope extends ng.IScope {
@@ -38,14 +46,6 @@ interface AdminCredentialsForm extends ng.IFormController {
 interface AdminCredentialsFormData {
     username:string
     password:string
-}
-
-interface FtpCredentialsForm extends ng.IFormController {
-    method:ng.INgModelController
-    username:ng.INgModelController
-    password:ng.INgModelController
-    host:ng.INgModelController
-    port:ng.INgModelController
 }
 
 interface FtpCredentialsFormData {
@@ -79,24 +79,34 @@ interface ConnectWebsiteNewScope extends ng.IScope {
 }
 
 angular.module('undine.dashboard')
-    .controller('ConnectWebsiteUrlController', function (Api:Api, $scope:ConnectWebsiteUrlScope, $state:ng.ui.IStateService) {
+    .controller('ConnectWebsiteUrlController', function (Api:Api, ConnectWebsiteSession:ConnectWebsiteSession, $scope:ConnectWebsiteUrlScope, $state:ng.ui.IStateService) {
+        $scope.urlFormData = {};
         $scope.urlFormSubmit = function (form:ConnectWebsiteUrlForm) {
+            ConnectWebsiteSession.httpUsername = $scope.urlFormData.httpUsername;
+            ConnectWebsiteSession.httpPassword = $scope.urlFormData.httpPassword;
             if (!form.$valid) {
                 return;
             }
+            $scope.connectWebsiteErrors = {};
             var siteUrl:string = $scope.urlFormData.url;
             if (!siteUrl.match(/^https?:\/\//)) {
                 // Make sure the URL starts with a scheme.
                 siteUrl = 'http://' + siteUrl.replace(/^:?\/+/, '');
             }
             $scope.urlFormLoading = true;
-            Api.siteConnect(siteUrl, true)
+            Api.siteConnect(siteUrl, true, $scope.urlFormData.httpUsername, $scope.urlFormData.httpPassword)
                 .success(function (result:SiteConnectResult) {
                     // @todo: Reset form data if it's in state!
                     $state.go('siteDashboard', {uid: result.site.uid});
                 })
                 .error(function (constraint:Constraint) {
-                    if (constraint instanceof AlreadyConnectedConstraint) {
+                    if (constraint instanceof HttpAuthenticationRequiredConstraint) {
+                        $scope.httpAuthenticationRequired = true;
+                    } else if (constraint instanceof HttpAuthenticationFailedConstraint) {
+                        ConnectWebsiteSession.httpUsername = null;
+                        ConnectWebsiteSession.httpPassword = null;
+                        $scope.connectWebsiteErrors.httpAuthenticationFailed = true;
+                    } else if (constraint instanceof AlreadyConnectedConstraint) {
                         $state.go('^.reconnect', {
                             url: siteUrl,
                             lookedForLoginForm: constraint.lookedForLoginForm,
@@ -117,7 +127,7 @@ angular.module('undine.dashboard')
                 })
         };
     })
-    .controller('ReconnectWebsiteController', function ($scope:ReconnectWebsiteScope, Api:Api, $state:ng.ui.IStateService, url:string, lookedForLoginForm:boolean, loginFormFound:boolean) {
+    .controller('ReconnectWebsiteController', function ($scope:ReconnectWebsiteScope, ConnectWebsiteSession:ConnectWebsiteSession, Api:Api, $state:ng.ui.IStateService, url:string, lookedForLoginForm:boolean, loginFormFound:boolean) {
         $scope.url = url;
         $scope.disconnectUrl = url.replace(/\/?$/, '/?q=admin/config/oxygen/disconnect');
         $scope.lookedForLoginForm = lookedForLoginForm;
@@ -135,7 +145,7 @@ angular.module('undine.dashboard')
             $scope.connectWebsiteErrors.stillConnected = false;
             $scope.connectWebsiteActive = true;
             $scope.connectWebsiteLoading = true;
-            Api.siteConnect(url)
+            Api.siteConnect(url, false, ConnectWebsiteSession.httpUsername, ConnectWebsiteSession.httpPassword)
                 .success(function (result:SiteConnectResult) {
                     // @todo: Reset form data if it's in state!
                     $state.go('siteDashboard', {uid: result.site.uid});
@@ -159,7 +169,7 @@ angular.module('undine.dashboard')
             }
             $scope.connectWebsiteActive = true;
             $scope.autoConnectWebsiteLoading = true;
-            Api.siteConnect(url, true, null, null, $scope.reconnectFormData.username, $scope.reconnectFormData.password)
+            Api.siteConnect(url, true, ConnectWebsiteSession.httpUsername, ConnectWebsiteSession.httpPassword, $scope.reconnectFormData.username, $scope.reconnectFormData.password)
                 .success(function (result:SiteConnectResult) {
                     // @todo: Reset form data if it's in state!
                     $state.go('siteDashboard', {uid: result.site.uid});
@@ -177,7 +187,7 @@ angular.module('undine.dashboard')
                 });
         }
     })
-    .controller('ConnectWebsiteNewController', function ($scope:ConnectWebsiteNewScope, $state:ng.ui.IStateService, AppData:AppData, Api:Api, url:string, lookedForLoginForm:boolean, loginFormFound:boolean) {
+    .controller('ConnectWebsiteNewController', function ($scope:ConnectWebsiteNewScope, ConnectWebsiteSession:ConnectWebsiteSession, $state:ng.ui.IStateService, AppData:AppData, Api:Api, url:string, lookedForLoginForm:boolean, loginFormFound:boolean) {
         $scope.url = url;
         $scope.updatesUrl = url.replace(/\/?$/, '/?q=admin/modules/install');
         $scope.oxygenZipUrl = AppData.oxygenZipUrl;
@@ -204,7 +214,7 @@ angular.module('undine.dashboard')
             $scope.connectWebsiteErrors = {};
             $scope.connectWebsiteActive = true;
             $scope.connectWebsiteLoading = true;
-            Api.siteConnect(url)
+            Api.siteConnect(url, false, ConnectWebsiteSession.httpUsername, ConnectWebsiteSession.httpPassword)
                 .success(function (result:SiteConnectResult) {
                     // @todo: Reset form data if it's in state!
                     $state.go('siteDashboard', {uid: result.site.uid});
@@ -232,7 +242,7 @@ angular.module('undine.dashboard')
             $scope.connectWebsiteErrors = {};
             $scope.connectWebsiteActive = true;
             $scope.autoConnectWebsiteLoading = true;
-            Api.siteConnect(url, true, null, null, $scope.newFormData.username, $scope.newFormData.password, $scope.ftpFormData.method, $scope.ftpFormData.username, $scope.ftpFormData.password, $scope.ftpFormData.host, $scope.ftpFormData.port)
+            Api.siteConnect(url, true, ConnectWebsiteSession.httpUsername, ConnectWebsiteSession.httpPassword, $scope.newFormData.username, $scope.newFormData.password, $scope.ftpFormData.method, $scope.ftpFormData.username, $scope.ftpFormData.password, $scope.ftpFormData.host, $scope.ftpFormData.port)
                 .success(function (result:SiteConnectResult) {
                     // @todo: Reset form data if it's in state!
                     $state.go('siteDashboard', {uid: result.site.uid});
@@ -247,6 +257,7 @@ angular.module('undine.dashboard')
                     } else if (constraint instanceof FtpCredentialsErrorConstraint) {
                         $scope.connectWebsiteErrors.ftpError = true;
                         $scope.connectWebsiteErrors.ftpErrorMessage = constraint.ftpError;
+                        return;
                     }
                 })
                 .finally(function () {
