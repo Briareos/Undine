@@ -71,6 +71,8 @@ interface ConnectWebsiteNewScope extends ng.IScope {
     connectWebsiteErrors:{
         stillDisabled:boolean
         invalidCredentials:boolean
+        ftpError:boolean
+        ftpErrorMessage:string
     }
     newClick()
     newFormSubmit()
@@ -78,174 +80,179 @@ interface ConnectWebsiteNewScope extends ng.IScope {
 
 angular.module('undine.dashboard')
     .controller('ConnectWebsiteUrlController', function (Api:Api, $scope:ConnectWebsiteUrlScope, $state:ng.ui.IStateService) {
-    $scope.urlFormData = {
-        url: ''
-    };
-
-    $scope.urlFormSubmit = function (form:ConnectWebsiteUrlForm) {
-        if (!form.$valid) {
-            return;
-        }
-        var siteUrl:string = $scope.urlFormData.url;
-        if (!siteUrl.match(/^https?:\/\//)) {
-            // Make sure the URL starts with a scheme.
-            siteUrl = 'http://' + siteUrl.replace(/^:?\/+/, '');
-        }
-        $scope.urlFormLoading = true;
-        Api.siteConnect(siteUrl, true)
-            .success(function (result:SiteConnectResult) {
-            $state.go('siteDashboard', {uid: result.site.uid});
-        })
-            .error(function (constraint:Constraint) {
-            if (constraint instanceof AlreadyConnectedConstraint) {
-                $state.go('^.reconnect', {
-                    url: siteUrl,
-                    lookedForLoginForm: constraint.lookedForLoginForm,
-                    loginFormFound: constraint.loginFormFound
-                });
-                return;
-            } else if (constraint instanceof OxygenNotEnabledConstraint) {
-                $state.go('^.new', {
-                    url: siteUrl,
-                    lookedForLoginForm: constraint.lookedForLoginForm,
-                    loginFormFound: constraint.loginFormFound
-                });
+        $scope.urlFormSubmit = function (form:ConnectWebsiteUrlForm) {
+            if (!form.$valid) {
                 return;
             }
-        })
-            .finally(function () {
-            $scope.urlFormLoading = false;
-        })
-    };
-})
+            var siteUrl:string = $scope.urlFormData.url;
+            if (!siteUrl.match(/^https?:\/\//)) {
+                // Make sure the URL starts with a scheme.
+                siteUrl = 'http://' + siteUrl.replace(/^:?\/+/, '');
+            }
+            $scope.urlFormLoading = true;
+            Api.siteConnect(siteUrl, true)
+                .success(function (result:SiteConnectResult) {
+                    // @todo: Reset form data if it's in state!
+                    $state.go('siteDashboard', {uid: result.site.uid});
+                })
+                .error(function (constraint:Constraint) {
+                    if (constraint instanceof AlreadyConnectedConstraint) {
+                        $state.go('^.reconnect', {
+                            url: siteUrl,
+                            lookedForLoginForm: constraint.lookedForLoginForm,
+                            loginFormFound: constraint.loginFormFound
+                        });
+                        return;
+                    } else if (constraint instanceof OxygenNotEnabledConstraint) {
+                        $state.go('^.new', {
+                            url: siteUrl,
+                            lookedForLoginForm: constraint.lookedForLoginForm,
+                            loginFormFound: constraint.loginFormFound
+                        });
+                        return;
+                    }
+                })
+                .finally(function () {
+                    $scope.urlFormLoading = false;
+                })
+        };
+    })
     .controller('ReconnectWebsiteController', function ($scope:ReconnectWebsiteScope, Api:Api, $state:ng.ui.IStateService, url:string, lookedForLoginForm:boolean, loginFormFound:boolean) {
-    $scope.url = url;
-    $scope.disconnectUrl = url.replace(/\/?$/, '/?q=admin/config/oxygen/disconnect');
-    $scope.lookedForLoginForm = lookedForLoginForm;
-    $scope.loginFormFound = loginFormFound;
-    $scope.connectWebsiteLoading = false;
-    $scope.autoConnectWebsiteLoading = false;
-    $scope.connectWebsiteActive = false;
-    $scope.reconnectFormData = {
-        username: '',
-        password: ''
-    };
-    $scope.connectWebsiteErrors = {
-        stillConnected: false,
-        invalidCredentials: false
-    };
+        $scope.url = url;
+        $scope.disconnectUrl = url.replace(/\/?$/, '/?q=admin/config/oxygen/disconnect');
+        $scope.lookedForLoginForm = lookedForLoginForm;
+        $scope.loginFormFound = loginFormFound;
+        $scope.connectWebsiteLoading = false;
+        $scope.autoConnectWebsiteLoading = false;
+        $scope.connectWebsiteActive = false;
+        $scope.reconnectFormData = {
+            username: '',
+            password: ''
+        };
+        $scope.connectWebsiteErrors = {};
 
-    $scope.reconnectClick = function () {
-        $scope.connectWebsiteErrors.stillConnected = false;
-        $scope.connectWebsiteActive = true;
-        $scope.connectWebsiteLoading = true;
-        Api.siteConnect(url)
-            .success(function (result:SiteConnectResult) {
-            $state.go('siteDashboard', {uid: result.site.uid});
-        })
-            .error(function (constraint:Constraint) {
-            if (constraint instanceof AlreadyConnectedConstraint) {
-                $scope.connectWebsiteErrors.stillConnected = true;
-                return;
-            }
-        })
-            .finally(function () {
-            $scope.connectWebsiteActive = false;
-            $scope.connectWebsiteLoading = false;
-        });
-    };
-
-    $scope.reconnectFormSubmit = function (form:AdminCredentialsForm) {
-        $scope.connectWebsiteErrors.invalidCredentials = false;
-        if (!form.$valid) {
-            return;
-        }
-        $scope.connectWebsiteActive = true;
-        $scope.autoConnectWebsiteLoading = true;
-        Api.siteConnect(url, true, null, null, $scope.reconnectFormData.username, $scope.reconnectFormData.password)
-            .success(function (result:SiteConnectResult) {
-            $state.go('siteDashboard', {uid: result.site.uid});
-        })
-            .error(function (constraint:Constraint) {
-            if (constraint instanceof InvalidCredentialsConstraint) {
-                $scope.connectWebsiteErrors.invalidCredentials = true;
-                return;
-            }
-        })
-            .finally(function () {
-            $scope.connectWebsiteActive = false;
-            $scope.autoConnectWebsiteLoading = false;
-            form.$setPristine();
-        });
-    }
-})
-    .controller('ConnectWebsiteNewController', function ($scope:ConnectWebsiteNewScope, $state:ng.ui.IStateService, AppData:AppData, Api:Api, url:string, lookedForLoginForm:boolean, loginFormFound:boolean) {
-    $scope.url = url;
-    $scope.updatesUrl = url.replace(/\/?$/, '/?q=admin/modules/install');
-    $scope.oxygenZipUrl = AppData.oxygenZipUrl;
-    $scope.lookedForLoginForm = lookedForLoginForm;
-    $scope.loginFormFound = loginFormFound;
-    $scope.connectWebsiteLoading = false;
-    $scope.autoConnectWebsiteLoading = false;
-    $scope.connectWebsiteActive = false;
-    $scope.ftpFormFound = false;
-    $scope.connectWebsiteErrors = {
-        stillDisabled: false,
-        invalidCredentials: false
-    };
-    $scope.newFormData = {
-        username: '',
-        password: ''
-    }
-
-    $scope.newClick = function () {
-        $scope.connectWebsiteErrors.stillDisabled = false;
-        $scope.connectWebsiteActive = true;
-        $scope.connectWebsiteLoading = true;
-        Api.siteConnect(url)
-            .success(function (result:SiteConnectResult) {
-            $state.go('siteDashboard', {uid: result.site.uid});
-        })
-            .error(function (constraint:Constraint) {
-            if (constraint instanceof OxygenNotEnabledConstraint) {
-                $scope.connectWebsiteErrors.stillDisabled = true;
-                return;
-            } else if (constraint instanceof AlreadyConnectedConstraint) {
-                // Site got connected to another account in the meantime? It's possible...
-                $state.go('^.reconnect', {
-                    url: url,
-                    lookedForLoginForm: lookedForLoginForm,
-                    loginFormFound: loginFormFound
+        $scope.reconnectClick = function () {
+            $scope.connectWebsiteErrors.stillConnected = false;
+            $scope.connectWebsiteActive = true;
+            $scope.connectWebsiteLoading = true;
+            Api.siteConnect(url)
+                .success(function (result:SiteConnectResult) {
+                    // @todo: Reset form data if it's in state!
+                    $state.go('siteDashboard', {uid: result.site.uid});
+                })
+                .error(function (constraint:Constraint) {
+                    if (constraint instanceof AlreadyConnectedConstraint) {
+                        $scope.connectWebsiteErrors.stillConnected = true;
+                        return;
+                    }
+                })
+                .finally(function () {
+                    $scope.connectWebsiteActive = false;
+                    $scope.connectWebsiteLoading = false;
                 });
+        };
+
+        $scope.reconnectFormSubmit = function (form:AdminCredentialsForm) {
+            $scope.connectWebsiteErrors.invalidCredentials = false;
+            if (!form.$valid) {
                 return;
             }
-        })
-            .finally(function () {
-            $scope.connectWebsiteActive = false;
-            $scope.connectWebsiteLoading = false;
-        });
-    };
-    $scope.newFormSubmit = function (form:AdminCredentialsForm) {
-        $scope.connectWebsiteErrors.invalidCredentials = false;
-        $scope.connectWebsiteActive = true;
-        $scope.autoConnectWebsiteLoading = true;
-        Api.siteConnect(url, true, null, null, $scope.newFormData.username, $scope.newFormData.password)
-            .success(function (result:SiteConnectResult) {
-            $state.go('siteDashboard', {uid: result.site.uid});
-        })
-            .error(function (constraint:Constraint) {
-            if (constraint instanceof InvalidCredentialsConstraint) {
-                $scope.connectWebsiteErrors.invalidCredentials = true;
-                return;
-            } else if (constraint instanceof FtpCredentialsRequiredConstraint) {
-                $scope.ftpFormFound = true;
-                return;
-            }
-        })
-            .finally(function () {
-            $scope.connectWebsiteActive = false;
-            $scope.autoConnectWebsiteLoading = false;
-            form.$setPristine();
-        });
-    };
-});
+            $scope.connectWebsiteActive = true;
+            $scope.autoConnectWebsiteLoading = true;
+            Api.siteConnect(url, true, null, null, $scope.reconnectFormData.username, $scope.reconnectFormData.password)
+                .success(function (result:SiteConnectResult) {
+                    // @todo: Reset form data if it's in state!
+                    $state.go('siteDashboard', {uid: result.site.uid});
+                })
+                .error(function (constraint:Constraint) {
+                    if (constraint instanceof InvalidCredentialsConstraint) {
+                        $scope.connectWebsiteErrors.invalidCredentials = true;
+                        return;
+                    }
+                })
+                .finally(function () {
+                    $scope.connectWebsiteActive = false;
+                    $scope.autoConnectWebsiteLoading = false;
+                    form.$setPristine();
+                });
+        }
+    })
+    .controller('ConnectWebsiteNewController', function ($scope:ConnectWebsiteNewScope, $state:ng.ui.IStateService, AppData:AppData, Api:Api, url:string, lookedForLoginForm:boolean, loginFormFound:boolean) {
+        $scope.url = url;
+        $scope.updatesUrl = url.replace(/\/?$/, '/?q=admin/modules/install');
+        $scope.oxygenZipUrl = AppData.oxygenZipUrl;
+        $scope.lookedForLoginForm = lookedForLoginForm;
+        $scope.loginFormFound = loginFormFound;
+        $scope.connectWebsiteLoading = false;
+        $scope.autoConnectWebsiteLoading = false;
+        $scope.connectWebsiteActive = false;
+        $scope.ftpFormFound = false;
+        $scope.connectWebsiteErrors = {};
+        $scope.newFormData = {
+            username: '',
+            password: ''
+        };
+        $scope.ftpFormData = {
+            method: 'ftp',
+            username: '',
+            password: '',
+            host: '',
+            port: ''
+        };
+
+        $scope.newClick = function () {
+            $scope.connectWebsiteErrors = {};
+            $scope.connectWebsiteActive = true;
+            $scope.connectWebsiteLoading = true;
+            Api.siteConnect(url)
+                .success(function (result:SiteConnectResult) {
+                    // @todo: Reset form data if it's in state!
+                    $state.go('siteDashboard', {uid: result.site.uid});
+                })
+                .error(function (constraint:Constraint) {
+                    if (constraint instanceof OxygenNotEnabledConstraint) {
+                        $scope.connectWebsiteErrors.stillDisabled = true;
+                        return;
+                    } else if (constraint instanceof AlreadyConnectedConstraint) {
+                        // Site got connected to another account in the meantime? It's possible...
+                        $state.go('^.reconnect', {
+                            url: url,
+                            lookedForLoginForm: lookedForLoginForm,
+                            loginFormFound: loginFormFound
+                        });
+                        return;
+                    }
+                })
+                .finally(function () {
+                    $scope.connectWebsiteActive = false;
+                    $scope.connectWebsiteLoading = false;
+                });
+        };
+        $scope.newFormSubmit = function (form:AdminCredentialsForm) {
+            $scope.connectWebsiteErrors = {};
+            $scope.connectWebsiteActive = true;
+            $scope.autoConnectWebsiteLoading = true;
+            Api.siteConnect(url, true, null, null, $scope.newFormData.username, $scope.newFormData.password, $scope.ftpFormData.method, $scope.ftpFormData.username, $scope.ftpFormData.password, $scope.ftpFormData.host, $scope.ftpFormData.port)
+                .success(function (result:SiteConnectResult) {
+                    // @todo: Reset form data if it's in state!
+                    $state.go('siteDashboard', {uid: result.site.uid});
+                })
+                .error(function (constraint:Constraint) {
+                    if (constraint instanceof InvalidCredentialsConstraint) {
+                        $scope.connectWebsiteErrors.invalidCredentials = true;
+                        return;
+                    } else if (constraint instanceof FtpCredentialsRequiredConstraint) {
+                        $scope.ftpFormFound = true;
+                        return;
+                    } else if (constraint instanceof FtpCredentialsErrorConstraint) {
+                        $scope.connectWebsiteErrors.ftpError = true;
+                        $scope.connectWebsiteErrors.ftpErrorMessage = constraint.ftpError;
+                    }
+                })
+                .finally(function () {
+                    $scope.connectWebsiteActive = false;
+                    $scope.autoConnectWebsiteLoading = false;
+                    form.$setPristine();
+                });
+        };
+    });
