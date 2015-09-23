@@ -10,10 +10,22 @@ class ConnectWebsiteSession {
     adminUsername:string;
     adminPassword:string;
 
-    clear() {
+    clearHttp() {
         this.url = this.httpUsername = null;
+    }
+
+    clearFtp() {
         this.httpPassword = this.ftpMethod = this.ftpUsername = this.ftpPassword = this.ftpHost = this.ftpPort = null;
+    }
+
+    clearAdmin() {
         this.adminUsername = this.adminPassword = null
+    }
+
+    clearAll() {
+        this.clearAdmin();
+        this.clearHttp();
+        this.clearFtp();
     }
 }
 

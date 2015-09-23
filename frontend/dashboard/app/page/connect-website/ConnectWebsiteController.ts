@@ -96,16 +96,17 @@ angular.module('undine.dashboard')
             $scope.urlFormLoading = true;
             Api.siteConnect(siteUrl, true, $scope.urlFormData.httpUsername, $scope.urlFormData.httpPassword)
                 .success(function (result:SiteConnectResult) {
-                    // @todo: Reset form data if it's in state!
+                    ConnectWebsiteSession.clearAll();
                     $state.go('siteDashboard', {uid: result.site.uid});
                 })
                 .error(function (constraint:Constraint) {
                     if (constraint instanceof HttpAuthenticationRequiredConstraint) {
                         $scope.httpAuthenticationRequired = true;
+                        return;
                     } else if (constraint instanceof HttpAuthenticationFailedConstraint) {
-                        ConnectWebsiteSession.httpUsername = null;
-                        ConnectWebsiteSession.httpPassword = null;
+                        ConnectWebsiteSession.clearHttp();
                         $scope.connectWebsiteErrors.httpAuthenticationFailed = true;
+                        return;
                     } else if (constraint instanceof AlreadyConnectedConstraint) {
                         $state.go('^.reconnect', {
                             url: siteUrl,
@@ -171,7 +172,7 @@ angular.module('undine.dashboard')
             $scope.autoConnectWebsiteLoading = true;
             Api.siteConnect(url, true, ConnectWebsiteSession.httpUsername, ConnectWebsiteSession.httpPassword, $scope.reconnectFormData.username, $scope.reconnectFormData.password)
                 .success(function (result:SiteConnectResult) {
-                    // @todo: Reset form data if it's in state!
+                    ConnectWebsiteSession.clearAll();
                     $state.go('siteDashboard', {uid: result.site.uid});
                 })
                 .error(function (constraint:Constraint) {
@@ -216,7 +217,7 @@ angular.module('undine.dashboard')
             $scope.connectWebsiteLoading = true;
             Api.siteConnect(url, false, ConnectWebsiteSession.httpUsername, ConnectWebsiteSession.httpPassword)
                 .success(function (result:SiteConnectResult) {
-                    // @todo: Reset form data if it's in state!
+                    ConnectWebsiteSession.clearAll();
                     $state.go('siteDashboard', {uid: result.site.uid});
                 })
                 .error(function (constraint:Constraint) {
@@ -244,7 +245,7 @@ angular.module('undine.dashboard')
             $scope.autoConnectWebsiteLoading = true;
             Api.siteConnect(url, true, ConnectWebsiteSession.httpUsername, ConnectWebsiteSession.httpPassword, $scope.newFormData.username, $scope.newFormData.password, $scope.ftpFormData.method, $scope.ftpFormData.username, $scope.ftpFormData.password, $scope.ftpFormData.host, $scope.ftpFormData.port)
                 .success(function (result:SiteConnectResult) {
-                    // @todo: Reset form data if it's in state!
+                    ConnectWebsiteSession.clearAll();
                     $state.go('siteDashboard', {uid: result.site.uid});
                 })
                 .error(function (constraint:Constraint) {
