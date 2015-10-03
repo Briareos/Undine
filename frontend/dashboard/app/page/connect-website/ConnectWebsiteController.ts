@@ -53,15 +53,15 @@ interface FtpCredentialsFormData {
     username:string
     password:string
     host:string
-    port:number
+    port:string
 }
 
 interface ConnectWebsiteNewScope extends ng.IScope {
     url:string
     updatesUrl:string
     oxygenZipUrl:string
-    lookedForLoginForm:string
-    loginFormFound:string
+    lookedForLoginForm:boolean
+    loginFormFound:boolean
     connectWebsiteLoading:boolean
     autoConnectWebsiteLoading:boolean
     connectWebsiteActive:boolean
@@ -75,19 +75,25 @@ interface ConnectWebsiteNewScope extends ng.IScope {
         ftpErrorMessage:string
     }
     newClick()
-    newFormSubmit()
+    newFormSubmit(form:AdminCredentialsForm)
 }
 
 angular.module('undine.dashboard')
     .controller('ConnectWebsiteUrlController', function (Api:Api, ConnectWebsiteSession:ConnectWebsiteSession, $scope:ConnectWebsiteUrlScope, $state:ng.ui.IStateService) {
-        $scope.urlFormData = {};
+        $scope.urlFormData = {
+            url: '',
+            httpUsername: '',
+            httpPassword: ''
+        };
         $scope.urlFormSubmit = function (form:ConnectWebsiteUrlForm) {
             ConnectWebsiteSession.httpUsername = $scope.urlFormData.httpUsername;
             ConnectWebsiteSession.httpPassword = $scope.urlFormData.httpPassword;
             if (!form.$valid) {
                 return;
             }
-            $scope.connectWebsiteErrors = {};
+            $scope.connectWebsiteErrors = {
+                httpAuthenticationFailed: false
+            };
             var siteUrl:string = $scope.urlFormData.url;
             if (!siteUrl.match(/^https?:\/\//)) {
                 // Make sure the URL starts with a scheme.
@@ -140,7 +146,10 @@ angular.module('undine.dashboard')
             username: '',
             password: ''
         };
-        $scope.connectWebsiteErrors = {};
+        $scope.connectWebsiteErrors = {
+            stillConnected: false,
+            invalidCredentials: false
+        };
 
         $scope.reconnectClick = function () {
             $scope.connectWebsiteErrors.stillConnected = false;
@@ -198,7 +207,6 @@ angular.module('undine.dashboard')
         $scope.autoConnectWebsiteLoading = false;
         $scope.connectWebsiteActive = false;
         $scope.ftpFormFound = false;
-        $scope.connectWebsiteErrors = {};
         $scope.newFormData = {
             username: '',
             password: ''
@@ -211,8 +219,19 @@ angular.module('undine.dashboard')
             port: ''
         };
 
+        function resetErrors() {
+            $scope.connectWebsiteErrors = {
+                stillDisabled: false,
+                invalidCredentials: false,
+                ftpError: false,
+                ftpErrorMessage: ''
+            };
+        }
+
+        resetErrors();
+
         $scope.newClick = function () {
-            $scope.connectWebsiteErrors = {};
+            resetErrors();
             $scope.connectWebsiteActive = true;
             $scope.connectWebsiteLoading = true;
             Api.siteConnect(url, false, ConnectWebsiteSession.httpUsername, ConnectWebsiteSession.httpPassword)
@@ -240,10 +259,10 @@ angular.module('undine.dashboard')
                 });
         };
         $scope.newFormSubmit = function (form:AdminCredentialsForm) {
-            $scope.connectWebsiteErrors = {};
+            resetErrors();
             $scope.connectWebsiteActive = true;
             $scope.autoConnectWebsiteLoading = true;
-            Api.siteConnect(url, true, ConnectWebsiteSession.httpUsername, ConnectWebsiteSession.httpPassword, $scope.newFormData.username, $scope.newFormData.password, $scope.ftpFormData.method, $scope.ftpFormData.username, $scope.ftpFormData.password, $scope.ftpFormData.host, $scope.ftpFormData.port)
+            Api.siteConnect(url, true, ConnectWebsiteSession.httpUsername, ConnectWebsiteSession.httpPassword, $scope.newFormData.username, $scope.newFormData.password, $scope.ftpFormData.method, $scope.ftpFormData.username, $scope.ftpFormData.password, $scope.ftpFormData.host, parseInt($scope.ftpFormData.port))
                 .success(function (result:SiteConnectResult) {
                     ConnectWebsiteSession.clearAll();
                     $state.go('siteDashboard', {uid: result.site.uid});

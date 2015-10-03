@@ -6,9 +6,10 @@ angular.module('undine.dashboard')
                 ngPlaceholder: '='
             },
             link: function (scope:ng.IScope, element:ng.IAugmentedJQuery) {
-                scope.$watch('ngPlaceholder', function (newValue) {
-                    element[0].placeholder = newValue;
+                scope.$watch('ngPlaceholder', function (newValue:string) {
+                    var inputElement = <HTMLInputElement>element[0];
+                    inputElement.placeholder = newValue;
                 });
             }
-        }
+        };
     });
