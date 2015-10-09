@@ -21,15 +21,14 @@ use Undine\Api\Constraint\Site\NoResponseConstraint;
 use Undine\Api\Constraint\Site\OxygenAlreadyConnectedConstraint;
 use Undine\Api\Constraint\Site\OxygenNotEnabledConstraint;
 use Undine\Api\Constraint\Site\OxygenPageNotFoundConstraint;
-use Undine\Api\Constraint\Site\ProtocolErrorConstraint;
+use Undine\Api\Constraint\Site\OxygenErrorConstraint;
 use Undine\Api\Exception\ConstraintViolationException;
 use Undine\Api\Exception\RejectedPromiseException;
 use Undine\Api\Result\SiteConnectResult;
 use Undine\Api\Result\SiteLoginResult;
 use Undine\Api\Result\SiteLogoutResult;
 use Undine\AppBundle\Controller\AppController;
-use Undine\Configuration\ApiCommand;
-use Undine\Configuration\ApiResult;
+use Undine\Configuration\Api;
 use Undine\Drupal\Data\ModuleList;
 use Undine\Drupal\Exception\FtpCredentialsErrorException;
 use Undine\Drupal\Exception\FtpCredentialsRequiredException;
@@ -52,8 +51,7 @@ class SiteController extends AppController
 {
     /**
      * @Route("site.connect", name="api-site.connect")
-     * @ApiCommand("api__site_connect")
-     * @ApiResult()
+     * @Api("api__site_connect")
      */
     public function connectAction(SiteConnectCommand $command)
     {
@@ -164,7 +162,7 @@ class SiteController extends AppController
                     $this->persistSite($site);
 
                     return new SiteConnectResult($site);
-                } elseif ($invalidBodyException instanceof LoginFormNotFoundException) {
+                } elseif ($result[1]['reason'] instanceof LoginFormNotFoundException) {
                     // No login form found, is this even a Drupal website?
                     throw new ConstraintViolationException(new OxygenNotEnabledConstraint(true, false));
                 }
@@ -208,7 +206,7 @@ class SiteController extends AppController
                 // We did not look for a login form.
                 throw new ConstraintViolationException(new OxygenAlreadyConnectedConstraint(false, false));
             }
-            throw new ConstraintViolationException(new ProtocolErrorConstraint($oxygenException->getCode(), $oxygenException->getType()));
+            throw new ConstraintViolationException(new OxygenErrorConstraint($oxygenException->getCode(), $oxygenException->getType()));
         } elseif ($result[0]['reason'] instanceof RequestException) {
             // A lower-level request exception occurred.
             // @todo: Move this to a generic site connection exception handler.
@@ -264,7 +262,7 @@ class SiteController extends AppController
     /**
      * @Route("site.ping", name="api-site.ping")
      * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
-     * @ApiResult()
+     * @Api()
      */
     public function pingAction(Site $site)
     {
@@ -276,7 +274,7 @@ class SiteController extends AppController
     /**
      * @Route("site.disconnect", name="api-site.disconnect")
      * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
-     * @ApiResult()
+     * @Api()
      */
     public function disconnectAction(Site $site)
     {
@@ -294,7 +292,7 @@ class SiteController extends AppController
     /**
      * @Route("site.login", name="api-site.login")
      * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
-     * @ApiResult()
+     * @Api()
      */
     public function loginAction(Site $site)
     {
@@ -306,7 +304,7 @@ class SiteController extends AppController
     /**
      * @Route("site.logout", name="api-site.logout")
      * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
-     * @ApiResult()
+     * @Api()
      */
     public function logoutAction(Site $site)
     {

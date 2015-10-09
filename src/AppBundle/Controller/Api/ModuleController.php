@@ -10,8 +10,7 @@ use Undine\Api\Result\ModuleDisableResult;
 use Undine\Api\Result\ModuleEnableResult;
 use Undine\Api\Result\ModuleUninstallResult;
 use Undine\AppBundle\Controller\AppController;
-use Undine\Configuration\ApiCommand;
-use Undine\Configuration\ApiResult;
+use Undine\Configuration\Api;
 use Undine\Model\Site;
 use Undine\Oxygen\Action\ModuleDisableAction;
 use Undine\Oxygen\Action\ModuleEnableAction;
@@ -25,8 +24,7 @@ class ModuleController extends AppController
     /**
      * @Route("module.enable", name="api-module.enable")
      * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
-     * @ApiCommand("api__module_enable")
-     * @ApiResult()
+     * @Api("api__module_enable")
      */
     public function enableAction(Site $site, ModuleEnableCommand $command)
     {
@@ -39,8 +37,7 @@ class ModuleController extends AppController
     /**
      * @Route("module.disable", name="api-module.disable")
      * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
-     * @ApiCommand("api__module_disable")
-     * @ApiResult()
+     * @Api("api__module_disable")
      */
     public function disableAction(Site $site, ModuleDisableCommand $command)
     {
@@ -53,8 +50,7 @@ class ModuleController extends AppController
     /**
      * @Route("module.uninstall", name="api-module.uninstall")
      * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
-     * @ApiCommand("api__module_disable")
-     * @ApiResult()
+     * @Api("api__module_disable")
      */
     public function uninstallAction(Site $site, ModuleDisableCommand $command)
     {

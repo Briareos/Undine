@@ -17,12 +17,16 @@ use Undine\Api\Constraint\Security\BadCredentialsConstraint;
 use Undine\Api\Constraint\Security\NotAuthenticatedConstraint;
 use Undine\Api\Constraint\Security\NotAuthorizedConstraint;
 use Undine\Api\Constraint\SecurityConstraint;
+use Undine\Api\Constraint\Site\InvalidBodyConstraint;
+use Undine\Api\Constraint\Site\OxygenErrorConstraint;
 use Undine\Api\Exception\CommandInvalidException;
 use Undine\Api\Exception\ConstraintViolationException;
 use Undine\Api\Result\ResultInterface;
 use Undine\Api\Serializer\Context;
 use Undine\Api\Serializer\Normalizer;
 use Undine\Oxygen\Exception\InvalidBodyException;
+use Undine\Oxygen\Exception\OxygenException;
+use Undine\Oxygen\Exception\ProtocolException;
 
 class ApiResultListener implements EventSubscriberInterface
 {
@@ -54,7 +58,7 @@ class ApiResultListener implements EventSubscriberInterface
     {
         $request = $event->getRequest();
 
-        if (!$request->attributes->has('_api_result')) {
+        if (!$request->attributes->has('_api')) {
             return;
         }
 
@@ -97,6 +101,10 @@ class ApiResultListener implements EventSubscriberInterface
             } else {
                 $this->mergeConstraintData($data, new NotAuthenticatedConstraint());
             }
+        } elseif ($exception instanceof OxygenException) {
+            $this->mergeConstraintData($data, new OxygenErrorConstraint($exception->getCode(), $exception->getType()));
+        } elseif ($exception instanceof InvalidBodyException) {
+            $this->mergeConstraintData($data, new InvalidBodyConstraint());
         } else {
             // Show full exceptions for now.
             return;

@@ -35,6 +35,13 @@
             <tag name="data_collector" template="views/toolbar/angular.html.twig" id="angular"/>
         </service>
 
+        <service id="event_loop" class="React\EventLoop\LoopInterface" factory-class="React\EventLoop\Factory" factory-method="create">
+        </service>
+
+        <service id="output_flusher" class="Undine\Http\OutputFlusher">
+            <argument>4096</argument>
+        </service>
+
     </services>
 
 </container>

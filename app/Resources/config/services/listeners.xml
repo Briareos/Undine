@@ -17,6 +17,11 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <service id="undine.listener.api" class="Undine\EventListener\ApiListener">
+            <argument type="service" id="http_kernel"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <service id="undine.listener.api_command" class="Undine\EventListener\ApiCommandListener">
             <argument type="service" id="form.factory"/>
             <tag name="kernel.event_subscriber"/>

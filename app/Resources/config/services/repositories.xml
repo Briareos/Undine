@@ -14,6 +14,10 @@
             <argument>Model:Staff</argument>
         </service>
 
+        <service id="doctrine.repository.site" class="Undine\Repository\SiteRepository" factory-service="doctrine.orm.default_entity_manager" factory-method="getRepository">
+            <argument>Model:Site</argument>
+        </service>
+
     </services>
 
 </container>

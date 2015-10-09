@@ -21,11 +21,18 @@ class SiteTransformer extends AbstractTransformer
         'themeUpdates',
     ];
 
+    private static $statusMap = [
+        Site::STATUS_CONNECTED    => 'connected',
+        Site::STATUS_DISCONNECTED => 'disconnected',
+        Site::STATUS_PAUSED       => 'paused',
+    ];
+
     public function transform(Site $site)
     {
         return [
-            'uid' => $site->getUid(),
-            'url' => (string)$site->getUrl(),
+            'uid'    => $site->getUid(),
+            'url'    => (string)$site->getUrl(),
+            'status' => self::$statusMap[$site->getStatus()],
         ];
     }
 

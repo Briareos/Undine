@@ -8,7 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationAnnotation;
  * @Annotation
  * @Target({"CLASS", "METHOD"})
  */
-class ApiCommand extends ConfigurationAnnotation
+class Api extends ConfigurationAnnotation
 {
     /**
      * Registered form type class name or alias.
@@ -32,6 +32,11 @@ class ApiCommand extends ConfigurationAnnotation
      */
     protected $groups = [];
 
+    /**
+     * @var bool
+     */
+    protected $bulkable = false;
+
     public function setValue($value)
     {
         $this->type = $value;
@@ -39,7 +44,7 @@ class ApiCommand extends ConfigurationAnnotation
 
     public function getAliasName()
     {
-        return 'api_command';
+        return 'api';
     }
 
     public function allowArray()
@@ -93,5 +98,21 @@ class ApiCommand extends ConfigurationAnnotation
     public function setGroups(array $groups)
     {
         $this->groups = $groups;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isBulkable()
+    {
+        return $this->bulkable;
+    }
+
+    /**
+     * @param boolean $bulkable
+     */
+    public function setBulkable($bulkable)
+    {
+        $this->bulkable = $bulkable;
     }
 }

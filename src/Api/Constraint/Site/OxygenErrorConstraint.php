@@ -4,7 +4,7 @@ namespace Undine\Api\Constraint\Site;
 
 use Undine\Api\Constraint\AbstractConstraint;
 
-class ProtocolErrorConstraint extends AbstractConstraint
+class OxygenErrorConstraint extends AbstractConstraint
 {
     /**
      * @var int

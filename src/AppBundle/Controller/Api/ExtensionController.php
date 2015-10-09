@@ -9,8 +9,7 @@ use Undine\Api\Command\ExtensionUpdateCommand;
 use Undine\Api\Result\ExtensionDownloadFromUrlResult;
 use Undine\Api\Result\ExtensionUpdateResult;
 use Undine\AppBundle\Controller\AppController;
-use Undine\Configuration\ApiCommand;
-use Undine\Configuration\ApiResult;
+use Undine\Configuration\Api;
 use Undine\Model\Site;
 use Undine\Oxygen\Action\DatabaseListMigrationsAction;
 use Undine\Oxygen\Action\DatabaseRunMigrationAction;
@@ -26,9 +25,8 @@ class ExtensionController extends AppController
 {
     /**
      * @Route("extension.downloadFromUrl", name="api-extension.downloadFromUrl")
-     * @ApiCommand("api__extension_download_from_url")
      * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
-     * @ApiResult()
+     * @Api("api__extension_download_from_url")
      */
     public function downloadFromUrlAction(Site $site, ExtensionDownloadFromUrlCommand $command)
     {
@@ -40,9 +38,8 @@ class ExtensionController extends AppController
 
     /**
      * @Route("extension.update", name="api-project.update")
-     * @ApiCommand("api__extension_update")
      * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
-     * @ApiResult()
+     * @Api("api__extension_update")
      */
     public function downloadUpdateFromUrlAction(Site $site, ExtensionUpdateCommand $command)
     {

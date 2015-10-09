@@ -10,6 +10,7 @@ use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\FormTypeInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Undine\Api\Progress\ProgressInterface;
 use Undine\Email\EmailFactory;
 use Undine\Model\User;
 use Undine\Oxygen\Client as OxygenClient;
@@ -106,5 +107,10 @@ abstract class AppController extends Controller
     protected function isStateless()
     {
         return ($this->get('security.token_storage')->getToken() instanceof ApiToken);
+    }
+
+    protected function progress(ProgressInterface $progress)
+    {
+        $this->get('output_flusher')->flushMessage(json_encode($progress));
     }
 }

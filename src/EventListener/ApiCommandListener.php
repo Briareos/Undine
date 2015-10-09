@@ -7,6 +7,7 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Undine\Api\Exception\CommandInvalidException;
+use Undine\Configuration\Api;
 use Undine\Configuration\ApiCommand;
 
 class ApiCommandListener implements EventSubscriberInterface
@@ -32,14 +33,16 @@ class ApiCommandListener implements EventSubscriberInterface
     {
         $request = $event->getRequest();
 
-        if (!$request->attributes->has('_api_command')) {
+        if (!$request->attributes->has('_api')) {
             return;
         }
 
-        /** @var ApiCommand $apiCommand */
-        $apiCommand = $request->attributes->get('_api_command');
+        /** @var Api $apiCommand */
+        $apiCommand = $request->attributes->get('_api');
 
-        $type = $apiCommand->getType();
+        if (!$type = $apiCommand->getType()) {
+            return;
+        }
 
         $formOptions = [
             'csrf_protection'    => false,

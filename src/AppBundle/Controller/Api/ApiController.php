@@ -2,17 +2,24 @@
 
 namespace Undine\AppBundle\Controller\Api;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Undine\Api\Result\ApiTestResult;
 use Undine\Api\Result\ApiMeResult;
 use Undine\AppBundle\Controller\AppController;
-use Undine\Configuration\ApiResult;
+use Undine\Configuration\Api;
 
 class ApiController extends AppController
 {
+    public function bulkAction()
+    {
+
+    }
+
     /**
+     * @Method("GET,POST")
      * @Route("api.test", name="api-api.test")
-     * @ApiResult()
+     * @Api()
      */
     public function testAction()
     {
@@ -21,7 +28,7 @@ class ApiController extends AppController
 
     /**
      * @Route("api.me", name="api-api.me")
-     * @ApiResult()
+     * @Api()
      */
     public function meAction()
     {

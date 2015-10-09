@@ -10,6 +10,7 @@
         <field name="url" type="uri" length="300"/>
         <field name="privateKey" type="string" length="1750"/>
         <field name="publicKey" type="string" length="500"/>
+        <field name="status" type="integer"/>
         <field name="createdAt" type="datetime">
             <gedmo:timestampable on="create"/>
         </field>

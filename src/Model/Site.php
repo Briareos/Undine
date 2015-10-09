@@ -14,6 +14,10 @@ class Site implements UidInterface
 {
     use UidTrait;
 
+    const STATUS_DISCONNECTED = 0;
+    const STATUS_CONNECTED = 1;
+    const STATUS_PAUSED = 2;
+
     /**
      * @var int
      */
@@ -63,6 +67,16 @@ class Site implements UidInterface
      * @var SiteUpdate[]
      */
     private $siteUpdates;
+
+    /**
+     * @var int
+     */
+    private $status = self::STATUS_DISCONNECTED;
+
+    /**
+     * @var \DateTime
+     */
+    private $lastCommunicatedAt;
 
     /**
      * @var \DateTime
@@ -253,6 +267,46 @@ class Site implements UidInterface
     public function setSiteUpdates(array $siteUpdates)
     {
         $this->siteUpdates = new ArrayCollection($siteUpdates);
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setConnected()
+    {
+        $this->status = self::STATUS_CONNECTED;
+
+        return $this;
+    }
+
+    /**
+     * @param $reason
+     *
+     * @return $this
+     */
+    public function setDisconnected($reason)
+    {
+        $this->status = self::STATUS_DISCONNECTED;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setPaused()
+    {
+        $this->status = self::STATUS_PAUSED;
 
         return $this;
     }
