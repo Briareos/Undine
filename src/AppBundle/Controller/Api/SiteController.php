@@ -82,7 +82,6 @@ class SiteController extends AppController
         if ($command->checkUrl() || $command->hasAdminCredentials()) {
             $findLoginForm = $drupalClient->findLoginFormAsync($command->getUrl(), $drupalSession);
         }
-        $stream(['message'=>'test']);
         /** @var Promise $settlePromise */
         $settlePromise = \GuzzleHttp\Promise\settle(array_filter([$connectWebsite, $findLoginForm]));
         // [0] will contain 'connectWebsite' result; while [1] will contain 'findLoginForm' result or will not be set.

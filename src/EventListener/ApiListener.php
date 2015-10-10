@@ -129,7 +129,7 @@ class ApiListener implements EventSubscriberInterface
                 return new StreamedResponse(function () use ($request) {
                     $streamer = $this->createStreamer();
                     $request->attributes->set('stream', $streamer);
-                    $response = $this->httpKernel->handle($request, HttpKernelInterface::SUB_REQUEST, true, false);
+                    $response = $this->httpKernel->handle($request, HttpKernelInterface::SUB_REQUEST, true, true);
                     $streamer($response->getContent());
                 }, 200, $headers);
             });
