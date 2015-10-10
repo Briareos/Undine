@@ -74,26 +74,19 @@ class AsyncHttpKernel implements HttpKernelInterface, TerminableInterface
     {
         $request->headers->set('X-Php-Ob-Level', ob_get_level());
 
-        try {
-            $promise = $this->handleRaw($request, $type)
-                ->otherwise(function (\Exception $e) use ($request, $type, $catch) {
-                    if (false === $catch) {
-                        $this->finishRequest($request, $type);
+        $promise = (new FulfilledPromise(null))
+            ->then(function () use ($request, $type) {
+                return $this->handleRaw($request, $type);
+            })
+            ->otherwise(function (\Exception $e) use ($request, $type, $catch) {
+                if (false === $catch) {
+                    $this->finishRequest($request, $type);
 
-                        throw $e;
-                    }
+                    throw $e;
+                }
 
-                    return $this->handleException($e, $request, $type);
-                });
-        } catch (\Exception $e) {
-            if (false === $catch) {
-                $this->finishRequest($request, $type);
-
-                throw $e;
-            }
-
-            return $this->handleException($e, $request, $type);
-        }
+                return $this->handleException($e, $request, $type);
+            });
 
         if ($unwrap) {
             return $promise->wait();
