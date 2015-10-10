@@ -68,7 +68,14 @@ trait UidTrait
             return null;
         }
 
-        if (!$id = (int)$encoder->decode(ltrim(substr($uid, -10), '0'))) {
+        $idString = ltrim(substr($uid, -10), '0');
+
+        if (!ctype_digit($idString)) {
+            // The ID is not numeric.
+            return null;
+        }
+
+        if (!$id = (int)$encoder->decode($idString)) {
             return null;
         }
 

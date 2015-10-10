@@ -2,6 +2,7 @@
 
 namespace Undine\AppBundle\Controller\Api;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Undine\Api\Command\ExtensionDownloadFromUrlCommand;
@@ -24,6 +25,7 @@ use Undine\Oxygen\Reaction\ExtensionUpdateReaction;
 class ExtensionController extends AppController
 {
     /**
+     * @Method("GET|POST")
      * @Route("extension.downloadFromUrl", name="api-extension.downloadFromUrl")
      * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
      * @Api("api__extension_download_from_url")
@@ -37,6 +39,7 @@ class ExtensionController extends AppController
     }
 
     /**
+     * @Method("GET|POST")
      * @Route("extension.update", name="api-project.update")
      * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
      * @Api("api__extension_update")

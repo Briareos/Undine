@@ -26,6 +26,10 @@
             <tag name="form.type" alias="api__extension_update"/>
         </service>
 
+        <service id="undine.form.type.api.site_ping" class="Undine\Form\Type\Api\SitePingType">
+            <tag name="form.type" alias="api__site_ping"/>
+        </service>
+
     </services>
 
 </container>

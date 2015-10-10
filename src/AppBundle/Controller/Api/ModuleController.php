@@ -2,6 +2,7 @@
 
 namespace Undine\AppBundle\Controller\Api;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Undine\Api\Command\ModuleDisableCommand;
@@ -22,6 +23,7 @@ use Undine\Oxygen\Reaction\ModuleUninstallReaction;
 class ModuleController extends AppController
 {
     /**
+     * @Method("GET|POST")
      * @Route("module.enable", name="api-module.enable")
      * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
      * @Api("api__module_enable")
@@ -35,6 +37,7 @@ class ModuleController extends AppController
     }
 
     /**
+     * @Method("GET|POST")
      * @Route("module.disable", name="api-module.disable")
      * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
      * @Api("api__module_disable")
@@ -48,6 +51,7 @@ class ModuleController extends AppController
     }
 
     /**
+     * @Method("GET|POST")
      * @Route("module.uninstall", name="api-module.uninstall")
      * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
      * @Api("api__module_disable")
@@ -59,6 +63,4 @@ class ModuleController extends AppController
 
         return new ModuleUninstallResult();
     }
-
-
 }

@@ -42,6 +42,12 @@
             <argument>4096</argument>
         </service>
 
+        <service id="http_kernel" class="Undine\Http\AsyncHttpKernel">
+            <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="controller_resolver"/>
+            <argument type="service" id="request_stack"/>
+        </service>
+
     </services>
 
 </container>

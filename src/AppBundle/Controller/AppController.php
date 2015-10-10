@@ -108,9 +108,4 @@ abstract class AppController extends Controller
     {
         return ($this->get('security.token_storage')->getToken() instanceof ApiToken);
     }
-
-    protected function progress(ProgressInterface $progress)
-    {
-        $this->get('output_flusher')->flushMessage(json_encode($progress));
-    }
 }

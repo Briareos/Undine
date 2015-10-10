@@ -11,13 +11,8 @@ use Undine\Configuration\Api;
 
 class ApiController extends AppController
 {
-    public function bulkAction()
-    {
-
-    }
-
     /**
-     * @Method("GET,POST")
+     * @Method("GET|POST")
      * @Route("api.test", name="api-api.test")
      * @Api()
      */
@@ -27,6 +22,7 @@ class ApiController extends AppController
     }
 
     /**
+     * @Method("GET|POST")
      * @Route("api.me", name="api-api.me")
      * @Api()
      */

@@ -18,30 +18,37 @@ class SiteConnectCommand extends AbstractCommand
      * @var bool
      */
     private $checkUrl;
+
     /**
      * @var string|null
      */
     private $httpUsername;
+
     /**
      * @var string|null
      */
     private $httpPassword;
+
     /**
      * @var string|null
      */
     private $adminUsername;
+
     /**
      * @var string|null
      */
     private $adminPassword;
+
     /**
      * @var string|null
      */
     private $ftpMethod;
+
     /**
      * @var string|null
      */
     private $ftpUsername;
+
     /**
      * @var string|null
      */

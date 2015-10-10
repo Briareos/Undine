@@ -35,6 +35,11 @@ class Api extends ConfigurationAnnotation
     /**
      * @var bool
      */
+    protected $streamable = false;
+
+    /**
+     * @var bool
+     */
     protected $bulkable = false;
 
     public function setValue($value)
@@ -101,7 +106,23 @@ class Api extends ConfigurationAnnotation
     }
 
     /**
-     * @return boolean
+     * @return bool
+     */
+    public function isStreamable()
+    {
+        return $this->streamable;
+    }
+
+    /**
+     * @param bool $streamable
+     */
+    public function setStreamable($streamable)
+    {
+        $this->streamable = $streamable;
+    }
+
+    /**
+     * @return bool
      */
     public function isBulkable()
     {
@@ -109,10 +130,12 @@ class Api extends ConfigurationAnnotation
     }
 
     /**
-     * @param boolean $bulkable
+     * @param bool $bulkable
      */
     public function setBulkable($bulkable)
     {
         $this->bulkable = $bulkable;
     }
+    
+    
 }

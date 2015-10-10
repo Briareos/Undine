@@ -19,6 +19,7 @@
 
         <service id="undine.listener.api" class="Undine\EventListener\ApiListener">
             <argument type="service" id="http_kernel"/>
+            <argument type="service" id="output_flusher"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 

@@ -5,10 +5,12 @@ namespace Undine\AppBundle\Controller\Api;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Promise\Promise;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\DomCrawler\Form;
 use Undine\Api\Command\SiteConnectCommand;
+use Undine\Api\Command\SitePingCommand;
 use Undine\Api\Constraint\Site\CanNotInstallOxygenConstraint;
 use Undine\Api\Constraint\Site\CanNotResolveHostConstraint;
 use Undine\Api\Constraint\Site\FtpCredentialsErrorConstraint;
@@ -46,14 +48,16 @@ use Undine\Oxygen\Action\SitePingAction;
 use Undine\Oxygen\Exception\InvalidBodyException;
 use Undine\Oxygen\Exception\OxygenException;
 use Undine\Oxygen\Reaction\SiteLogoutReaction;
+use Undine\Oxygen\Reaction\SitePingReaction;
 
 class SiteController extends AppController
 {
     /**
+     * @Method("GET|POST")
      * @Route("site.connect", name="api-site.connect")
-     * @Api("api__site_connect")
+     * @Api("api__site_connect", streamable=true)
      */
-    public function connectAction(SiteConnectCommand $command)
+    public function connectAction(SiteConnectCommand $command, callable $stream)
     {
         list($privateKey, $publicKey) = \Undine\Functions\openssl_generate_rsa_key_pair();
         $site = (new Site($command->getUrl(), $this->getUser(), $privateKey, $publicKey))
@@ -78,7 +82,7 @@ class SiteController extends AppController
         if ($command->checkUrl() || $command->hasAdminCredentials()) {
             $findLoginForm = $drupalClient->findLoginFormAsync($command->getUrl(), $drupalSession);
         }
-
+        $stream(['message'=>'test']);
         /** @var Promise $settlePromise */
         $settlePromise = \GuzzleHttp\Promise\settle(array_filter([$connectWebsite, $findLoginForm]));
         // [0] will contain 'connectWebsite' result; while [1] will contain 'findLoginForm' result or will not be set.
@@ -261,17 +265,18 @@ class SiteController extends AppController
 
     /**
      * @Route("site.ping", name="api-site.ping")
-     * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
-     * @Api()
+     * @Api("api__site_ping", bulkable=true)
      */
-    public function pingAction(Site $site)
+    public function pingAction(SitePingCommand $command)
     {
-        $this->oxygenClient->send($site, new SitePingAction());
-
-        return new SiteConnectResult($site);
+        return $this->oxygenClient->sendAsync($command->getSite(), new SitePingAction())
+            ->then(function (SitePingReaction $reaction) use ($command) {
+                return new SiteConnectResult($command->getSite());
+            });
     }
 
     /**
+     * @Method("GET|POST")
      * @Route("site.disconnect", name="api-site.disconnect")
      * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
      * @Api()
@@ -290,6 +295,7 @@ class SiteController extends AppController
     }
 
     /**
+     * @Method("GET|POST")
      * @Route("site.login", name="api-site.login")
      * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
      * @Api()

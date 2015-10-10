@@ -2,6 +2,8 @@
 
 namespace Undine\EventListener;
 
+use GuzzleHttp\Promise\Promise;
+use GuzzleHttp\Promise\PromiseInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestMatcherInterface;
@@ -62,9 +64,9 @@ class ApiResultListener implements EventSubscriberInterface
             return;
         }
 
-        $result = $event->getControllerResult() ?: [];
-        if (!$result instanceof ResultInterface) {
-            throw new \RuntimeException(sprintf('API controller result must be an instance of %s.', ResultInterface::class));
+        $result = $event->getControllerResult();
+        if (!$result instanceof ResultInterface && !$result instanceof PromiseInterface) {
+            throw new \RuntimeException(sprintf('API controller result must be an instance of %s or %s.', ResultInterface::class, PromiseInterface::class));
         }
 
         $includes = $request->get('include', null);
@@ -90,7 +92,11 @@ class ApiResultListener implements EventSubscriberInterface
         $data = [];
 
         if ($exception instanceof CommandInvalidException) {
-            $data += ['error' => $exception->getForm()->getErrors(true)->current()->getMessage(), 'verbose' => $exception->getForm()->getErrors(true, true)->__toString()];
+            $formError = $exception->getForm()->getErrors(true)->current();
+            $data += [
+                'error'    => $formError->getMessage(),
+                'property' => $formError->getOrigin()->getName(),
+            ];
         } elseif ($exception instanceof ConstraintViolationException) {
             $this->mergeConstraintData($data, $exception->getConstraint());
         } elseif ($exception instanceof UsernameNotFoundException) {
