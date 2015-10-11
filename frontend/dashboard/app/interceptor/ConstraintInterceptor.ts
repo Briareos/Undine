@@ -33,6 +33,9 @@ angular.module('undine.dashboard')
                     case 'site.http_authentication_failed':
                         response.data = new HttpAuthenticationFailedConstraint(response.data);
                         break;
+                    case 'site.can_not_resolve_host':
+                        response.data = new CanNotResolveHost(response.data);
+                        break;
                     default:
                         response.data = new Constraint(response.data);
                 }

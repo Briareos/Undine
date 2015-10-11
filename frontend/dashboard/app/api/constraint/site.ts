@@ -45,3 +45,6 @@ class HttpAuthenticationRequiredConstraint extends Constraint {
 
 class HttpAuthenticationFailedConstraint extends Constraint {
 }
+
+class CanNotResolveHost extends Constraint {
+}

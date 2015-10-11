@@ -6,6 +6,7 @@ interface ConnectWebsiteUrlScope extends ng.IScope {
     httpAuthenticationRequired:boolean
     connectWebsiteErrors:{
         httpAuthenticationFailed:boolean
+        canNotResolveHost:boolean
     }
 }
 
@@ -92,7 +93,8 @@ angular.module('undine.dashboard')
                 return;
             }
             $scope.connectWebsiteErrors = {
-                httpAuthenticationFailed: false
+                httpAuthenticationFailed: false,
+                canNotResolveHost: false
             };
             var siteUrl:string = $scope.urlFormData.url;
             if (!siteUrl.match(/^https?:\/\//)) {
@@ -127,6 +129,8 @@ angular.module('undine.dashboard')
                             loginFormFound: constraint.loginFormFound
                         });
                         return;
+                    } else if (constraint instanceof CanNotResolveHost) {
+                        $scope.connectWebsiteErrors.canNotResolveHost = true;
                     }
                 })
                 .finally(function () {
