@@ -35,11 +35,11 @@ class Api {
         return config;
     }
 
-    private command(command:string, parameters:any, stream:boolean = true):ng.IHttpPromise<ApiResult> {
+    private command(command:string, parameters:any, stream:boolean = false):ng.IHttpPromise<ApiResult> {
         return this.$http.post(this.endpoint + command, parameters, this.buildConfig(stream));
     }
 
-    siteConnect(url:string, checkUrl:boolean = false, httpUsername?:string, httpPassword?:string, adminUsername?:string, adminPassword?:string, ftpMethod?:string, ftpUsername?:string, ftpPassword?:string, ftpHost?:string, ftpPort?:number):ng.IHttpPromise<SiteConnectResult> {
+    siteConnect(url:string, checkUrl:boolean = false, httpUsername?:string, httpPassword?:string, adminUsername?:string, adminPassword?:string, ftpMethod?:string, ftpUsername?:string, ftpPassword?:string, ftpHost?:string, ftpPort?:number, stream:boolean = false):ng.IHttpPromise<SiteConnectResult> {
         return this.command('site.connect', {
             url: url,
             checkUrl: checkUrl,
@@ -52,7 +52,7 @@ class Api {
             ftpPassword: ftpPassword,
             ftpHost: ftpHost,
             ftpPort: ftpPort
-        });
+        }, stream);
     }
 }
 
