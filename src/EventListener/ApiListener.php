@@ -74,8 +74,10 @@ class ApiListener implements EventSubscriberInterface
             return;
         }
 
-        // This listener will unwind/spread the calls, so don't trigger other Api listeners.
-        $request->attributes->remove('_api');
+        if ($subRequests) {
+            // This listener will unwind/spread the calls, so don't trigger other Api listeners.
+            $request->attributes->remove('_api');
+        }
 
         if ($stream) {
             $headers = ['content-type' => 'application/json; boundary=NL', 'x-accel-buffering' => 'no'];
@@ -95,7 +97,7 @@ class ApiListener implements EventSubscriberInterface
                         if (isset($query['payload'])) {
                             unset($query['payload']);
                         }
-                        $subRequest = $request->duplicate($query, $requestParams);
+                        $subRequest = $request->duplicate([], $requestParams);
                         // Also force-make it a POST request, so it can contain a body.
                         $subRequest->setMethod('POST');
                         $subRequest->attributes->set('stream', $stream ? $this->createStreamer($i) : $noOp);
