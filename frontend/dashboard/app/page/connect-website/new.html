@@ -19,12 +19,16 @@
                 Install and enable our client plugin, <strong>Oxygen</strong>, that allows you to manage the website remotely:
             </p>
 
-            <div class="ui fluid input">
+            <div class="ui fluid action input">
                 <input type="text" readonly ng-value="oxygenZipUrl" onclick="this.select()">
+                <a ng-href="{{ oxygenZipUrl }}" class="ui right labeled icon button">
+                    <i class="download icon"></i>
+                    Download
+                </a>
             </div>
 
             <div class="ui info message">
-                If you have the Drupal's core module <strong>Updates</strong> enabled, go to <a ng-href="{{ updatesUrl }}" target="_blank">this page</a>, install it from the URL and enable it.
+                If you have the Drupal's core module <strong>Updates</strong> enabled, go to the <a ng-href="{{ updatesUrl }}" target="_blank">install module page</a> of your website, paste in the URL above and enable the "Oxygen" module.
             </div>
 
             <div ng-if="connectWebsiteErrors.stillDisabled" class="ui negative message">

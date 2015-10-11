@@ -11,6 +11,10 @@
             <input required type="text" name="url" id="site-url" placeholder="http://example.com" ng-model="urlFormData.url" autofocus>
         </div>
 
+        <div class="ui negative message" ng-if="connectWebsiteErrors.canNotResolveHost">
+            <p>Could not resolve the website host. Are you sure the site exists?</p>
+        </div>
+
     </div>
 
     <div class="field" ng-if="httpAuthenticationRequired">
