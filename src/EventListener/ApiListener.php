@@ -129,10 +129,12 @@ class ApiListener implements EventSubscriberInterface
         } else {
             $event->setController(function () use ($request, $headers) {
                 return new StreamedResponse(function () use ($request) {
-                    $streamer = $this->createStreamer();
-                    $request->attributes->set('stream', $streamer);
+                    $request->attributes->set('stream', $this->createStreamer());
                     $response = $this->httpKernel->handle($request, HttpKernelInterface::SUB_REQUEST, true, true);
-                    $streamer($response->getContent());
+                    // The streamer outputs a new line as the ending delimiter. In single action calls, the ending line should be
+                    // the actual response without a new line at the end. That's why streaming single calls have a resulting
+                    // response, but bulk calls don't have one.
+                    echo $response->getContent();
                 }, 200, $headers);
             });
         }

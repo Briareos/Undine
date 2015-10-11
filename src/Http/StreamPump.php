@@ -30,19 +30,22 @@ class StreamPump
 
     /**
      * @param string $progress A valid JSON, a JsonSerializable or an array.
+     * @param bool   $final    Whether this is a final response and not a progress message.
      */
-    public function __invoke($progress)
+    public function __invoke($progress, $final = false)
     {
+        $key = $final ? 'result' : 'progress';
+
         if (is_string($progress)) {
             // Strings are expected to be valid JSON.
             if ($this->index !== null) {
-                $this->outputFlusher->flushMessage('{"index":'.$this->index.',"data":'.$progress.'}');
+                $this->outputFlusher->flushMessage(sprintf('{"index":%d,"%s":%s}', $this->index, $key, $progress));
             } else {
                 $this->outputFlusher->flushMessage($progress);
             }
         } elseif ($progress instanceof \JsonSerializable || is_array($progress)) {
             if ($this->index !== null) {
-                $progress = ['index' => $this->index, 'data' => $progress];
+                $progress = ['index' => $this->index, $key => $progress];
             }
             $this->outputFlusher->flushMessage(json_encode($progress));
         } else {
