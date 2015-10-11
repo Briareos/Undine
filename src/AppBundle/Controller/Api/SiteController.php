@@ -59,6 +59,16 @@ class SiteController extends AppController
      */
     public function connectAction(SiteConnectCommand $command, callable $stream)
     {
+        $stream(['foo'=>'bar']);
+        sleep(1);
+        $stream(['foo'=>'bar']);
+        sleep(1);
+        $stream(['foo'=>'bar']);
+        sleep(1);
+        $stream(['foo'=>'bar']);
+        sleep(1);
+        $stream(['foo'=>'bar']);
+        sleep(1);
         list($privateKey, $publicKey) = \Undine\Functions\openssl_generate_rsa_key_pair();
         $site = (new Site($command->getUrl(), $this->getUser(), $privateKey, $publicKey))
             ->setHttpCredentials($command->getHttpCredentials())

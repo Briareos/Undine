@@ -74,10 +74,8 @@ class ApiListener implements EventSubscriberInterface
             return;
         }
 
-        if ($subRequests) {
             // This listener will unwind/spread the calls, so don't trigger other Api listeners.
             $request->attributes->remove('_api');
-        }
 
         if ($stream) {
             $headers = ['content-type' => 'application/json; boundary=NL', 'x-accel-buffering' => 'no'];
@@ -106,7 +104,7 @@ class ApiListener implements EventSubscriberInterface
                         if ($stream) {
                             $streamer = $this->createStreamer($i);
                             $promise->then(function (Response $response) use ($streamer) {
-                                $streamer($response->getContent());
+                                $streamer($response->getContent(), true);
                             });
                         }
                     }
@@ -191,6 +189,7 @@ class ApiListener implements EventSubscriberInterface
     private function shouldStream(Request $request)
     {
         return (bool)$request->query->get('stream', false)
-        || strpos($request->headers->get('accept'), 'application/ldjson');
+        || $request->headers->has('x-stream')
+        || $request->headers->has('stream');
     }
 }
