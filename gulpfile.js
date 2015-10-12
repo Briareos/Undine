@@ -39,12 +39,14 @@ function cleanDev(cb) {
 
 function clean(cb) {
     del([
-        './var/tmp/rev-*.json',
+        './var/tmp/**',
+        '!./var/tmp',
+        '!./var/tmp/.gitkeep',
         './web/css/**',
-        '!./var/css',
+        '!./web/css',
         '!./web/css/.gitkeep',
         './web/js/**',
-        '!./var/js',
+        '!./web/js',
         '!./web/js/.gitkeep',
         './web/image/**',
         '!./web/image',
