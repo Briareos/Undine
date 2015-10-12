@@ -6,12 +6,12 @@
     <title>{% block title %}Undine{% endblock %}</title>
 
     {% if app.environment == 'dev' %}
-        <link rel="stylesheet" href="/tmp/semantic-ui/semantic.css">
+        <link rel="stylesheet" href="/bower_components/semantic-ui/dist/semantic.css">
         <link rel="stylesheet" href="/tmp/css/web/web.css">
 
         <script src="/bower_components/jquery/dist/jquery.js"></script>
         <script src="/bower_components/angular/angular.js"></script>
-        <script src="/tmp/semantic-ui/semantic.js"></script>
+        <script src="/bower_components/semantic-ui/dist/semantic.js"></script>
         <script src="/tmp/js/web/web-template.js"></script>
         <script src="/tmp/js/web/web.js"></script>
     {% else %}
