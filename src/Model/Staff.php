@@ -51,8 +51,9 @@ class Staff implements UserInterface, UserActivityAwareInterface
      * @param string $email
      * @param string $password
      */
-    public function __construct($email, $password)
+    public function __construct($name, $email, $password)
     {
+        $this->name     = $name;
         $this->email    = $email;
         $this->password = $password;
     }

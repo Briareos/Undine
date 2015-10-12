@@ -15,12 +15,14 @@ class StaffCreateCommand extends ContainerAwareCommand
     {
         $this->setName('staff:create')
             ->setDescription('Create a staff member that will have the access to the administration panel.')
+            ->addArgument('name', InputArgument::REQUIRED, 'Staff member name.')
             ->addArgument('email', InputArgument::REQUIRED, 'Email address.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $validator = $this->getContainer()->get('validator');
+        $name      = $input->getArgument('name');
         $email     = $input->getArgument('email');
 
         $dialog   = $this->getHelper('dialog');
@@ -28,7 +30,7 @@ class StaffCreateCommand extends ContainerAwareCommand
 
         $encoder = $this->getContainer()->get('security.encoder_factory')->getEncoder(Staff::class);
 
-        $staff = new Staff($email, $encoder->encodePassword($password, null));
+        $staff = new Staff($name, $email, $encoder->encodePassword($password, null));
 
         $violations = $validator->validate($staff);
 
