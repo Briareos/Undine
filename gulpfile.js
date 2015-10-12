@@ -212,7 +212,6 @@ function buildDashboardTypescript() {
         .pipe(vendorFilter.restore)
         .pipe(htmlFilter)
         .pipe(minifyHtml())
-        .pipe(debug({minimal: false}))
         .pipe(ngTemplate({
             filename: 'dashboard-template.js',
             module: 'undine.dashboard.template',
@@ -242,7 +241,7 @@ function buildAdminTypescript() {
 
     return gulp.src([
         './frontend/bower_components/jquery/dist/jquery.min.js',
-        './frontend/bower_components/angularjs/angular.min.js',
+        './frontend/bower_components/angular/angular.min.js',
         './frontend/bower_components/semantic-ui/dist/semantic.min.js',
         './frontend/bower_components/lodash/lodash.min.js',
         './frontend/admin/app/**/*.html',
@@ -285,7 +284,7 @@ function buildWebTypescript() {
 
     return gulp.src([
         './frontend/bower_components/jquery/dist/jquery.min.js',
-        './frontend/bower_components/angularjs/angular.min.js',
+        './frontend/bower_components/angular/angular.min.js',
         './frontend/bower_components/semantic-ui/dist/semantic.min.js',
         './frontend/bower_components/lodash/lodash.min.js',
         './frontend/web/app/**/*.html',
