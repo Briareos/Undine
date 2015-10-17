@@ -1,9 +1,15 @@
 class Dashboard {
-    private _user:User;
-    private _sites:Array<Site>;
-    private _initialized:boolean = false;
+    private api: Api;
+    private q: ng.IQService;
+    private rootScope: ng.IRootScopeService;
+    private _user: IUser;
+    private _sites: ISite[];
+    private _initialized: boolean = false;
 
-    constructor(private Api:Api, private $q:ng.IQService, private $rootScope:ng.IRootScopeService) {
+    constructor(api: Api, $q: ng.IQService, $rootScope: ng.IRootScopeService) {
+        this.api = api;
+        this.q = $q;
+        this.rootScope = $rootScope;
     }
 
     /**
@@ -11,15 +17,15 @@ class Dashboard {
      *
      * @internal
      */
-    public initialize(user:User) {
+    public initialize(user: IUser) {
         this._user = user;
         this._sites = user.sites;
         this._initialized = true;
-        this.$rootScope.$broadcast('dashboard.change');
+        this.rootScope.$broadcast('dashboard.change');
     }
 
-    public subscribeScope(scope:ng.IScope, callback:any) {
-        var unsubscribe:any = this.$rootScope.$on('dashboard.change', callback);
+    public subscribeScope(scope: ng.IScope, callback: any) {
+        let unsubscribe: any = this.rootScope.$on('dashboard.change', callback);
         scope.$on('destroy', unsubscribe);
 
         if (this._initialized) {
@@ -27,31 +33,31 @@ class Dashboard {
         }
     }
 
-    public subscribe(callback:any):Function {
+    public subscribe(callback: any): void {
         if (this._initialized) {
             callback();
         }
 
-        return this.$rootScope.$on('dashboard.change', callback);
+        this.rootScope.$on('dashboard.change', callback);
     }
 
-    public get sites() {
+    public get sites(): ISite[] {
         return this._sites;
     }
 
-    public get user() {
+    public get user(): IUser {
         return this._user;
     }
 
-    private broadcastChange() {
-        this.$rootScope.$broadcast('dashboard.change');
+    private broadcastChange(): void {
+        this.rootScope.$broadcast('dashboard.change');
     }
 }
 
 angular.module('undine.dashboard')
-    .service('Dashboard', function (Api:Api, $q:ng.IQService, $rootScope:ng.IRootScopeService) {
+    .service('Dashboard', function (Api: Api, $q: ng.IQService, $rootScope: ng.IRootScopeService): Dashboard {
         return new Dashboard(Api, $q, $rootScope);
     })
-    .run(function (Dashboard:Dashboard, AppData:AppData) {
+    .run(function (Dashboard: Dashboard, AppData: AppData): void {
         Dashboard.initialize(AppData.currentUser);
     });

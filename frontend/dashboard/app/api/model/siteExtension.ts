@@ -1,13 +1,13 @@
-interface SiteExtension {
-    slug:string,
-    name:string,
-    description:string,
-    version?:string,
+interface ISiteExtension {
+    slug: string;
+    name: string;
+    description: string;
+    version: string;
 }
 
-interface Module extends SiteExtension {
-    required:boolean,
+interface IModule extends ISiteExtension {
+    required: boolean;
 }
 
-interface Theme extends SiteExtension {
+interface ITheme extends ISiteExtension {
 }

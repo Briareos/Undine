@@ -1,5 +1,5 @@
-interface User {
+interface IUser {
     uid: string;
     email: string;
-    sites: Array<Site>;
+    sites: ISite[];
 }

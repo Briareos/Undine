@@ -1,7 +1,7 @@
 interface AppData {
     apiUrl: string
     logoutUrl: string
-    currentUser: User
+    currentUser: IUser
     oxygenZipUrl: string
 }
 

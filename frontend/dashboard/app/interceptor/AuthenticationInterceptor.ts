@@ -3,10 +3,10 @@
  * That case should be handled here. For now, reload the page and let the backend handle it.
  */
 angular.module('undine.dashboard')
-    .service('AuthenticationInterceptor', function ($q:ng.IQService, $window:ng.IWindowService) {
+    .service('AuthenticationInterceptor', function ($q: ng.IQService, $window: ng.IWindowService): any {
         // https://docs.angularjs.org/api/ng/service/$http#interceptors
         return {
-            response: function (response) {
+            response: function (response: ng.IHttpPromiseCallbackArg<any>): ng.IHttpPromiseCallbackArg<any> {
                 if (!response.data.ok && response.data.error === 'security.not_authenticated') {
                     // The "not logged in" handler should be placed here. For now just reload the page.
                     $window.location.reload();

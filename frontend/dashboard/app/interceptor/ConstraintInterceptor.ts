@@ -3,45 +3,41 @@
  * That case should be handled here. For now, reload the page and let the backend handle it.
  */
 angular.module('undine.dashboard')
-    .service('ConstraintInterceptor', function ($q:ng.IQService) {
-    // https://docs.angularjs.org/api/ng/service/$http#interceptors
-    return {
-        response: function (response) {
-            if (response.data.ok === false) {
-                switch (response.data.error) {
-                    case 'site.already_connected':
-                        response.data = new AlreadyConnectedConstraint(response.data);
-                        break;
-                    case 'site.invalid_credentials':
-                        response.data = new InvalidCredentialsConstraint(response.data);
-                        break;
-                    case 'site.oxygen_not_enabled':
-                        response.data = new OxygenNotEnabledConstraint(response.data);
-                        break;
-                    case 'site.ftp_credentials_required':
-                        response.data = new FtpCredentialsRequiredConstraint(response.data);
-                        break;
-                    case 'site.ftp_credentials_error':
-                        response.data = new FtpCredentialsErrorConstraint(response.data);
-                        break;
-                    case 'site.can_not_install_oxygen':
-                        response.data = new CanNotInstallOxygenConstraint(response.data);
-                        break;
-                    case 'site.http_authentication_required':
-                        response.data = new HttpAuthenticationRequiredConstraint(response.data);
-                        break;
-                    case 'site.http_authentication_failed':
-                        response.data = new HttpAuthenticationFailedConstraint(response.data);
-                        break;
-                    case 'site.can_not_resolve_host':
-                        response.data = new CanNotResolveHost(response.data);
-                        break;
-                    default:
-                        response.data = new Constraint(response.data);
-                }
-                return $q.reject(response);
+    .service('ConstraintInterceptor', function ($q: ng.IQService): any {
+        function getConstraint(name: string, data: any): Constraint {
+            switch (name) {
+                case 'site.already_connected':
+                    return new AlreadyConnectedConstraint(data);
+                case 'site.invalid_credentials':
+                    return new InvalidCredentialsConstraint(data);
+                case 'site.oxygen_not_enabled':
+                    return new OxygenNotEnabledConstraint(data);
+                case 'site.ftp_credentials_required':
+                    return new FtpCredentialsRequiredConstraint(data);
+                case 'site.ftp_credentials_error':
+                    return new FtpCredentialsErrorConstraint(data);
+                case 'site.can_not_install_oxygen':
+                    return new CanNotInstallOxygenConstraint(data);
+                case 'site.http_authentication_required':
+                    return new HttpAuthenticationRequiredConstraint(data);
+                case 'site.http_authentication_failed':
+                    return new HttpAuthenticationFailedConstraint(data);
+                case 'site.can_not_resolve_host':
+                    return new CanNotResolveHost(data);
+                default:
+                    return new Constraint(data);
             }
-            return response;
         }
-    };
-});
+
+        // https://docs.angularjs.org/api/ng/service/$http#interceptors
+        return {
+            response: function (response: ng.IHttpPromiseCallbackArg<any>): any {
+                if (response.data.ok === false) {
+                    response.data = getConstraint(response.data.error, response.data);
+
+                    return $q.reject(response);
+                }
+                return response;
+            }
+        };
+    });

@@ -1,57 +1,72 @@
-class SiteDashboard {
-    constructor(private _site:Site, private _state:SiteState, private _modules:Array<Module>, private _themes:Array<Theme>, private _coreUpdates:Array<CoreUpdate>, private _moduleUpdates:Array<ModuleUpdate>, private _themeUpdates:Array<ThemeUpdate>) {
+class ISiteDashboard {
+    private _site: ISite;
+    private _state: ISiteState;
+    private _modules: IModule[];
+    private _themes: ITheme[];
+    private _coreUpdates: ICoreUpdate[];
+    private _moduleUpdates: IModuleUpdate[];
+    private _themeUpdates: IThemeUpdate[];
+
+    constructor(site: ISite, state: ISiteState, modules: IModule[], themes: ITheme[], coreUpdates: ICoreUpdate[], moduleUpdates: IModuleUpdate[], themeUpdates: IThemeUpdate[]) {
+        this._site = site;
+        this._state = state;
+        this._modules = modules;
+        this._themes = themes;
+        this._coreUpdates = coreUpdates;
+        this._moduleUpdates = moduleUpdates;
+        this._themeUpdates = themeUpdates;
     }
 
-    get site():Site {
+    get site(): ISite {
         return this._site;
     }
 
-    get state():SiteState {
+    get state(): ISiteState {
         return this._state;
     }
 
-    get modules():Array<Module> {
+    get modules(): Array<IModule> {
         return this._modules;
     }
 
-    get themes():Array<Theme> {
+    get themes(): ITheme[] {
         return this._themes;
     }
 
-    get coreUpdateCount():number {
+    get coreUpdateCount(): number {
         return this._coreUpdates.length;
     }
 
-    get moduleUpdateCount():number {
+    get moduleUpdateCount(): number {
         return this._moduleUpdates.length;
     }
 
-    get themeUpdateCount():number {
+    get themeUpdateCount(): number {
         return this._themeUpdates.length;
     }
 
-    get coreUpdates():Array<CoreUpdate> {
+    get coreUpdates(): ICoreUpdate[] {
         return this._coreUpdates;
     }
 
-    get moduleUpdates():Array<ModuleUpdate> {
+    get moduleUpdates(): IModuleUpdate[] {
         return this._moduleUpdates;
     }
 
-    get themeUpdates():Array<ThemeUpdate> {
+    get themeUpdates(): IThemeUpdate[] {
         return this._themeUpdates;
     }
 }
 
-interface SiteDashboardFactory {
-    create(site:Site):SiteDashboard
+interface ISiteDashboardFactory {
+    create(site: ISite): ISiteDashboard;
 }
 
 angular.module('undine.dashboard')
-    .factory('SiteDashboardFactory', function () {
-    return {
-        create: function (site:Site):SiteDashboard {
-            return new SiteDashboard(site, site.state, site.modules, site.themes, site.coreUpdates, site.moduleUpdates, site.themeUpdates);
-        }
-    };
-});
+    .factory('SiteDashboardFactory', function (): ISiteDashboardFactory {
+        return {
+            create: function (site: ISite): ISiteDashboard {
+                return new ISiteDashboard(site, site.state, site.modules, site.themes, site.coreUpdates, site.moduleUpdates, site.themeUpdates);
+            }
+        };
+    });

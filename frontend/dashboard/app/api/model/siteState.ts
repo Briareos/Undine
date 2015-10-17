@@ -1,3 +1,3 @@
-interface SiteState {
-    drupalVersion?:string,
+interface ISiteState {
+    drupalVersion: string;
 }

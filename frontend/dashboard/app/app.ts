@@ -1,10 +1,29 @@
-angular.module('undine.dashboard', ['undine.dashboard.template', 'ui.router', 'ncy-angular-breadcrumb'])
-    .config(function ($httpProvider:ng.IHttpProvider) {
+angular.module('undine.dashboard', ['undine.dashboard.template', 'ui.router'])
+    .config(function ($httpProvider: ng.IHttpProvider) {
         $httpProvider.interceptors.push('AuthenticationInterceptor');
         $httpProvider.interceptors.push('ConstraintInterceptor');
     })
-    .config(function ($breadcrumbProvider) {
-        $breadcrumbProvider.setOptions({
-            templateUrl: '/component/breadcrumb/breadcrumb.html'
+    .run(function ($rootScope, $window): void {
+        $rootScope.currentUser = $window.appData.currentUser;
+    })
+    .run(function (Dashboard: Dashboard, $state: ng.ui.IStateService, $rootScope: ng.IRootScopeService): void {
+        // Listen for state change events.
+        // If the state depends on site picker being visible and there are no sites added, redirect to add website state.
+        $rootScope.$on('$stateChangeStart', function ($event: ng.IAngularEvent, toState: ng.ui.IState) {
+            // temporarily disabled
+            return;
+
+            if (Dashboard.sites.length || toState.name === 'connectWebsite') {
+                return;
+            }
+
+            if (_.isUndefined(toState.data) ||
+                _.isUndefined(toState.data.sitePicker) ||
+                _.isUndefined(toState.data.sitePicker.visible) || !toState.data.sitePicker.visible) {
+                return;
+            }
+
+            $event.preventDefault();
+            $state.go('connectWebsite.url');
         });
     });

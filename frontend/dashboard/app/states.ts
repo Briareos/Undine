@@ -1,15 +1,13 @@
 angular.module('undine.dashboard')
-    .config(function ($locationProvider:ng.ILocationProvider, $stateProvider:ng.ui.IStateProvider, $urlRouterProvider:ng.ui.IUrlRouterProvider) {
+    .config(function ($locationProvider: ng.ILocationProvider, $stateProvider: ng.ui.IStateProvider, $urlRouterProvider: ng.ui.IUrlRouterProvider): void {
         $urlRouterProvider.otherwise('/');
         $locationProvider.html5Mode(true);
+        /* tslint:disable:no-string-literal */
         $stateProvider
             .state('dashboard', {
                 url: '/',
                 controller: 'DashboardController',
                 templateUrl: '/page/dashboard/dashboard.html',
-                ncyBreadcrumb: {
-                    label: 'Dashboard'
-                },
                 data: {
                     sitePicker: {
                         visible: true
@@ -21,12 +19,9 @@ angular.module('undine.dashboard')
                 controller: 'SiteDashboardController',
                 templateUrl: '/page/site/dashboard.html',
                 resolve: {
-                    Site: function (Dashboard:Dashboard, $stateParams:ng.ui.IStateParamsService) {
+                    Site: function (Dashboard: Dashboard, $stateParams: ng.ui.IStateParamsService): ISite {
                         return _.find(Dashboard.sites, {uid: $stateParams['uid']});
                     }
-                },
-                nycBreadcrumb: {
-                    label: 'Site Dashboard'
                 },
                 data: {
                     sitePicker: {
@@ -38,9 +33,6 @@ angular.module('undine.dashboard')
                 url: '/module',
                 controller: 'ModuleController',
                 templateUrl: '/page/module/module.html',
-                ncyBreadcrumb: {
-                    label: 'Module'
-                },
                 data: {
                     sitePicker: {
                         visible: true
@@ -51,9 +43,6 @@ angular.module('undine.dashboard')
                 url: '/backup',
                 controller: 'BackupController',
                 templateUrl: '/page/backup/backup.html',
-                ncyBreadcrumb: {
-                    label: 'Backup'
-                },
                 data: {
                     sitePicker: {
                         visible: true
@@ -63,40 +52,31 @@ angular.module('undine.dashboard')
             .state('account', {
                 url: '/account',
                 controller: 'ProfileController',
-                templateUrl: '/page/profile/profile.html',
-                ncyBreadcrumb: {
-                    label: 'Account'
-                }
+                templateUrl: '/page/profile/profile.html'
             })
             .state('connectWebsite', {
                 url: '/connect-website',
                 templateUrl: '/page/connect-website/layout.html',
-                ncyBreadcrumb: {
-                    label: 'Connect Website'
-                },
                 abstract: true
             })
             .state('connectWebsite.url', {
                 // Empty URL will make the state take the URL of the parent.
                 url: '',
                 controller: 'ConnectWebsiteUrlController',
-                templateUrl: '/page/connect-website/url.html',
-                ncyBreadcrumb: {
-                    label: 'Connect Website'
-                }
+                templateUrl: '/page/connect-website/url.html'
             })
             .state('connectWebsite.reconnect', {
                 url: '/reconnect?url&lookedForLoginForm&loginFormFound',
                 controller: 'ReconnectWebsiteController',
                 templateUrl: '/page/connect-website/reconnect.html',
                 resolve: {
-                    url: function ($stateParams:ng.ui.IStateParamsService) {
+                    url: function ($stateParams: ng.ui.IStateParamsService): string {
                         return decodeURIComponent($stateParams['url']);
                     },
-                    lookedForLoginForm: function ($stateParams:ng.ui.IStateParamsService) {
+                    lookedForLoginForm: function ($stateParams: ng.ui.IStateParamsService): boolean {
                         return $stateParams['lookedForLoginForm'] === 'true';
                     },
-                    loginFormFound: function ($stateParams:ng.ui.IStateParamsService) {
+                    loginFormFound: function ($stateParams: ng.ui.IStateParamsService): boolean {
                         return $stateParams['loginFormFound'] === 'true';
                     }
                 }
@@ -106,41 +86,30 @@ angular.module('undine.dashboard')
                 controller: 'ConnectWebsiteNewController',
                 templateUrl: '/page/connect-website/new.html',
                 resolve: {
-                    url: function ($stateParams:ng.ui.IStateParamsService) {
+                    url: function ($stateParams: ng.ui.IStateParamsService): string {
                         return decodeURIComponent($stateParams['url']);
                     },
-                    lookedForLoginForm: function ($stateParams:ng.ui.IStateParamsService) {
+                    lookedForLoginForm: function ($stateParams: ng.ui.IStateParamsService): boolean {
                         return $stateParams['lookedForLoginForm'] === 'true';
                     },
-                    loginFormFound: function ($stateParams:ng.ui.IStateParamsService) {
+                    loginFormFound: function ($stateParams: ng.ui.IStateParamsService): boolean {
                         return $stateParams['loginFormFound'] === 'true';
                     }
-                },
-                ncyBreadcrumb: {
-                    label: 'Connect Website'
                 }
             })
             .state('connectWebsite.httpCredentials', {
                 url: '/http-credentials',
-                templateUrl: '/page/connect-website/http-credentials.html',
-                ncyBreadcrumb: {
-                    label: 'Connect Website'
-                }
+                templateUrl: '/page/connect-website/http-credentials.html'
             })
             .state('connectWebsite.adminCredentials', {
                 url: '/admin-credentials',
                 controller: 'ConnectWebsiteAdminCredentialsController',
-                templateUrl: '/page/connect-website/admin-credentials.html',
-                ncyBreadcrumb: {
-                    label: 'Connect Website'
-                }
+                templateUrl: '/page/connect-website/admin-credentials.html'
             })
             .state('connectWebsite.finish', {
                 url: '/connected',
-                templateUrl: '/page/connect-website/connected.html',
-                ncyBreadcrumb: {
-                    label: 'Connect Website'
-                }
+                templateUrl: '/page/connect-website/connected.html'
             })
         ;
+        /* tslint:enable */
     });

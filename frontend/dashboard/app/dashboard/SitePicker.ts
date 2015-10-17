@@ -1,67 +1,70 @@
 class SitePicker {
-    private _visible:boolean = false;
-    private _filteredSites:Array<Site> = [];
-    private _initialized:boolean = false;
+    private _visible: boolean = false;
+    private _filteredSites: ISite[] = [];
+    private _initialized: boolean = false;
+    private dashboard: Dashboard;
+    private rootScope: ng.IRootScopeService;
 
-    constructor(private Dashboard:Dashboard, private $rootScope:ng.IRootScopeService) {
+    constructor(Dashboard: Dashboard, $rootScope: ng.IRootScopeService) {
+        this.dashboard = Dashboard;
+        this.rootScope = $rootScope;
     }
 
-    public subscribeScope(scope:ng.IScope, callback:any) {
-        var unsubscribe:any = this.$rootScope.$on('site-picker.change', callback);
-        scope.$on('destroy', unsubscribe);
+    public subscribeScope(scope: ng.IScope, callback: any): void {
+        let unSubscribe: any = this.rootScope.$on('site-picker.change', callback);
+        scope.$on('$destroy', unSubscribe);
 
         if (this._initialized) {
             callback();
         }
     }
 
-    public subscribe(callback:any):Function {
+    public subscribe(callback: any): Function {
         if (this._initialized) {
             callback();
         }
 
-        return this.$rootScope.$on('site-picker.change', callback);
+        return this.rootScope.$on('site-picker.change', callback);
     }
 
-    public get visible():boolean {
+    public get visible(): boolean {
         return this._visible;
     }
 
-    public set visible(visible:boolean) {
+    public set visible(visible: boolean) {
         this._visible = visible;
         if (visible) {
             this.update();
         }
     }
 
-    public get filteredSites():Array<Site> {
+    public get filteredSites(): ISite[] {
         return this._filteredSites;
     }
 
-    public update() {
+    public update(): void {
         this._initialized = true;
-        this._filteredSites = this.Dashboard.sites.filter(function (site:Site) {
+        this._filteredSites = this.dashboard.sites.filter(function (site: ISite): boolean {
             return true;
         });
     }
 
-    private broadcastChange() {
-        this.$rootScope.$broadcast('site-picker.change');
+    private broadcastChange(): void {
+        this.rootScope.$broadcast('site-picker.change');
     }
 }
 
 angular.module('undine.dashboard')
-    .service('SitePicker', function (Dashboard:Dashboard, $rootScope:ng.IRootScopeService) {
+    .service('SitePicker', function (Dashboard: Dashboard, $rootScope: ng.IRootScopeService): SitePicker {
         return new SitePicker(Dashboard, $rootScope);
     })
-    .run(function (SitePicker:SitePicker, Dashboard:Dashboard, $rootScope:ng.IRootScopeService) {
-        $rootScope.$on('$stateChangeSuccess', function ($event:ng.IAngularEvent, toState:ng.ui.IState) {
-            var stateData = toState.data;
+    .run(function (SitePicker: SitePicker, Dashboard: Dashboard, $rootScope: ng.IRootScopeService): void {
+        $rootScope.$on('$stateChangeSuccess', function ($event: ng.IAngularEvent, toState: ng.ui.IState): void {
+            let stateData: any = toState.data;
 
             if (_.isUndefined(stateData) || _.isUndefined(stateData.sitePicker)) {
                 SitePicker.visible = false;
-            }
-            else {
+            } else {
                 SitePicker.visible = !!stateData.sitePicker.visible;
             }
         });

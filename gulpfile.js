@@ -149,7 +149,6 @@ function buildDashboardTypescriptDev() {
         './frontend/dashboard/app/all.ts',
         './frontend/dashboard/app/app.ts',
         './frontend/dashboard/app/states.ts',
-        './frontend/dashboard/app/run.ts',
         './frontend/dashboard/app/*/**/*.ts'
     ], {base: './frontend/dashboard'})
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.init()))
@@ -164,7 +163,6 @@ function buildAdminTypescriptDev() {
     return gulp.src([
         './frontend/admin/app/all.ts',
         './frontend/admin/app/app.ts',
-        './frontend/admin/app/run.ts',
         './frontend/admin/app/*/**/*.ts'
     ], {base: './frontend/admin'})
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.init()))
@@ -179,7 +177,6 @@ function buildWebTypescriptDev() {
     return gulp.src([
         './frontend/web/app/all.ts',
         './frontend/web/app/app.ts',
-        './frontend/web/app/run.ts',
         './frontend/web/app/*/**/*.ts'
     ], {base: './frontend/web'})
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.init()))
@@ -206,7 +203,6 @@ function buildDashboardTypescript() {
         './frontend/dashboard/app/all.ts',
         './frontend/dashboard/app/app.ts',
         './frontend/dashboard/app/states.ts',
-        './frontend/dashboard/app/run.ts',
         './frontend/dashboard/app/*/**/*.ts'
     ], {base: './frontend'})
         .pipe(vendorFilter)
@@ -249,7 +245,6 @@ function buildAdminTypescript() {
         './frontend/admin/app/**/*.html',
         './frontend/admin/app/all.ts',
         './frontend/admin/app/app.ts',
-        './frontend/admin/app/run.ts',
         './frontend/admin/app/*/**/*.ts'
     ], {base: './frontend'})
         .pipe(vendorFilter)
@@ -292,7 +287,6 @@ function buildWebTypescript() {
         './frontend/web/app/**/*.html',
         './frontend/web/app/all.ts',
         './frontend/web/app/app.ts',
-        './frontend/web/app/run.ts',
         './frontend/web/app/*/**/*.ts'
     ], {base: './frontend'})
         .pipe(vendorFilter)

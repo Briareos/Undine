@@ -89,7 +89,7 @@ class SiteController extends AppController
         $result = $settlePromise->wait();
 
         if ($result[0]['state'] == Promise::FULFILLED) {
-            // Site connection was fully successful.
+            // ISite connection was fully successful.
             $this->persistSite($site);
 
             return new SiteConnectResult($site);
@@ -161,7 +161,7 @@ class SiteController extends AppController
                     }
                     // @todo: Make sure the module is at the latest version.
                     $this->oxygenClient->send($site, new SitePingAction());
-                    // Site connection was fully successful.
+                    // ISite connection was fully successful.
                     $this->persistSite($site);
 
                     return new SiteConnectResult($site);
@@ -198,7 +198,7 @@ class SiteController extends AppController
                         }
                         // @todo: Make sure the module is at the latest version.
                         $this->oxygenClient->send($site, new SitePingAction());
-                        // Site connection was fully successful.
+                        // ISite connection was fully successful.
                         $this->persistSite($site);
 
                         return new SiteConnectResult($site);
@@ -277,7 +277,7 @@ class SiteController extends AppController
     /**
      * @Method("GET|POST")
      * @Route("site.disconnect", name="api-site.disconnect")
-     * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
+     * @ParamConverter("site", class="Model:ISite", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
      * @Api()
      */
     public function disconnectAction(Site $site)
@@ -296,7 +296,7 @@ class SiteController extends AppController
     /**
      * @Method("GET|POST")
      * @Route("site.login", name="api-site.login")
-     * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
+     * @ParamConverter("site", class="Model:ISite", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
      * @Api()
      */
     public function loginAction(Site $site)
@@ -308,7 +308,7 @@ class SiteController extends AppController
 
     /**
      * @Route("site.logout", name="api-site.logout")
-     * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
+     * @ParamConverter("site", class="Model:ISite", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
      * @Api()
      */
     public function logoutAction(Site $site)

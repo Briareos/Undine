@@ -1,11 +1,11 @@
 class Constraint {
-    protected data:any;
+    protected data: any;
 
-    constructor(data:any) {
+    constructor(data: any) {
         this.data = data;
     }
 
-    get name() {
+    get name(): string {
         return this.data.error;
     }
 }

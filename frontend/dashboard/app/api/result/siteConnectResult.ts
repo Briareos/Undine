@@ -1,3 +1,3 @@
-interface SiteConnectResult extends ApiResult {
-    site: Site;
+interface ISiteConnectResult extends IApiResult {
+    site: ISite;
 }

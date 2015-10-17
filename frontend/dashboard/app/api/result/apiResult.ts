@@ -1,3 +1,3 @@
-interface ApiResult {
-    ok: boolean
+interface IApiResult {
+    ok: boolean;
 }
