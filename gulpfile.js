@@ -13,9 +13,10 @@ var rev = require('gulp-rev');
 var revReplace = require('gulp-rev-replace');
 var filter = require('gulp-filter');
 var autoprefixer = require('gulp-autoprefixer');
-var typescript = require('gulp-typescript');
+var tsc = require('gulp-typescript');
 var del = require('del');
 var debug = require('gulp-debug');
+var systemjsModules = require('gulp-systemjs-module-name-injector');
 
 var minifyImages = require('gulp-imagemin');
 var minifyCss = require('gulp-minify-css');
@@ -145,15 +146,10 @@ function buildWebCss() {
 }
 
 function buildDashboardTypescriptDev() {
-    return gulp.src([
-        './frontend/dashboard/app/all.ts',
-        './frontend/dashboard/app/app.ts',
-        './frontend/dashboard/app/states.ts',
-        './frontend/dashboard/app/*/**/*.ts'
-    ], {base: './frontend/dashboard'})
+    return gulp.src('./frontend/dashboard/app/**/*.ts', {base: './frontend/dashboard'})
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.init()))
-        .pipe(typescript({sortOutput: true, target: 'ES5'}))
-        .pipe(ngAnnotate())
+        .pipe(tsc({target: 'ES5', module: 'system', experimentalDecorators: true, moduleResolution: 'node', sortOutput: true, emitDecoratorMetadata: true}))
+        .pipe(systemjsModules())
         .pipe(concat('dashboard.js'))
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.write()))
         .pipe(gulp.dest('./var/tmp/js/dashboard'));
@@ -166,7 +162,7 @@ function buildAdminTypescriptDev() {
         './frontend/admin/app/*/**/*.ts'
     ], {base: './frontend/admin'})
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.init()))
-        .pipe(typescript({sortOutput: true, target: 'ES5'}))
+        .pipe(tsc({sortOutput: true, target: 'ES5'}))
         .pipe(ngAnnotate())
         .pipe(concat('admin.js'))
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.write()))
@@ -180,7 +176,7 @@ function buildWebTypescriptDev() {
         './frontend/web/app/*/**/*.ts'
     ], {base: './frontend/web'})
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.init()))
-        .pipe(typescript({sortOutput: true, target: 'ES5'}))
+        .pipe(tsc({sortOutput: true, target: 'ES5'}))
         .pipe(ngAnnotate())
         .pipe(concat('web.js'))
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.write()))
@@ -189,39 +185,23 @@ function buildWebTypescriptDev() {
 
 function buildDashboardTypescript() {
     var typescriptFilter = filter('dashboard/app/**/*.ts', {restore: true});
-    var htmlFilter = filter('dashboard/app/**/*.html', {restore: true});
     var vendorFilter = filter('bower_components/**/*.js', {restore: true});
 
     return gulp.src([
-        './frontend/bower_components/jquery/dist/jquery.min.js',
-        './frontend/bower_components/angular/angular.min.js',
-        './frontend/bower_components/angular-ui-router/release/angular-ui-router.min.js',
-        './frontend/bower_components/semantic-ui/dist/semantic.min.js',
+        './node_modules/angular2/bundle/angular2.min.js',
         './frontend/bower_components/lodash/lodash.min.js',
         './frontend/dashboard/app/**/*.html',
-        './frontend/dashboard/app/all.ts',
         './frontend/dashboard/app/app.ts',
-        './frontend/dashboard/app/states.ts',
         './frontend/dashboard/app/*/**/*.ts'
     ], {base: './frontend'})
         .pipe(vendorFilter)
         .pipe(concat('vendor.js'))
         .pipe(vendorFilter.restore)
-        .pipe(htmlFilter)
-        .pipe(minifyHtml())
-        .pipe(ngTemplate({
-            filename: 'dashboard-template.js',
-            module: 'undine.dashboard.template',
-            base: __dirname + '/frontend/dashboard/app',
-            root: '/',
-            standalone: true
-        }))
         .pipe(minifyJs())
-        .pipe(htmlFilter.restore)
         .pipe(typescriptFilter)
-        .pipe(typescript({sortOutput: true, target: 'ES5'}))
-        .pipe(ngAnnotate())
-        .pipe(concat('dashboard.js'))
+        .pipe(tsc({target: 'ES5', module: 'system', experimentalDecorators: true, moduleResolution: 'node', sortOutput: true, emitDecoratorMetadata: true}))
+        .pipe(systemjsModules())
+        .pipe(concat('app.js'))
         .pipe(minifyJs())
         .pipe(typescriptFilter.restore)
         .pipe(concat('dashboard.js'))
@@ -261,7 +241,7 @@ function buildAdminTypescript() {
         .pipe(minifyJs())
         .pipe(htmlFilter.restore)
         .pipe(typescriptFilter)
-        .pipe(typescript({sortOutput: true, target: 'ES5'}))
+        .pipe(tsc({sortOutput: true, target: 'ES5'}))
         .pipe(ngAnnotate())
         .pipe(concat('admin.js'))
         .pipe(minifyJs())
@@ -303,7 +283,7 @@ function buildWebTypescript() {
         .pipe(minifyJs())
         .pipe(htmlFilter.restore)
         .pipe(typescriptFilter)
-        .pipe(typescript({sortOutput: true, target: 'ES5'}))
+        .pipe(tsc({sortOutput: true, target: 'ES5'}))
         .pipe(ngAnnotate())
         .pipe(concat('web.js'))
         .pipe(minifyJs())

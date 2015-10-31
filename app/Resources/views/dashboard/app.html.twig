@@ -15,13 +15,13 @@
         assets to work. An alternative is to rewrite CSS routes on build time. #}
         <link rel="stylesheet" href="/tmp/css/dashboard/dashboard.css">
 
+        <script src="/bower_components/system.js/dist/system-register-only.js"></script>
         <script src="/bower_components/jquery/dist/jquery.js"></script>
-        <script src="/bower_components/angular/angular.js"></script>
-        <script src="/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+        <script src="/node_modules/angular2/bundles/angular2.dev.js"></script>
+        <script src="/node_modules/angular2/bundles/router.dev.js"></script>
         <script src="/bower_components/semantic-ui/dist/semantic.js"></script>
         <script src="/bower_components/lodash/lodash.js"></script>
 
-        <script src="/tmp/js/dashboard/dashboard-template.js"></script>
         <script src="/tmp/js/dashboard/dashboard.js"></script>
     {% else %}
 
@@ -39,27 +39,7 @@
 
 {{ include('dashboard/data.html.twig') }}
 
-<div class="stretched dashboard container">
-    <sidebar></sidebar>
-    <site-picker></site-picker>
-    <div class="main content">
-        <div class="content header">
-            <div class="breadcrumbs" ncy-breadcrumb>
-            </div>
-
-            <div class="ui secondary icon action menu">
-                <a class="item" ui-sref="account" ui-sref-active>
-                    <i class="setting icon"></i>
-                </a>
-                <a class="item" logout-url>
-                    <i class="sign out icon"></i>
-                </a>
-            </div>
-        </div>
-        <div ui-view state-class class="state content">
-        </div>
-    </div>
-</div>
+<dashboard-app></dashboard-app>
 
 {% if app.environment == 'dev' %}
     {{ include('live-reload.html.twig') }}
@@ -67,16 +47,7 @@
 {% endif %}
 
 <script>
-    {# Dirty fix - when visiting /dashboard# it flips out. Must be the router component, but it's probably related to the <base> tag not being a substring of the current URL. Remove once it's fixed. #}
-    if (window.location.href.indexOf('#') !== -1) {
-        history.replaceState('', document.title, window.location.pathname.replace(/\/$/, '') + '/' + window.location.search);
-    }
-
-    {% if app.environment == 'dev' %}
-    angular.bootstrap(document.body, ['undine.dashboard']);
-    {% else %}
-    angular.bootstrap(document.body, ['undine.dashboard'], {strictDi: true});
-    {% endif %}
+    System.import('app/app');
 </script>
 
 </body>

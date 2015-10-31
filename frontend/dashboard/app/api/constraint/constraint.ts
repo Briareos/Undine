@@ -1,4 +1,8 @@
-class Constraint {
+export interface IConstraint {
+    name: string;
+}
+
+export class Constraint implements IConstraint{
     protected data: any;
 
     constructor(data: any) {

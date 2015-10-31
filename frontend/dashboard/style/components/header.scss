@@ -32,7 +32,7 @@
       border-left: 1px solid #eaedf0;
       border-right: 1px solid #eaedf0;
 
-      &:hover, &:active, &.active {
+      &:hover, &:active, &.router-link-active {
         transition-property: none;
         background-color: #24a5f7;
         border-left-color: #229be7;

@@ -39,7 +39,7 @@
         </service>
 
         <service id="output_flusher" class="Undine\Http\OutputFlusher">
-            <argument>4096</argument>
+            <argument>8</argument>
         </service>
 
         <service id="http_kernel" class="Undine\Http\AsyncHttpKernel">

@@ -29,6 +29,11 @@ class ApiListener implements EventSubscriberInterface
     private $outputFlusher;
 
     /**
+     * @var callable
+     */
+    private $noop;
+
+    /**
      * @param AsyncHttpKernel $httpKernel
      * @param OutputFlusher   $outputFlusher
      */
@@ -36,6 +41,8 @@ class ApiListener implements EventSubscriberInterface
     {
         $this->httpKernel    = $httpKernel;
         $this->outputFlusher = $outputFlusher;
+        $this->noop          = function () {
+        };
     }
 
     /**
@@ -68,14 +75,13 @@ class ApiListener implements EventSubscriberInterface
         $stream      = ($api->isStreamable() || $bulk) && ($this->shouldStream($request));
 
         if (!$bulk && !$stream) {
-            $request->attributes->set('stream', function () {
-            });
+            $request->attributes->set('stream', $this->noop);
 
             return;
         }
 
-            // This listener will unwind/spread the calls, so don't trigger other Api listeners.
-            $request->attributes->remove('_api');
+        // This listener will unwind/spread the calls, so don't trigger other Api listeners.
+        $request->attributes->remove('_api');
 
         if ($stream) {
             $headers = ['content-type' => 'application/json; boundary=NL', 'x-accel-buffering' => 'no'];
@@ -86,8 +92,6 @@ class ApiListener implements EventSubscriberInterface
         if ($subRequests) {
             $event->setController(function () use ($request, $headers, $subRequests, $stream) {
                 return new StreamedResponse(function () use ($request, $subRequests, $stream) {
-                    $noOp     = function () {
-                    };
                     $promises = [];
                     foreach ($subRequests as $i => $requestParams) {
                         // Forward the query string without the 'payload', and put all the parameters in the body.
@@ -98,7 +102,7 @@ class ApiListener implements EventSubscriberInterface
                         $subRequest = $request->duplicate([], $requestParams);
                         // Also force-make it a POST request, so it can contain a body.
                         $subRequest->setMethod('POST');
-                        $subRequest->attributes->set('stream', $stream ? $this->createStreamer($i) : $noOp);
+                        $subRequest->attributes->set('stream', $stream ? $this->createStreamer($i) : $this->noop);
                         /** @var PromiseInterface $promise */
                         $promises[] = $promise = $this->httpKernel->handle($subRequest, HttpKernelInterface::SUB_REQUEST, true, false);
                         if ($stream) {
@@ -141,7 +145,7 @@ class ApiListener implements EventSubscriberInterface
     /**
      * @param int|null $index
      *
-     * @return StreamPump
+     * @return callable
      */
     private function createStreamer($index = null)
     {
@@ -188,8 +192,8 @@ class ApiListener implements EventSubscriberInterface
 
     private function shouldStream(Request $request)
     {
-        return (bool)$request->query->get('stream', false)
-        || $request->headers->has('x-stream')
-        || $request->headers->has('stream');
+        return $request->query->get('stream')
+        || $request->headers->get('x-stream')
+        || $request->headers->get('stream');
     }
 }

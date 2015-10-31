@@ -23,11 +23,11 @@
       margin: 0 auto 0.5rem !important;
     }
 
-    &:hover, &:active, &.active {
+    &:hover, &:active, &.router-link-active {
       color: $sidebarLinkHoverColor;
     }
 
-    &:active, &.active {
+    &:active, &.router-link-active {
       background-color: $sidebarItemActiveBackgroundColor;
     }
 

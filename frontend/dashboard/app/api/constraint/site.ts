@@ -1,4 +1,6 @@
-class CanNotInstallOxygenConstraint extends Constraint {
+import {Constraint} from "./constraint";
+
+export class SiteCanNotInstallOxygen extends Constraint {
     public static STEP_LIST_MODULES: string = 'list_modules';
     public static STEP_SEARCH_UPDATE_MODULE: string = 'search_update_module';
     public static STEP_SEARCH_OXYGEN_MODULE: string = 'search_oxygen_module';
@@ -8,7 +10,7 @@ class CanNotInstallOxygenConstraint extends Constraint {
     }
 }
 
-class AlreadyConnectedConstraint extends Constraint {
+export class SiteAlreadyConnected extends Constraint {
     get lookedForLoginForm(): boolean {
         return this.data.lookedForLoginForm;
     }
@@ -18,10 +20,13 @@ class AlreadyConnectedConstraint extends Constraint {
     }
 }
 
-class InvalidCredentialsConstraint extends Constraint {
+export class SiteInvalidCredentials extends Constraint {
 }
 
-class OxygenNotEnabledConstraint extends Constraint {
+export class SiteUrlInvalid extends Constraint {
+}
+
+export class SiteOxygenNotEnabled extends Constraint {
     get lookedForLoginForm(): boolean {
         return this.data.lookedForLoginForm;
     }
@@ -31,20 +36,20 @@ class OxygenNotEnabledConstraint extends Constraint {
     }
 }
 
-class FtpCredentialsRequiredConstraint extends Constraint {
+export class SiteFtpCredentialsRequired extends Constraint {
 }
 
-class FtpCredentialsErrorConstraint extends Constraint {
+export class SiteFtpCredentialsError extends Constraint {
     get ftpError(): string {
         return this.data.ftpError;
     }
 }
 
-class HttpAuthenticationRequiredConstraint extends Constraint {
+export class SiteHttpAuthenticationRequired extends Constraint {
 }
 
-class HttpAuthenticationFailedConstraint extends Constraint {
+export class SiteHttpAuthenticationFailed extends Constraint {
 }
 
-class CanNotResolveHost extends Constraint {
+export class SiteCanNotResolveHost extends Constraint {
 }

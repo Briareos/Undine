@@ -1,3 +1,0 @@
-interface ISiteState {
-    drupalVersion: string;
-}

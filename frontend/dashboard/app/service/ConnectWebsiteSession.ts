@@ -1,35 +1,30 @@
-class ConnectWebsiteSession {
-    url:string;
-    httpUsername:string;
-    httpPassword:string;
-    ftpMethod:string;
-    ftpUsername:string;
-    ftpPassword:string;
-    ftpHost:string;
-    ftpPort:string;
-    adminUsername:string;
-    adminPassword:string;
+export class ConnectWebsiteSession {
+    public url: string;
+    public httpUsername: string;
+    public httpPassword: string;
+    public ftpMethod: string;
+    public ftpUsername: string;
+    public ftpPassword: string;
+    public ftpHost: string;
+    public ftpPort: string;
+    public adminUsername: string;
+    public adminPassword: string;
 
-    clearHttp() {
+    public clearHttp(): void {
         this.url = this.httpUsername = null;
     }
 
-    clearFtp() {
+    public clearFtp(): void {
         this.httpPassword = this.ftpMethod = this.ftpUsername = this.ftpPassword = this.ftpHost = this.ftpPort = null;
     }
 
-    clearAdmin() {
-        this.adminUsername = this.adminPassword = null
+    public clearAdmin(): void {
+        this.adminUsername = this.adminPassword = null;
     }
 
-    clearAll() {
+    public clearAll(): void {
         this.clearAdmin();
         this.clearHttp();
         this.clearFtp();
     }
 }
-
-angular.module('undine.dashboard')
-    .factory('ConnectWebsiteSession', function () {
-        return new ConnectWebsiteSession();
-    });
