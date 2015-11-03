@@ -248,8 +248,8 @@ export class ConnectWebsiteNewController {
                     // ISite got connected to another account in the meantime? It's possible...
                     this.router.navigate(['../ConnectSiteReconnect', {
                         url: encodeURIComponent(this.url),
-                        lookedForLoginForm: this.lookedForLoginForm,
-                        loginFormFound: this.loginFormFound
+                        lookedForLoginForm: this.lookedForLoginForm.toString(),
+                        loginFormFound: this.loginFormFound.toString()
                     }]);
                     return;
                 }

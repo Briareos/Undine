@@ -108,8 +108,8 @@ export class ConnectWebsiteUrlController {
                 } else if (constraint instanceof Constraint.SiteOxygenNotEnabled) {
                     this.router.navigate(['../ConnectSiteNew', {
                         url: encodeURIComponent(siteUrl),
-                        lookedForLoginForm: constraint.lookedForLoginForm,
-                        loginFormFound: constraint.loginFormFound
+                        lookedForLoginForm: constraint.lookedForLoginForm.toString(),
+                        loginFormFound: constraint.loginFormFound.toString()
                     }]);
                     return;
                 } else if (constraint instanceof Constraint.SiteCanNotResolveHost) {
