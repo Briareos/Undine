@@ -16,6 +16,7 @@ import {ConnectWebsiteSession} from './service/ConnectWebsiteSession';
 import {ConnectWebsiteNewController} from "./page/connect_website/new/controller";
 import {ConnectWebsiteReconnectController} from "./page/connect_website/reconnect/controller";
 import {IUser} from "./api/model/user";
+import {ConnectWebsiteController} from "./page/connect_website/controller";
 
 @Component({
     selector: 'dashboard-app',
@@ -50,9 +51,7 @@ import {IUser} from "./api/model/user";
     {path: '/account', as: 'Account', component: AccountController},
     {path: '/logout', as: 'Logout', component: LogoutController},
     {path: '/site/:uid', as: 'SiteDashboard', component: SiteDashboardController},
-    {path: '/connect/url', as: 'ConnectSiteUrl', component: ConnectWebsiteUrlController},
-    {path: '/connect/new', as: 'ConnectSiteNew', component: ConnectWebsiteNewController},
-    {path: '/connect/reconnect', as: 'ConnectSiteReconnect', component: ConnectWebsiteReconnectController}
+    {path: '/connect/...', as: 'ConnectSite', component: ConnectWebsiteController}
 ])
 class DashboardComponent {
 }

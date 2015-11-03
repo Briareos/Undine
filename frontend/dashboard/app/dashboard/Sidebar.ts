@@ -19,7 +19,7 @@ import {RouterLink} from 'angular2/router';
                     <i class="cubes icon"></i>
                     Modules
                 </a>
-                <a [router-link]="['/ConnectSiteUrl']" class="tool">
+                <a [router-link]="['/ConnectSite']" class="tool">
                     <i class="plus icon"></i>
                     Connect Website
                 </a>

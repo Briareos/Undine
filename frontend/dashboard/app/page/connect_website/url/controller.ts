@@ -28,7 +28,7 @@ import {ConnectWebsiteSession} from '../../../service/ConnectWebsiteSession';
                 <p>The site specified uses HTTP authentication. Please enter the HTTP credentials below:</p>
                 <div class="field">
                     <label for="url-http-username">HTTP Username</label>
-                    <input type="text" id="url-http-username" [ng-form-control]="form.controls['httpUsername']">
+                    <input type="text" id="url-http-username" autofocus [ng-form-control]="form.controls['httpUsername']">
                 </div>
                 <div class="field">
                     <label for="url-http-password">HTTP Password</label>
@@ -79,7 +79,6 @@ export class ConnectWebsiteUrlController {
         };
         let response = this.api.siteConnect(siteUrl, true, formData.httpUsername, formData.httpPassword);
         response.progress.subscribe((progress: Object): void => {
-            console.log(progress);
         });
         response.result.subscribe(
             (result: Result.ISiteConnect): void => {
@@ -100,14 +99,14 @@ export class ConnectWebsiteUrlController {
                     this.errors.invalidUrl = true;
                     return;
                 } else if (constraint instanceof Constraint.SiteAlreadyConnected) {
-                    this.router.navigate(['/ConnectSiteReconnect', {
+                    this.router.navigate(['../ConnectSiteReconnect', {
                         url: encodeURIComponent(siteUrl),
                         lookedForLoginForm: constraint.lookedForLoginForm,
                         loginFormFound: constraint.loginFormFound
                     }]);
                     return;
                 } else if (constraint instanceof Constraint.SiteOxygenNotEnabled) {
-                    this.router.navigate(['/ConnectSiteNew', {
+                    this.router.navigate(['../ConnectSiteNew', {
                         url: encodeURIComponent(siteUrl),
                         lookedForLoginForm: constraint.lookedForLoginForm,
                         loginFormFound: constraint.loginFormFound

@@ -92,7 +92,6 @@ class ApiXhrFactory {
     }
 
     private finalizeResponse(observer: Observer<any>, response: any): void {
-        console.log(response);
         if (response.ok === true) {
             observer.next(response);
             observer.complete();
@@ -100,7 +99,6 @@ class ApiXhrFactory {
         }
 
         let constraint = ConstraintFactory.createConstraint(response.error, response);
-        console.log(constraint);
         observer.error(constraint);
     }
 }

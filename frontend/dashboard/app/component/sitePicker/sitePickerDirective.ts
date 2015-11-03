@@ -15,7 +15,7 @@ import {ISite} from '../../api/model/site';
         <input type="text" placeholder="Search sites">
         <i class="search icon"></i>
     </div>
-    <a [router-link]="['/ConnectSiteUrl']" class="fluid large ui light gray button margin-bottom-20">
+    <a [router-link]="['/ConnectSite']" class="fluid large ui light gray button margin-bottom-20">
         <i class="plus icon"></i>
         Connect Website
     </a>

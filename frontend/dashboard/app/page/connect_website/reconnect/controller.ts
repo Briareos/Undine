@@ -23,7 +23,8 @@ import {Api} from "../../../service/Api";
             </div>
         </div>
         <div class="ui middle aligned very relaxed stackable grid" [ng-class]="loginFormFound ? ['two', 'column'] : ''">
-            <div class="row">
+            <!-- @todo Duplicate code until https://github.com/angular/angular/issues/4805 gets resolved! -->
+            <div class="row" *ng-if="!loginFormFound">
                 <div class="center aligned middle aligned column">
                     <p>
                         You can go to <a [href]="disconnectUrl" target="_blank">this page</a> and disconnect the website from any dashboard that it's connected to. Then click:
@@ -36,10 +37,24 @@ import {Api} from "../../../service/Api";
                         Connect Website
                     </button>
                 </div>
-                <div class="ui vertical divider" *ng-if="loginFormFound">
+            </div>
+            <div class="row" *ng-if="loginFormFound">
+                <div class="center aligned middle aligned column">
+                    <p>
+                        You can go to <a [href]="disconnectUrl" target="_blank">this page</a> and disconnect the website from any dashboard that it's connected to. Then click:
+                    </p>
+                    <div *ng-if="errors.stillConnected" class="ui negative message">
+                        <p>The site still appears to be connected to the other account.</p>
+                    </div>
+                    <button class="ui primary labeled icon submit button" [class.loading]="connectWebsiteLoading" [disabled]="connectWebsiteActive" (click)="click()">
+                        <i class="linkify icon"></i>
+                        Connect Website
+                    </button>
+                </div>
+                <div class="ui vertical divider">
                     Or
                 </div>
-                <div class="column" *ng-if="loginFormFound">
+                <div class="column">
                     <p>... we can do that for you if you provide us with <strong>{{ url }}</strong> administrator credentials:</p>
                     <form class="ui form" (submit)="submit(form.value)" [ng-form-model]="form">
                         <div class="field">

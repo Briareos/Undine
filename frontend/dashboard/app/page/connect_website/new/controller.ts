@@ -20,9 +20,9 @@ import {Api} from "../../../service/Api";
                 </div>
             </div>
         </div>
-
         <div class="ui very relaxed stackable grid" [ng-class]="loginFormFound ? ['two', 'column'] : ''">
-            <div class="row">
+            <!-- @todo Duplicate code until https://github.com/angular/angular/issues/4805 gets resolved! -->
+            <div class="row" *ng-if="!loginFormFound">
                 <div class="column">
                     <p>Install and enable our client plugin, <strong>Oxygen</strong>, that allows you to manage the website remotely:</p>
                     <div class="ui fluid action input">
@@ -43,10 +43,33 @@ import {Api} from "../../../service/Api";
                         Connect Website
                     </button>
                 </div>
-                <div class="ui vertical divider" *ng-if="loginFormFound">
+            </div>
+            <div class="row" *ng-if="loginFormFound">
+                <div class="column">
+                    <p>Install and enable our client plugin, <strong>Oxygen</strong>, that allows you to manage the website remotely:</p>
+
+                    <div class="ui fluid action input">
+                        <input type="text" readonly [value]="oxygenZipUrl" onclick="this.select()">
+                        <a [attr.href]="oxygenZipUrl" class="ui right labeled icon button">
+                            <i class="download icon"></i>
+                            Download
+                        </a>
+                    </div>
+                    <div class="ui info message">
+                        If you have the Drupal's core module <strong>Updates</strong> enabled, go to the <a [attr.href]="updatesUrl" target="_blank">install module page</a> of your website, paste in the URL above and enable the "Oxygen" module.
+                    </div>
+                    <div *ng-if="errors.stillDisabled" class="ui negative message">
+                        <p>The Oxygen module still appears to be disabled.</p>
+                    </div>
+                    <button class="ui primary labeled icon submit button" [class.loading]="connectWebsiteLoading" [disabled]="connectWebsiteActive" (click)="click()">
+                        <i class="linkify icon"></i>
+                        Connect Website
+                    </button>
+                </div>
+                <div class="ui vertical divider">
                     Or
                 </div>
-                <div class="column" *ng-if="loginFormFound">
+                <div class="column">
                     <form class="ui form warning" (submit)="submit(form.value)" [ng-form-model]="form">
                         <div *ng-if="!ftpFormFound" class="field">
                             <p>... we can do that for you if you provide us with <strong>{{ url }}</strong> administrator credentials:</p>
@@ -115,8 +138,8 @@ import {Api} from "../../../service/Api";
                             </div>
                             <div *ng-if="errors.ftpError" class="ui negative message">
                                 <p>Failed to use the provided FTP credentials.</p>
-
                                 <p *ng-if="errors.ftpErrorMessage">The FTP server returned the following error:
+                                    <br>
                                     <code>{{ errors.ftpErrorMessage }}</code>
                                 </p>
                             </div>
@@ -126,11 +149,10 @@ import {Api} from "../../../service/Api";
                             Automatically Connect Website
                         </button>
                     </form>
-                    <div class="ui info message">
+                    <div class="ui info message" *ng-if="!ftpFormFound">
                         These credentials are only used now and are <strong>not</strong> saved anywhere on our system.
                     </div>
                 </div>
-
             </div>
         </div>
         `
@@ -186,6 +208,7 @@ export class ConnectWebsiteNewController {
                 this.router.navigate(['/SiteDashboard', {uid: result.site.uid}]);
             },
             (constraint): void => {
+                _finally();
                 if (constraint instanceof Constraint.SiteInvalidCredentials) {
                     this.errors.invalidCredentials = true;
                     return;
@@ -223,7 +246,7 @@ export class ConnectWebsiteNewController {
                     return;
                 } else if (constraint instanceof Constraint.SiteAlreadyConnected) {
                     // ISite got connected to another account in the meantime? It's possible...
-                    this.router.navigate(['/ConnectSiteReconnect', {
+                    this.router.navigate(['../ConnectSiteReconnect', {
                         url: encodeURIComponent(this.url),
                         lookedForLoginForm: this.lookedForLoginForm,
                         loginFormFound: this.loginFormFound
