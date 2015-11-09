@@ -180,7 +180,7 @@ function buildDashboardTypescriptDev() {
 }
 
 function buildAdminTypescriptDev() {
-    return gulp.src('./frontend/admin/app/*/**/*.ts', {base: './frontend/admin'})
+    return gulp.src('./frontend/admin/app/**/*.ts', {base: './frontend/admin'})
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.init()))
         .pipe(tsc(tscOptions))
         .pipe(systemjsModules())
