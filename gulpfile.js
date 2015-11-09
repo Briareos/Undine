@@ -33,7 +33,9 @@ var config = {
 function cleanDev(cb) {
     del([
         './var/tmp/css/**',
-        './var/tmp/js/**'
+        './var/tmp/js/**',
+        './var/tmp/font/**',
+        './var/tmp/themes/**'
     ], cb);
 }
 
