@@ -1,4 +1,3 @@
 {
-    "tmp": "var/tmp",
-    "directory": "frontend/bower_components"
+    "tmp": "var/tmp"
 }

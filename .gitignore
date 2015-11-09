@@ -8,7 +8,6 @@
 !var/cache/.gitkeep
 !var/logs/.gitkeep
 !var/tmp/.gitkeep
-/build/
 /vendor/
 /bin/*
 !bin/console
@@ -18,9 +17,11 @@
 /web/css/*
 /web/js/*
 /web/image/*
+/web/themes/*
 !web/css/.gitkeep
 !web/js/.gitkeep
 !web/image/.gitkeep
+!web/themes/.gitkeep
 /node_modules/
-/frontend/bower_components/
+/bower_components/
 /frontend/typings/

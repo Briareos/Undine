@@ -98,18 +98,12 @@ import {Api} from "../../../service/Api";
                                     kept on our system.</p>
                             </div>
                             <div class="inline fields">
-                                <label>Transfer method</label>
+                                <label form="new-ftp-method">Transfer method</label>
                                 <div class="field">
-                                    <div class="ui radio checkbox">
-                                        <input id="new-ftp-method-ftp" type="radio" [ng-form-control]="form.controls['ftp'].controls['method']" value="ftp">
-                                        <label for="new-ftp-method-ftp">FTP</label>
-                                    </div>
-                                </div>
-                                <div class="field">
-                                    <div class="ui radio checkbox">
-                                        <input id="new-ftp-method-ssh" type="radio" [ng-form-control]="form.controls['ftp'].controls['method']" value="ssh">
-                                        <label for="new-ftp-method-ssh">SSH</label>
-                                    </div>
+                                    <select [ng-form-control]="form.controls['ftp'].controls['method']" name="new-ftp-method">
+                                        <option value="ftp">FTP</option>
+                                        <option value="ssh">SSH</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="field">
@@ -171,7 +165,6 @@ export class ConnectWebsiteNewController {
     private form: ControlGroup;
 
     constructor(private session: ConnectWebsiteSession, private router: Router, params: RouteParams, private api: Api, fb: FormBuilder, @Inject('OXYGEN_ZIP_URL') oxygenZipUrl) {
-        this.errors = new Errors();
         this.url = decodeURIComponent(params.get('url'));
         this.updatesUrl = this.url.replace(/\/?$/, '/?q=admin/modules/install');
         this.oxygenZipUrl = oxygenZipUrl;

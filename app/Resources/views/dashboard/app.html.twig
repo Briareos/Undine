@@ -7,7 +7,7 @@
     <title>{{ brand }}</title>
 
     {% if app.environment == 'dev' %}
-        <link rel="stylesheet" href="/bower_components/semantic-ui/dist/semantic.css">
+        <link rel="stylesheet" href="/tmp/css/semantic/semantic.css">
 
         {# The dashboard.css file is dynamically built by gulp. A server rule maps all assets like
         /dashboard/*.{js|css|html} to the /dashboard/ directory (relative to the project directory),
@@ -15,12 +15,11 @@
         assets to work. An alternative is to rewrite CSS routes on build time. #}
         <link rel="stylesheet" href="/tmp/css/dashboard/dashboard.css">
 
+        <script src="/bower_components/lodash/lodash.js"></script>
         <script src="/bower_components/system.js/dist/system-register-only.js"></script>
         <script src="/bower_components/jquery/dist/jquery.js"></script>
         <script src="/node_modules/angular2/bundles/angular2.dev.js"></script>
         <script src="/node_modules/angular2/bundles/router.dev.js"></script>
-        <script src="/bower_components/semantic-ui/dist/semantic.js"></script>
-        <script src="/bower_components/lodash/lodash.js"></script>
 
         <script src="/tmp/js/dashboard/dashboard.js"></script>
     {% else %}

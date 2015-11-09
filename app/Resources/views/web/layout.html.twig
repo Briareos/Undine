@@ -6,13 +6,16 @@
     <title>{% block title %}Undine{% endblock %}</title>
 
     {% if app.environment == 'dev' %}
-        <link rel="stylesheet" href="/bower_components/semantic-ui/dist/semantic.css">
+        <link rel="stylesheet" href="/tmp/css/semantic/semantic.css">
         <link rel="stylesheet" href="/tmp/css/web/web.css">
 
+        <script src="/bower_components/lodash/lodash.js"></script>
+        <script src="/bower_components/system.js/dist/system-register-only.js"></script>
         <script src="/bower_components/jquery/dist/jquery.js"></script>
-        <script src="/bower_components/angular/angular.js"></script>
-        <script src="/bower_components/semantic-ui/dist/semantic.js"></script>
-        <script src="/tmp/js/web/web-template.js"></script>
+        <script src="/node_modules/angular2/bundles/angular2.dev.js"></script>
+        <script src="/node_modules/semantic-ui-visibility/visibility.js"></script>
+        <script src="/node_modules/semantic-ui-sidebar/sidebar.js"></script>
+        <script src="/node_modules/semantic-ui-transition/transition.js"></script>
         <script src="/tmp/js/web/web.js"></script>
     {% else %}
         <link rel="stylesheet" href="/css/web/{% asset 'web.css' 'rev-css-web.json' %}">

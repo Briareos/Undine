@@ -33,7 +33,7 @@ This development setup guide is geared toward the [Legend](https://github.com/Br
     	/var/tmp
     	/vendor
     	/node_modules
-    	/dashboard/bower_components
+    	/bower_components
     	```
 
 Add this to Nginx configuration for development environment:
@@ -48,15 +48,15 @@ Add this to Nginx configuration for development environment:
         try_files /frontend/image/$1 =404;
     }
 
-    location /bower_components/ {
-        root /home/vagrant/www/undine/frontend;
+    location ~ ^/(bower_components|node_modules)/ {
+        root /home/vagrant/www/undine;
     }
 
 To bootstrap the application, run `composer install --no-scripts --no-autoloader` on the host machine.
 That should be all the host should run in order to provide smooth development experience.
 
 On the guest you have to run `composer install`, which will, along with the standard tasks, run `npm install`
-(`/node_modules`), `bower install` (`/frontend/bower_components`), `tsd reinstall` (`/dashboard/typings`)
+(`/node_modules`), `bower install` (`/bower_components`), `tsd reinstall` (`/dashboard/typings`)
 and `gulp build` (`/var/tmp`, `/web/(css|js|image)`), which will prepare the twig part of the project for
 the (automatically run) `cache:warmup` command.
 

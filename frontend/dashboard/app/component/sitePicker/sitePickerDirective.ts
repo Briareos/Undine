@@ -5,6 +5,7 @@ import {SitePickerSiteList} from './sitePickerSiteListDirective';
 import {SitePicker} from '../../dashboard/SitePicker';
 import {Dashboard} from '../../dashboard/Dashboard';
 import {ISite} from '../../api/model/site';
+import {Api} from "../../service/Api";
 
 @Component({
     selector: 'site-picker',
@@ -19,15 +20,40 @@ import {ISite} from '../../api/model/site';
         <i class="plus icon"></i>
         Connect Website
     </a>
+    <a (click)="refresh()" class="fluid large ui light gray button margin-bottom-20">
+        <i class="plus icon"></i>
+        Refresh
+    </a>
     <site-picker-site-list></site-picker-site-list>
 </div>
 `
 })
 export class SitePickerDirective {
-    private sites: ISite[] = [];
+    private _sites: ISite[] = [];
+    private _api: Api;
 
-    constructor(private _viewContainer: ViewContainerRef, dashboard: Dashboard) {
+    constructor(private _viewContainer: ViewContainerRef, dashboard: Dashboard, api: Api) {
         let element = <HTMLElement>_viewContainer.element.nativeElement;
         element.style.display = 'block';
+        this._sites = dashboard.sites;
+        this._api = api;
+    }
+
+    refresh() {
+        this._api.bulk(()=> {
+            this._sites.forEach((s) => {
+                this._api.sitePing(s.uid)
+                    .result.subscribe(
+                    (result) => {
+                        console.log(result);
+                    },
+                    (constraint) => {
+                        console.log(constraint);
+                    }
+                );
+            });
+        }).subscribe(null, null, ()=> {
+            console.log('bulk call completed')
+        });
     }
 }

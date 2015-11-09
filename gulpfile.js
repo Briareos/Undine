@@ -5,10 +5,7 @@ var sourcemaps = require('gulp-sourcemaps');
 var watch = require('gulp-watch');
 var gulpIf = require('gulp-if');
 var ws = require('ws');
-var ngAnnotate = require('gulp-ng-annotate');
-var ngTemplate = require('gulp-angular-templatecache');
 var concat = require('gulp-concat');
-var glob = require('gulp-glob-html');
 var rev = require('gulp-rev');
 var revReplace = require('gulp-rev-replace');
 var filter = require('gulp-filter');
@@ -17,11 +14,13 @@ var tsc = require('gulp-typescript');
 var del = require('del');
 var debug = require('gulp-debug');
 var systemjsModules = require('gulp-systemjs-module-name-injector');
+var less = require('gulp-less');
 
 var minifyImages = require('gulp-imagemin');
 var minifyCss = require('gulp-minify-css');
-var minifyHtml = require('gulp-minify-html');
 var minifyJs = require('gulp-uglify');
+
+var tscOptions = {target: 'ES5', module: 'system', experimentalDecorators: true, moduleResolution: 'node', sortOutput: true, emitDecoratorMetadata: true};
 
 var noop = function () {
 };
@@ -38,6 +37,13 @@ function cleanDev(cb) {
     ], cb);
 }
 
+function symlinkTheme(cb) {
+    // Semantic looks for a hardcoded theme.config file, so use this hack.
+    del('./node_modules/semantic-ui-less/theme.config', function () {
+        fs.symlink(__dirname + '/frontend/semantic/theme.config', './node_modules/semantic-ui-less/theme.config', cb);
+    });
+}
+
 function clean(cb) {
     del([
         './var/tmp/**',
@@ -51,7 +57,13 @@ function clean(cb) {
         '!./web/js/.gitkeep',
         './web/image/**',
         '!./web/image',
-        '!./web/image/.gitkeep'
+        '!./web/image/.gitkeep',
+        './web/themes/**',
+        '!./web/themes',
+        '!./web/themes/.gitkeep',
+        './web/fonts/**',
+        '!./web/fonts',
+        '!./web/fonts/.gitkeep'
     ], cb);
 }
 
@@ -89,12 +101,16 @@ function buildWebCssDev() {
 }
 
 function buildDashboardCss() {
+    var filterLess = filter('**.less', {restore: true});
     var filterScss = filter('**.scss', {restore: true});
 
     return gulp.src([
-        './frontend/dashboard/style/dashboard.scss',
-        './frontend/bower_components/semantic-ui/dist/semantic.min.css'
-    ])
+            './frontend/dashboard/style/dashboard.scss',
+            './frontend/semantic/semantic.less'
+        ])
+        .pipe(filterLess)
+        .pipe(less())
+        .pipe(filterLess.restore)
         .pipe(filterScss)
         .pipe(sass().on('error', sass.logError))
         .pipe(revReplace({manifest: gulp.src('./var/tmp/rev-image.json')}))
@@ -108,12 +124,16 @@ function buildDashboardCss() {
 }
 
 function buildAdminCss() {
+    var filterLess = filter('**.less', {restore: true});
     var filterScss = filter('**.scss', {restore: true});
 
     return gulp.src([
-        './frontend/admin/style/admin.scss',
-        './frontend/bower_components/semantic-ui/dist/semantic.min.css'
-    ])
+            './frontend/admin/style/admin.scss',
+            './frontend/semantic/semantic.less'
+        ])
+        .pipe(filterLess)
+        .pipe(less())
+        .pipe(filterLess.restore)
         .pipe(filterScss)
         .pipe(sass().on('error', sass.logError))
         .pipe(revReplace({manifest: gulp.src('./var/tmp/rev-image.json')}))
@@ -127,12 +147,16 @@ function buildAdminCss() {
 }
 
 function buildWebCss() {
+    var filterLess = filter('**.less', {restore: true});
     var filterScss = filter('**.scss', {restore: true});
 
     return gulp.src([
-        './frontend/admin/style/admin.scss',
-        './frontend/bower_components/semantic-ui/dist/semantic.min.css'
-    ])
+            './frontend/admin/style/admin.scss',
+            './frontend/semantic/semantic.less'
+        ])
+        .pipe(filterLess)
+        .pipe(less())
+        .pipe(filterLess.restore)
         .pipe(filterScss)
         .pipe(sass().on('error', sass.logError))
         .pipe(revReplace({manifest: gulp.src('./var/tmp/rev-image.json')}))
@@ -148,7 +172,7 @@ function buildWebCss() {
 function buildDashboardTypescriptDev() {
     return gulp.src('./frontend/dashboard/app/**/*.ts', {base: './frontend/dashboard'})
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.init()))
-        .pipe(tsc({target: 'ES5', module: 'system', experimentalDecorators: true, moduleResolution: 'node', sortOutput: true, emitDecoratorMetadata: true}))
+        .pipe(tsc(tscOptions))
         .pipe(systemjsModules())
         .pipe(concat('dashboard.js'))
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.write()))
@@ -156,50 +180,41 @@ function buildDashboardTypescriptDev() {
 }
 
 function buildAdminTypescriptDev() {
-    return gulp.src([
-        './frontend/admin/app/all.ts',
-        './frontend/admin/app/app.ts',
-        './frontend/admin/app/*/**/*.ts'
-    ], {base: './frontend/admin'})
+    return gulp.src('./frontend/admin/app/*/**/*.ts', {base: './frontend/admin'})
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.init()))
-        .pipe(tsc({sortOutput: true, target: 'ES5'}))
-        .pipe(ngAnnotate())
+        .pipe(tsc(tscOptions))
+        .pipe(systemjsModules())
         .pipe(concat('admin.js'))
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.write()))
         .pipe(gulp.dest('./var/tmp/js/admin'));
 }
 
 function buildWebTypescriptDev() {
-    return gulp.src([
-        './frontend/web/app/all.ts',
-        './frontend/web/app/app.ts',
-        './frontend/web/app/*/**/*.ts'
-    ], {base: './frontend/web'})
+    return gulp.src('./frontend/web/app/**/*.ts', {base: './frontend/web'})
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.init()))
-        .pipe(tsc({sortOutput: true, target: 'ES5'}))
-        .pipe(ngAnnotate())
+        .pipe(tsc(tscOptions))
+        .pipe(systemjsModules())
         .pipe(concat('web.js'))
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.write()))
         .pipe(gulp.dest('./var/tmp/js/web'));
 }
 
 function buildDashboardTypescript() {
-    var typescriptFilter = filter('dashboard/app/**/*.ts', {restore: true});
-    var vendorFilter = filter('bower_components/**/*.js', {restore: true});
+    var typescriptFilter = filter('app/**/*.ts', {restore: true});
+    var vendorFilter = filter(['../../bower_components/**/*.js', '../../node_modules/**/*.js'], {restore: true});
 
     return gulp.src([
-        './node_modules/angular2/bundle/angular2.min.js',
-        './frontend/bower_components/lodash/lodash.min.js',
-        './frontend/dashboard/app/**/*.html',
-        './frontend/dashboard/app/app.ts',
-        './frontend/dashboard/app/*/**/*.ts'
-    ], {base: './frontend'})
+            './bower_components/system.js/dist/system-register-only.js',
+            './node_modules/angular2/bundles/angular2.min.js',
+            './node_modules/angular2/bundles/router.dev.min.js',
+            './bower_components/lodash/lodash.min.js',
+            './frontend/dashboard/app/**/*.ts'
+        ], {base: './frontend/dashboard'})
         .pipe(vendorFilter)
         .pipe(concat('vendor.js'))
         .pipe(vendorFilter.restore)
-        .pipe(minifyJs())
         .pipe(typescriptFilter)
-        .pipe(tsc({target: 'ES5', module: 'system', experimentalDecorators: true, moduleResolution: 'node', sortOutput: true, emitDecoratorMetadata: true}))
+        .pipe(tsc(tscOptions))
         .pipe(systemjsModules())
         .pipe(concat('app.js'))
         .pipe(minifyJs())
@@ -213,36 +228,22 @@ function buildDashboardTypescript() {
 
 function buildAdminTypescript() {
     var typescriptFilter = filter('admin/app/**/*.ts', {restore: true});
-    var htmlFilter = filter('admin/app/**/*.html', {restore: true});
-    var vendorFilter = filter('bower_components/**/*.js', {restore: true});
+    var vendorFilter = filter('../../bower_components/**/*.js', {restore: true});
 
     return gulp.src([
-        './frontend/bower_components/jquery/dist/jquery.min.js',
-        './frontend/bower_components/angular/angular.min.js',
-        './frontend/bower_components/semantic-ui/dist/semantic.min.js',
-        './frontend/bower_components/lodash/lodash.min.js',
-        './frontend/admin/app/**/*.html',
-        './frontend/admin/app/all.ts',
-        './frontend/admin/app/app.ts',
-        './frontend/admin/app/*/**/*.ts'
-    ], {base: './frontend'})
+            './bower_components/system.js/dist/system-register-only.js',
+            './node_modules/angular2/bundles/angular2.min.js',
+            './bower_components/jquery/dist/jquery.min.js',
+            './bower_components/lodash/lodash.min.js',
+            './admin/app/**/*.ts'
+        ], {base: './frontend'})
         .pipe(vendorFilter)
         .pipe(concat('vendor.js'))
         .pipe(vendorFilter.restore)
-        .pipe(htmlFilter)
-        .pipe(minifyHtml())
-        .pipe(ngTemplate({
-            filename: 'admin-template.js',
-            module: 'undine.admin.template',
-            base: __dirname + '/frontend/admin/app',
-            root: '/',
-            standalone: true
-        }))
         .pipe(minifyJs())
-        .pipe(htmlFilter.restore)
         .pipe(typescriptFilter)
-        .pipe(tsc({sortOutput: true, target: 'ES5'}))
-        .pipe(ngAnnotate())
+        .pipe(tsc(tscOptions))
+        .pipe(systemjsModules())
         .pipe(concat('admin.js'))
         .pipe(minifyJs())
         .pipe(typescriptFilter.restore)
@@ -255,36 +256,24 @@ function buildAdminTypescript() {
 
 function buildWebTypescript() {
     var typescriptFilter = filter('web/app/**/*.ts', {restore: true});
-    var htmlFilter = filter('web/app/**/*.html', {restore: true});
-    var vendorFilter = filter('bower_components/**/*.js', {restore: true});
+    var vendorFilter = filter('../../bower_components/**/*.js', {restore: true});
 
     return gulp.src([
-        './frontend/bower_components/jquery/dist/jquery.min.js',
-        './frontend/bower_components/angular/angular.min.js',
-        './frontend/bower_components/semantic-ui/dist/semantic.min.js',
-        './frontend/bower_components/lodash/lodash.min.js',
-        './frontend/web/app/**/*.html',
-        './frontend/web/app/all.ts',
-        './frontend/web/app/app.ts',
-        './frontend/web/app/*/**/*.ts'
-    ], {base: './frontend'})
+            './bower_components/lodash/lodash.min.js',
+            './bower_components/system.js/dist/system-register-only.js',
+            './node_modules/angular2/bundles/angular2.min.js',
+            './bower_components/jquery/dist/jquery.min.js',
+            './node_modules/semantic-ui-visibility/visibility.min.js',
+            './node_modules/semantic-ui-sidebar/sidebar.min.js',
+            './node_modules/semantic-ui-transition/transition.min.js',
+            './frontend/web/app/**/*.ts'
+        ], {base: './frontend'})
         .pipe(vendorFilter)
         .pipe(concat('vendor.js'))
         .pipe(vendorFilter.restore)
-        .pipe(htmlFilter)
-        .pipe(minifyHtml())
-        .pipe(ngTemplate({
-            filename: 'web-template.js',
-            module: 'undine.web.template',
-            base: __dirname + '/frontend/web/app',
-            root: '/',
-            standalone: true
-        }))
-        .pipe(minifyJs())
-        .pipe(htmlFilter.restore)
         .pipe(typescriptFilter)
-        .pipe(tsc({sortOutput: true, target: 'ES5'}))
-        .pipe(ngAnnotate())
+        .pipe(tsc(tscOptions))
+        .pipe(systemjsModules())
         .pipe(concat('web.js'))
         .pipe(minifyJs())
         .pipe(typescriptFilter.restore)
@@ -293,39 +282,6 @@ function buildWebTypescript() {
         .pipe(gulp.dest('./web/js/web'))
         .pipe(rev.manifest('rev-js-web.json'))
         .pipe(gulp.dest('./var/tmp'));
-}
-
-function buildDashboardTemplateDev() {
-    return gulp.src('./frontend/dashboard/app/**/*.html')
-        .pipe(ngTemplate({
-            filename: 'dashboard-template.js',
-            module: 'undine.dashboard.template',
-            root: '/',
-            standalone: true
-        }))
-        .pipe(gulp.dest('./var/tmp/js/dashboard'));
-}
-
-function buildAdminTemplateDev() {
-    return gulp.src('./frontend/admin/app/**/*.html')
-        .pipe(ngTemplate({
-            filename: 'admin-template.js',
-            module: 'undine.admin.template',
-            root: '/',
-            standalone: true
-        }))
-        .pipe(gulp.dest('./var/tmp/js/admin'));
-}
-
-function buildWebTemplateDev() {
-    return gulp.src('./frontend/web/app/**/*.html')
-        .pipe(ngTemplate({
-            filename: 'web-template.js',
-            module: 'undine.web.template',
-            root: '/',
-            standalone: true
-        }))
-        .pipe(gulp.dest('./var/tmp/js/web'));
 }
 
 function buildDashboardIndex(cb) {
@@ -343,11 +299,30 @@ function buildWebIndex(cb) {
     fs.utimes(__dirname + '/app/Resources/views/web/layout.html.twig', new Date(), new Date(), cb);
 }
 
+function buildSemanticCssDev() {
+    return gulp.src('./frontend/semantic/semantic.less')
+        .pipe(less())
+        .pipe(gulp.dest('./var/tmp/css/semantic'));
+}
+
 function buildSemanticTheme() {
-    return gulp.src('./frontend/bower_components/semantic-ui/dist/themes/default/**', {base: './frontend/bower_components/semantic-ui/dist'})
-        .pipe(gulp.dest('./web/css/dashboard'))
-        .pipe(gulp.dest('./web/css/admin'))
-        .pipe(gulp.dest('./web/css/web'));
+    return gulp.src('./node_modules/semantic-ui-less/themes/default/assets/**')
+        .pipe(gulp.dest('./web/themes/default/assets'));
+}
+
+function buildSemanticThemeDev() {
+    return gulp.src('./node_modules/semantic-ui-less/themes/default/assets/**')
+        .pipe(gulp.dest('./var/tmp/themes/default/assets'));
+}
+
+function buildFontsDev() {
+    return gulp.src('./bower_components/lato/font/**')
+        .pipe(gulp.dest('./var/tmp/font'));
+}
+
+function buildFonts() {
+    return gulp.src('./bower_components/lato/font/**')
+        .pipe(gulp.dest('./web/font'));
 }
 
 var reload = noop;
@@ -374,50 +349,48 @@ function watchDev() {
 
     watch('./frontend/dashboard/style/**/*', gulp.series(buildDashboardCssDev, reloadComponent.bind(null, 'css')));
     watch('./frontend/dashboard/app/**/*.ts', gulp.series(buildDashboardTypescriptDev, reloadComponent.bind(null, 'html')));
-    watch('./frontend/dashboard/app/**/*.html', gulp.series(buildDashboardTemplateDev, reloadComponent.bind(null, 'html')));
     watch('./app/Resources/views/dashboard/app.html.twig', gulp.series(reloadComponent.bind(null, 'html')));
 
     watch('./frontend/admin/style/**/*', gulp.series(buildAdminCssDev, reloadComponent.bind(null, 'css')));
     watch('./frontend/admin/app/**/*.ts', gulp.series(buildAdminTypescriptDev, reloadComponent.bind(null, 'html')));
-    watch('./frontend/admin/app/**/*.html', gulp.series(buildAdminTemplateDev, reloadComponent.bind(null, 'html')));
     watch('./app/Resources/views/admin/layout.html.twig', gulp.series(reloadComponent.bind(null, 'html')));
 
     watch('./frontend/web/style/**/*', gulp.series(buildWebCssDev, reloadComponent.bind(null, 'css')));
     watch('./frontend/web/app/**/*.ts', gulp.series(buildWebTypescriptDev, reloadComponent.bind(null, 'html')));
-    watch('./frontend/web/app/**/*.html', gulp.series(buildWebTemplateDev, reloadComponent.bind(null, 'html')));
     watch('./app/Resources/views/web/layout.html.twig', gulp.series(reloadComponent.bind(null, 'html')));
 }
 
-gulp.task('default',
+gulp.task('build-dev',
     gulp.series(
         cleanDev,
+        symlinkTheme,
         gulp.parallel(
+            buildSemanticCssDev,
+            buildSemanticThemeDev,
+            buildFontsDev,
+
             buildDashboardCssDev,
-            buildDashboardTemplateDev,
             buildDashboardTypescriptDev,
             buildDashboardIndex,
 
             buildAdminCssDev,
-            buildAdminTemplateDev,
             buildAdminTypescriptDev,
             buildAdminIndex,
 
             buildWebCssDev,
-            buildWebTemplateDev,
             buildWebTypescriptDev,
             buildWebIndex
-        ),
-        gulp.parallel(
-            server,
-            watchDev
-        )));
+        )
+    ));
 
 gulp.task('build',
     gulp.series(
         clean,
+        symlinkTheme,
         buildImage,
         gulp.parallel(
             buildSemanticTheme,
+            buildFonts,
 
             buildDashboardCss,
             buildDashboardTypescript,
@@ -433,3 +406,11 @@ gulp.task('build',
         )
     )
 );
+
+gulp.task('default', gulp.series(
+    'build-dev',
+    gulp.parallel(
+        server,
+        watchDev
+    )
+));

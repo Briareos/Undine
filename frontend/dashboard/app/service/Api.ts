@@ -7,6 +7,17 @@ import * as Progress from '../api/progress';
 import * as Constraint from '../api/constraint';
 import ConstraintFactory from '../api/constraint_factory';
 
+function finalizeResponse(observer: Observer<any>, result: any): void {
+    if (result.ok === true) {
+        observer.next(result);
+        observer.complete();
+        return;
+    }
+
+    let constraint = ConstraintFactory.createConstraint(result.error, result);
+    observer.error(constraint);
+}
+
 class ApiXhrFactory {
     public createApiXhr(method: string, url: string, data?: Object): ApiResponse<Progress.IProgress, Result.IResult> {
         method = method.toUpperCase();
@@ -15,17 +26,17 @@ class ApiXhrFactory {
         let xhr: XMLHttpRequest = new XMLHttpRequest();
         xhr.open(method, url);
 
-        let progress = new Observable<any>((progressObserver: Observer<any>): void => {
+        let progress: Observable<any> = new Observable<any>((progressObserver: Observer<any>): void => {
             stream = true;
 
             xhr.setRequestHeader('X-Stream', '1');
 
-            let responseBuffer: string = '', delimiterIndex: number = -1, lineObject: any, lineBuffer: string;
-            let pumpResponse = (buffer: string) => {
-                responseBuffer += buffer;
-                while ((delimiterIndex = responseBuffer.indexOf("\n")) !== -1) {
-                    lineBuffer = responseBuffer.substring(0, delimiterIndex + 1);
-                    responseBuffer = responseBuffer.substring(delimiterIndex + 1);
+            let buffer: string = '', delimiterIndex: number = -1, lineObject: any, lineBuffer: string;
+            let pumpResponse = (data: string): void => {
+                buffer += data;
+                while ((delimiterIndex = buffer.indexOf("\n")) !== -1) {
+                    lineBuffer = buffer.substring(0, delimiterIndex + 1);
+                    buffer = buffer.substring(delimiterIndex + 1);
                     lineObject = JSON.parse(lineBuffer);
                     progressObserver.next(lineObject);
                 }
@@ -54,19 +65,20 @@ class ApiXhrFactory {
                 let lastDelimiter;
                 if (stream && (lastDelimiter = xhr.response.lastIndexOf("\n")) !== -1) {
                     let lastLine = xhr.response.substring(lastDelimiter + 1);
-                    // Last line is empty in streaming bulk responses, so check that case here.
+                    // Last line is empty in streaming bulk responses, so check for that case here.
                     if (lastLine.length) {
-                        this.finalizeResponse(resultObserver, JSON.parse(lastLine));
+                        finalizeResponse(resultObserver, JSON.parse(lastLine));
+                    } else {
+                        resultObserver.complete();
                     }
                 } else {
-                    this.finalizeResponse(resultObserver, JSON.parse(xhr.response));
+                    finalizeResponse(resultObserver, JSON.parse(xhr.response));
                 }
-                resultObserver.complete();
             };
 
             // Error event handler.
             let onError = (err) => {
-                resultObserver.error(err);
+                throw Error(err);
             };
 
             xhr.setRequestHeader('Content-Type', 'application/json');
@@ -89,17 +101,6 @@ class ApiXhrFactory {
         });
 
         return new ApiResponse(progress, result);
-    }
-
-    private finalizeResponse(observer: Observer<any>, response: any): void {
-        if (response.ok === true) {
-            observer.next(response);
-            observer.complete();
-            return;
-        }
-
-        let constraint = ConstraintFactory.createConstraint(response.error, response);
-        observer.error(constraint);
     }
 }
 
@@ -134,17 +135,23 @@ class ApiResponse<T, U> implements IProgressAwareApiResponse<T, U> {
 
 class ApiTransaction {
     private _action: string;
-    private _stack: any[] = [];
+    private _parameters: any[] = [];
+    private _observers: ObserverContainer[] = [];
+    public progress: boolean = false;
 
     get action(): string {
         return this._action;
     }
 
-    get stack(): any[] {
-        return this._stack;
+    get parameters(): any[] {
+        return this._parameters;
     }
 
-    public push(action: string, params: any): void {
+    get observers() {
+        return this._observers;
+    };
+
+    public push(action: string, parameters: any, observerContainer: ObserverContainer): void {
         if (this._action) {
             if (this._action !== action) {
                 throw Error(`Transaction of type "${this._action}" cannot accept actions of type "${action}".`);
@@ -152,7 +159,8 @@ class ApiTransaction {
         } else {
             this._action = action;
         }
-        this._stack.push(params);
+        this._parameters.push(parameters);
+        this._observers.push(observerContainer);
     }
 }
 
@@ -167,20 +175,46 @@ export class Api {
         this.xhrFactory = new ApiXhrFactory();
     }
 
-    public beginTransaction(): void {
+    public bulk(fn): Observable<any> {
         this.transaction = new ApiTransaction();
-    }
 
-    public commit(): void {
-        // @todo: Implement!
-        this.transaction = null;
-    }
+        fn();
 
-    public rollback(): void {
-        if (!this.transaction) {
-            throw Error('There is no active transaction.');
+        if (this.transaction.parameters.length === 0) {
+            throw Error('No actions added to the bulk call.');
         }
+
+        let completeFn = (): void => {
+        };
+
+        let observers = this.transaction.observers;
+
+        let response = this.xhrFactory.createApiXhr('POST', this.endpoint + this.transaction.action, this.transaction.parameters);
+        response.progress.subscribe(
+            (response: any): void => {
+                if (response.hasOwnProperty('progress')) {
+                    // This is a "progress" message.
+                    observers[response.index].progress.next(response.progress)
+                } else {
+                    // This is a "result" message.
+                    finalizeResponse(observers[response.index].result, response.result);
+                }
+            },
+            null,
+            (): void => {
+                completeFn();
+            }
+        );
+        // We must subscribe to the result for the request to fire.
+        response.result.subscribe();
+
         this.transaction = null;
+
+        return new Observable<any>((observer: Observer<any>)=> {
+            completeFn = () => {
+                observer.complete();
+            };
+        });
     }
 
     public siteConnect(url: string, checkUrl: boolean = false, httpUsername?: string, httpPassword?: string, adminUsername?: string, adminPassword?: string, ftpMethod?: string, ftpUsername?: string, ftpPassword?: string, ftpHost?: string, ftpPort?: number): IProgressAwareApiResponse<Result.ISiteConnect, Progress.ISiteConnect> {
@@ -202,14 +236,44 @@ export class Api {
         );
     }
 
+    public sitePing(uid: string): IProgressAwareApiResponse<Result.ISiteConnect, Progress.ISiteConnect> {
+        return this.command('site.ping', {site: uid});
+    }
+
     private command(command: string, parameters?: Object): ApiResponse<Progress.IProgress, Result.IResult> {
-        // if (this.transaction) {
-        //    let deferred: ng.IDeferred<ng.IHttpPromiseCallbackArg<IApiResult>> = this.q.defer();
-        //
-        //    // @todo: Save this deferred object!
-        //
-        //    return deferred.promise;
-        // }
+        if (this.transaction) {
+            let observerContainer = new ObserverContainer();
+            let progressObserver = new Observable<Progress.IProgress>((observer: Observer<Progress.IProgress>): void => {
+                this.transaction.progress = true;
+                observerContainer.progress = observer;
+            });
+            let resultObserver = new Observable<Result.IResult>((observer: Observer<any>): void => {
+                observerContainer.result = observer;
+            });
+
+            let response: ApiResponse<Progress.IProgress, Result.IResult> = new ApiResponse(progressObserver, resultObserver);
+            this.transaction.push(command, parameters, observerContainer);
+
+            return response;
+        }
         return this.xhrFactory.createApiXhr('POST', this.endpoint + command, parameters);
+    }
+}
+
+class ObserverContainer {
+    public progress: Observer<any> = new MockObserver;
+    public result: Observer<any> = new MockObserver;
+}
+
+class MockObserver<T> implements Observer<T> {
+    isUnsubscribed: boolean = true;
+
+    next(value: T): void {
+    }
+
+    error(err: any): void {
+    }
+
+    complete(): void {
     }
 }
