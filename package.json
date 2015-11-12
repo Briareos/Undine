@@ -4,7 +4,7 @@
         "@reactivex/rxjs": "5.0.0-alpha.7",
         "angular2": "2.0.0-alpha.44",
         "del": "~1.2.1",
-        "gulp": "git://github.com/gulpjs/gulp.git#4.0",
+        "gulp": "gulpjs/gulp#4.0",
         "gulp-autoprefixer": "~2.3.1",
         "gulp-concat": "~2.6.0",
         "gulp-debug": "~2.1.2",
@@ -27,6 +27,19 @@
         "semantic-ui-sidebar": "~2.1.6",
         "semantic-ui-transition": "~2.1.6",
         "semantic-ui-visibility": "~2.1.6",
+        "tsd": "~0.6.5",
         "ws": "~0.7.2"
-    }
+    },
+    "scripts": {
+        "tsd-reinstall": "tsd reinstall",
+        "bower-install": "bower install",
+        "bower-prune": "bower prune",
+        "gulp-build": "gulp build",
+        "gulp-build-dev": "gulp build-dev"
+    },
+    "engines": {
+        "node": ">=4",
+        "npm": ">=2.1.7"
+    },
+    "engine-strict": true
 }
