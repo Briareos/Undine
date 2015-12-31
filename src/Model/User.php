@@ -3,17 +3,14 @@
 namespace Undine\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Undine\Security\User\UserActivityAwareInterface;
-use Undine\Uid\UidInterface;
-use Undine\Uid\UidTrait;
 
-class User implements UserInterface, UidInterface, UserActivityAwareInterface
+class User implements UserInterface, UserActivityAwareInterface
 {
-    use UidTrait;
-
     /**
-     * @var int
+     * @var string
      */
     private $id;
 
@@ -63,23 +60,20 @@ class User implements UserInterface, UidInterface, UserActivityAwareInterface
     private $createdAt;
 
     /**
-     * @var \DateTime|null
-     */
-    private $deletedAt;
-
-    /**
      * @param string $name
      * @param string $email
      */
     public function __construct($name, $email)
     {
-        $this->name  = $name;
-        $this->email = $email;
-        $this->sites = new ArrayCollection();
+        $this->id        = \Undine\Functions\generate_uuid1();
+        $this->name      = $name;
+        $this->email     = $email;
+        $this->sites     = new ArrayCollection();
+        $this->createdAt = new \DateTime();
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getId()
     {
@@ -284,13 +278,5 @@ class User implements UserInterface, UidInterface, UserActivityAwareInterface
     public function getCreatedAt()
     {
         return $this->createdAt;
-    }
-
-    /**
-     * @return \DateTime|null
-     */
-    public function getDeletedAt()
-    {
-        return $this->deletedAt;
     }
 }

@@ -7,9 +7,12 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Undine\Event\Events;
 use Undine\Event\SiteStateResultEvent;
 use Undine\Model\Site;
-use Undine\Model\Site\SiteState;
+use Undine\Model\SiteState;
 use Undine\Model\SiteExtension;
 use Undine\Model\SiteUpdate;
+use Undine\Oxygen\State\Result\SiteExtensionResult;
+use Undine\Oxygen\State\Result\SiteStateResult;
+use Undine\Oxygen\State\Result\SiteUpdateResult;
 
 class SiteStateResultTracker
 {
@@ -50,12 +53,12 @@ class SiteStateResultTracker
      */
     public function setResult(Site $site, array $result)
     {
-        $stateData = $this->getRootResolver()->resolve($result);
+        $stateData = self::getRootResolver()->resolve($result);
         foreach ($stateData['extensions'] as &$extensionData) {
-            $extensionData = new SiteExtensionResult($this->getExtensionResolver()->resolve($extensionData));
+            $extensionData = new SiteExtensionResult(self::getExtensionResolver()->resolve($extensionData));
         }
         foreach ($stateData['updates'] as &$updateData) {
-            $updateData = new SiteUpdateResult($this->getUpdateResolver()->resolve($updateData));
+            $updateData = new SiteUpdateResult(self::getUpdateResolver()->resolve($updateData));
         }
         foreach ($stateData as $key => $value) {
             // @TODO think of a better way to do safe-guard against long data.
@@ -75,21 +78,23 @@ class SiteStateResultTracker
     /**
      * @return OptionsResolver
      */
-    private function getRootResolver()
+    private static function getRootResolver()
     {
-        static $resolver;
+        static $resolver, $allowedTimezones;
 
-        if ($resolver === null) {
+        if ($allowedTimezones === null) {
             $allowedTimezones = \DateTimeZone::listIdentifiers();
             // Allow empty timezone.
             $allowedTimezones[] = '';
+        }
 
+        if ($resolver === null) {
+            /** @noinspection PhpUnusedParameterInspection */
             $resolver = (new OptionsResolver())
                 ->setRequired(['siteKey', 'cronKey', 'cronLastRunAt', 'siteMail', 'siteName', 'siteRoot', 'drupalRoot', 'drupalVersion', 'drupalMajorVersion', 'updatesLastCheckAt', 'timezone', 'phpVersion', 'phpVersionId', 'databaseDriver', 'databaseDriverVersion', 'databaseTablePrefix', 'memoryLimit', 'processArchitecture', 'internalIp', 'uname', 'hostname', 'os', 'windows', 'extensionsChecksum', 'extensionsCacheHit', 'extensions', 'updates'])
                 ->setAllowedTypes('siteKey', 'string')
                 ->setAllowedTypes('cronKey', 'string')
                 ->setAllowedTypes('cronLastRunAt', 'int')
-                /** @noinspection PhpUnusedParameterInspection */
                 ->setNormalizer('cronLastRunAt', function (OptionsResolver $resolver, $timestamp) {
                     return new \DateTime('@'.$timestamp);
                 })
@@ -100,12 +105,10 @@ class SiteStateResultTracker
                 ->setAllowedTypes('drupalVersion', 'string')
                 ->setAllowedValues('drupalMajorVersion', [7, 8])
                 ->setAllowedTypes('updatesLastCheckAt', 'int')
-                /** @noinspection PhpUnusedParameterInspection */
                 ->setNormalizer('updatesLastCheckAt', function (OptionsResolver $resolver, $timestamp) {
                     return new \DateTime('@'.$timestamp);
                 })
                 ->setAllowedValues('timezone', $allowedTimezones)
-                /** @noinspection PhpUnusedParameterInspection */
                 ->setNormalizer('timezone', function (OptionsResolver $resolver, $timezone) {
                     if ($timezone === '') {
                         return null;
@@ -138,7 +141,7 @@ class SiteStateResultTracker
         return $resolver;
     }
 
-    private function getExtensionResolver()
+    private static function getExtensionResolver()
     {
         static $resolver;
 
@@ -156,15 +159,14 @@ class SiteStateResultTracker
                 ->setAllowedTypes('version', ['null', 'string'])
                 ->setAllowedTypes('required', 'bool')
                 ->setAllowedTypes('dependencies', 'array')
-                /** @noinspection PhpUnusedParameterInspection */
-                ->setNormalizer('dependencies', $this->createStringNormalizer('dependencies'))
+                ->setNormalizer('dependencies', self::createStringArrayNormalizer('dependencies'))
                 ->setAllowedTypes('project', ['null', 'string']);
         }
 
         return $resolver;
     }
 
-    private function getUpdateResolver()
+    private static function getUpdateResolver()
     {
         static $resolver;
 
@@ -181,23 +183,26 @@ class SiteStateResultTracker
                 ->setAllowedTypes('recommendedDownloadLink', 'string')
                 ->setAllowedValues('status', SiteUpdate::getStatuses())
                 ->setAllowedTypes('includes', 'array')
-                ->setNormalizer('includes', $this->createStringNormalizer('includes'))
+                ->setNormalizer('includes', self::createStringArrayNormalizer('includes'))
                 ->setAllowedTypes('enabled', 'bool')
                 ->setAllowedTypes('baseThemes', 'array')
-                ->setNormalizer('baseThemes', $this->createStringNormalizer('baseThemes'))
+                ->setNormalizer('baseThemes', self::createStringArrayNormalizer('baseThemes'))
                 ->setAllowedTypes('subThemes', 'array')
-                ->setNormalizer('subThemes', $this->createStringNormalizer('subThemes'));
+                ->setNormalizer('subThemes', self::createStringArrayNormalizer('subThemes'));
         }
 
         return $resolver;
     }
 
     /**
+     * Creates a normalizer for an array of strings.
+     * Basically, it throws an exception if a non-string is encountered in an array.
+     *
      * @param string $optionName
      *
      * @return callable
      */
-    private function createStringNormalizer($optionName)
+    private static function createStringArrayNormalizer($optionName)
     {
         /** @noinspection PhpUnusedParameterInspection */
         /** @noinspection PhpDocSignatureInspection */

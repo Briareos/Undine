@@ -4,6 +4,7 @@ namespace Undine\AppBundle\Controller\Web;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\HttpFoundation\Request;
 use Undine\AppBundle\Controller\AppController;
 
@@ -28,8 +29,8 @@ class DocsController extends AppController
         $formAction   = $this->generateUrl('web-docs_api');
 
         if ($user->hasApiToken()) {
-            $regenerateForm = $this->createNamedForm('regenerateToken', 'form', null, ['method' => 'POST', 'action' => $formAction]);
-            $deleteForm     = $this->createNamedForm('deleteToken', 'form', null, ['method' => 'POST', 'action' => $formAction]);
+            $regenerateForm = $this->createNamedForm('regenerateToken', FormType::class, null, ['method' => 'POST', 'action' => $formAction]);
+            $deleteForm     = $this->createNamedForm('deleteToken', FormType::class, null, ['method' => 'POST', 'action' => $formAction]);
             $regenerateForm->handleRequest($request);
             $deleteForm->handleRequest($request);
 
@@ -51,7 +52,7 @@ class DocsController extends AppController
                 'deleteForm'     => $deleteForm->createView(),
             ];
         } else {
-            $createForm = $this->createNamedForm('createToken', 'form', null, ['method' => 'POST', 'action' => $formAction]);
+            $createForm = $this->createNamedForm('createToken', FormType::class, null, ['method' => 'POST', 'action' => $formAction]);
             $createForm->handleRequest($request);
 
             if ($createForm->isValid()) {

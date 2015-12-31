@@ -1,37 +1,31 @@
-@import "colors";
-@import "variables";
-@import "mixins";
-@import "base/structural";
-@import "base/buttons";
-@import "base/checkbox";
-@import "base/list";
-@import "base/input";
+$sidebar-width: 235px;
 
-body.stretched.body {
-  @include display-flex;
-  @include flex-direction(column);
+.page-wrapper {
   height: 100vh;
-}
-
-.stretched.dashboard.container {
-  @include display-flex;
-  @include flex-grow(1);
-  height: 100vh;
-}
-
-.main.content {
-  @include display-flex;
-  @include flex-direction(column);
-  @include flex-grow(1);
-
-  .state.content {
-    @include flex-grow(1);
-    overflow: auto;
-    padding: 50px 40px;
+  min-width: 768px;
+  display: flex;
+  flex-direction: column;
+  .navigation {
+    ul {
+      margin: 0;
+      padding-left: 0;
+      display: flex;
+      list-style: none;
+      a {
+        padding: 10px;
+        display: block;
+      }
+    }
+  }
+  .content-wrapper {
+    display: flex;
+    flex: 1;
+    .site-picker {
+      flex-basis: $sidebar-width;
+    }
+    .content {
+      flex-basis: 0;
+      flex-grow: 1;
+    }
   }
 }
-
-@import "components/header";
-@import "components/sidebar";
-@import "components/site-status-icons";
-@import "components/site-picker";

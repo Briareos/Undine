@@ -10,10 +10,12 @@
             <argument>now</argument>
         </service>
 
-        <service id="undine.drupal_client.middleware.ftp_credentials" class="Undine\Drupal\FtpCredentialsMiddleware" factory-class="Undine\Drupal\FtpCredentialsMiddleware" factory-method="create" public="false">
+        <service id="undine.drupal_client.middleware.ftp_credentials" class="Undine\Drupal\FtpCredentialsMiddleware" public="false">
+            <factory class="Undine\Drupal\FtpCredentialsMiddleware" method="create"/>
         </service>
 
-        <service id="undine.drupal_client.handler" class="GuzzleHttp\HandlerStack" factory-class="GuzzleHttp\HandlerStack" factory-method="create" public="false">
+        <service id="undine.drupal_client.handler" class="GuzzleHttp\HandlerStack" public="false">
+            <factory class="GuzzleHttp\HandlerStack" method="create"/>
             <call method="after">
                 <argument>cookies</argument>
                 <argument type="service" id="undine.drupal_client.middleware.ftp_credentials"/>
@@ -29,13 +31,6 @@
 
         <service id="undine.drupal_client" class="Undine\Drupal\Client">
             <argument type="service" id="undine.drupal_client.guzzle"/>
-        </service>
-
-        <service id="web_debug_toolbar.angular_profiler" class="Undine\AppBundle\DataCollector\AngularDataCollector">
-            <tag name="data_collector" template="views/toolbar/angular.html.twig" id="angular"/>
-        </service>
-
-        <service id="event_loop" class="React\EventLoop\LoopInterface" factory-class="React\EventLoop\Factory" factory-method="create">
         </service>
 
         <service id="output_flusher" class="Undine\Http\OutputFlusher">

@@ -20,9 +20,9 @@ import {Api} from "../../../service/Api";
                 </div>
             </div>
         </div>
-        <div class="ui very relaxed stackable grid" [ng-class]="loginFormFound ? ['two', 'column'] : ''">
+        <div class="ui very relaxed stackable grid" [ngClass]="loginFormFound ? ['two', 'column'] : ''">
             <!-- @todo Duplicate code until https://github.com/angular/angular/issues/4805 gets resolved! -->
-            <div class="row" *ng-if="!loginFormFound">
+            <div class="row" *ngIf="!loginFormFound">
                 <div class="column">
                     <p>Install and enable our client plugin, <strong>Oxygen</strong>, that allows you to manage the website remotely:</p>
                     <div class="ui fluid action input">
@@ -35,7 +35,7 @@ import {Api} from "../../../service/Api";
                     <div class="ui info message">
                         If you have the Drupal's core module <strong>Updates</strong> enabled, go to the <a [attr.href]="updatesUrl" target="_blank">install module page</a> of your website, paste in the URL above and enable the "Oxygen" module.
                     </div>
-                    <div *ng-if="errors.stillDisabled" class="ui negative message">
+                    <div *ngIf="errors.stillDisabled" class="ui negative message">
                         <p>The Oxygen module still appears to be disabled.</p>
                     </div>
                     <button class="ui primary labeled icon submit button" [class.loading]="connectWebsiteLoading" [disabled]="connectWebsiteActive" (click)="click()">
@@ -44,7 +44,7 @@ import {Api} from "../../../service/Api";
                     </button>
                 </div>
             </div>
-            <div class="row" *ng-if="loginFormFound">
+            <div class="row" *ngIf="loginFormFound">
                 <div class="column">
                     <p>Install and enable our client plugin, <strong>Oxygen</strong>, that allows you to manage the website remotely:</p>
 
@@ -58,7 +58,7 @@ import {Api} from "../../../service/Api";
                     <div class="ui info message">
                         If you have the Drupal's core module <strong>Updates</strong> enabled, go to the <a [attr.href]="updatesUrl" target="_blank">install module page</a> of your website, paste in the URL above and enable the "Oxygen" module.
                     </div>
-                    <div *ng-if="errors.stillDisabled" class="ui negative message">
+                    <div *ngIf="errors.stillDisabled" class="ui negative message">
                         <p>The Oxygen module still appears to be disabled.</p>
                     </div>
                     <button class="ui primary labeled icon submit button" [class.loading]="connectWebsiteLoading" [disabled]="connectWebsiteActive" (click)="click()">
@@ -70,28 +70,28 @@ import {Api} from "../../../service/Api";
                     Or
                 </div>
                 <div class="column">
-                    <form class="ui form warning" (submit)="submit(form.value)" [ng-form-model]="form">
-                        <div *ng-if="!ftpFormFound" class="field">
+                    <form class="ui form warning" (submit)="submit(form.value)" [ngFormModel]="form">
+                        <div *ngIf="!ftpFormFound" class="field">
                             <p>... we can do that for you if you provide us with <strong>{{ url }}</strong> administrator credentials:</p>
                             <div class="field">
                                 <label>Username</label>
                                 <div class="ui left icon input">
-                                    <input type="text" placeholder="Your Drupal username" [ng-form-control]="form.controls['admin'].controls['username']" required>
+                                    <input type="text" placeholder="Your Drupal username" [ngFormControl]="form.controls['admin'].controls['username']" required>
                                     <i class="user icon"></i>
                                 </div>
                             </div>
                             <div class="field">
                                 <label>Password</label>
                                 <div class="ui left icon input">
-                                    <input placeholder="Your Drupal password" type="password" [ng-form-control]="form.controls['admin'].controls['password']" required>
+                                    <input placeholder="Your Drupal password" type="password" [ngFormControl]="form.controls['admin'].controls['password']" required>
                                     <i class="lock icon"></i>
                                 </div>
                             </div>
-                            <div *ng-if="errors.invalidCredentials" class="ui negative message">
+                            <div *ngIf="errors.invalidCredentials" class="ui negative message">
                                 <p>Invalid credentials provided.</p>
                             </div>
                         </div>
-                        <div *ng-if="ftpFormFound" class="field">
+                        <div *ngIf="ftpFormFound" class="field">
                             <div class="ui warning message">
                                 <p>Drupal has detected that your filesystem is not writable by the web user. Please fill in your FTP connection details
                                     if you want to continue. Since ManageDrupal handles your site's updates, these credentials <strong>are</strong> safely
@@ -100,7 +100,7 @@ import {Api} from "../../../service/Api";
                             <div class="inline fields">
                                 <label form="new-ftp-method">Transfer method</label>
                                 <div class="field">
-                                    <select [ng-form-control]="form.controls['ftp'].controls['method']" name="new-ftp-method">
+                                    <select [ngFormControl]="form.controls['ftp'].controls['method']" name="new-ftp-method">
                                         <option value="ftp">FTP</option>
                                         <option value="ssh">SSH</option>
                                     </select>
@@ -109,30 +109,30 @@ import {Api} from "../../../service/Api";
                             <div class="field">
                                 <label for="">FTP Username</label>
                                 <div class="ui input">
-                                    <input type="text" [ng-form-control]="form.controls['ftp'].controls['username']" required>
+                                    <input type="text" [ngFormControl]="form.controls['ftp'].controls['username']" required>
                                 </div>
                             </div>
                             <div class="field">
                                 <label for="">FTP Password</label>
                                 <div class="ui input">
-                                    <input type="password" [ng-form-control]="form.controls['ftp'].controls['password']" required>
+                                    <input type="password" [ngFormControl]="form.controls['ftp'].controls['password']" required>
                                 </div>
                             </div>
                             <div class="field">
                                 <label for="">FTP Host</label>
                                 <div class="ui input">
-                                    <input type="text" [ng-form-control]="form.controls['ftp'].controls['host']" placeholder="localhost">
+                                    <input type="text" [ngFormControl]="form.controls['ftp'].controls['host']" placeholder="localhost">
                                 </div>
                             </div>
                             <div class="field">
                                 <label for="">FTP Port</label>
                                 <div class="ui input">
-                                    <input type="text" id="" [ng-form-control]="form.controls['ftp'].controls['port']" [attr.placeholder]="form.value.ftp.method === 'ftp' ? 21 : 22">
+                                    <input type="text" id="" [ngFormControl]="form.controls['ftp'].controls['port']" [attr.placeholder]="form.value.ftp.method === 'ftp' ? 21 : 22">
                                 </div>
                             </div>
-                            <div *ng-if="errors.ftpError" class="ui negative message">
+                            <div *ngIf="errors.ftpError" class="ui negative message">
                                 <p>Failed to use the provided FTP credentials.</p>
-                                <p *ng-if="errors.ftpErrorMessage">The FTP server returned the following error:
+                                <p *ngIf="errors.ftpErrorMessage">The FTP server returned the following error:
                                     <br>
                                     <code>{{ errors.ftpErrorMessage }}</code>
                                 </p>
@@ -143,7 +143,7 @@ import {Api} from "../../../service/Api";
                             Automatically Connect Website
                         </button>
                     </form>
-                    <div class="ui info message" *ng-if="!ftpFormFound">
+                    <div class="ui info message" *ngIf="!ftpFormFound">
                         These credentials are only used now and are <strong>not</strong> saved anywhere on our system.
                     </div>
                 </div>
@@ -168,8 +168,8 @@ export class ConnectWebsiteNewController {
         this.url = decodeURIComponent(params.get('url'));
         this.updatesUrl = this.url.replace(/\/?$/, '/?q=admin/modules/install');
         this.oxygenZipUrl = oxygenZipUrl;
-        this.lookedForLoginForm = params.get('lookedForLoginForm') === 'true';
-        this.loginFormFound = params.get('loginFormFound') === 'true';
+        this.lookedForLoginForm = params.get('lookedForLoginForm') === 'yes';
+        this.loginFormFound = params.get('loginFormFound') === 'yes';
         this.form = fb.group({
             admin: fb.group({
                 username: [''],
@@ -198,17 +198,17 @@ export class ConnectWebsiteNewController {
             (result: Result.ISiteConnect): void => {
                 _finally();
                 this.session.clearAll();
-                this.router.navigate(['/SiteDashboard', {uid: result.site.uid}]);
+                this.router.navigate(['/SiteDashboard', {id: result.site.id}]);
             },
             (constraint): void => {
                 _finally();
                 if (constraint instanceof Constraint.SiteInvalidCredentials) {
                     this.errors.invalidCredentials = true;
                     return;
-                } else if (constraint instanceof Constraint.SiteFtpCredentialsRequired) {
+                } else if (constraint instanceof Constraint.FtpCredentialsRequired) {
                     this.ftpFormFound = true;
                     return;
-                } else if (constraint instanceof Constraint.SiteFtpCredentialsError) {
+                } else if (constraint instanceof Constraint.FtpCredentialsError) {
                     this.errors.ftpError = true;
                     this.errors.ftpErrorMessage = constraint.ftpError;
                     return;
@@ -230,19 +230,19 @@ export class ConnectWebsiteNewController {
             (result: Result.ISiteConnect): void => {
                 _finally();
                 this.session.clearAll();
-                this.router.navigate(['/SiteDashboard', {uid: result.site.uid}]);
+                this.router.navigate(['/SiteDashboard', {id: result.site.id}]);
             },
             (constraint): void => {
                 _finally();
-                if (constraint instanceof Constraint.SiteOxygenNotEnabled) {
+                if (constraint instanceof Constraint.SiteConnectOxygenNotFound) {
                     this.errors.stillDisabled = true;
                     return;
-                } else if (constraint instanceof Constraint.SiteAlreadyConnected) {
+                } else if (constraint instanceof Constraint.SiteConnectAlreadyConnected) {
                     // ISite got connected to another account in the meantime? It's possible...
                     this.router.navigate(['../ConnectSiteReconnect', {
                         url: encodeURIComponent(this.url),
-                        lookedForLoginForm: this.lookedForLoginForm.toString(),
-                        loginFormFound: this.loginFormFound.toString()
+                        lookedForLoginForm: this.lookedForLoginForm ? 'yes' : 'no',
+                        loginFormFound: this.loginFormFound ? 'yes' : 'no'
                     }]);
                     return;
                 }

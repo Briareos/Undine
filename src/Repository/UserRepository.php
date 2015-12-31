@@ -2,24 +2,60 @@
 
 namespace Undine\Repository;
 
-use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Undine\Model\User;
 
-class UserRepository extends EntityRepository
+class UserRepository
 {
     /**
-     * @param string $uid
+     * @var EntityManager
+     */
+    private $em;
+
+    /**
+     * @var ClassMetadata
+     */
+    private $metadata;
+
+    public function __construct(EntityManager $em, ClassMetadata $metadata)
+    {
+        $this->em       = $em;
+        $this->metadata = $metadata;
+    }
+
+    /**
+     * @param string $id User UUID.
      *
      * @return User|null
      */
-    public function findOneByUid($uid)
+    public function find($id)
     {
-        $id = User::getIdFromUid($uid);
-
-        if ($id === null) {
+        if (!\Undine\Functions\valid_uuid1($id)) {
             return null;
         }
 
-        return $this->find($id);
+        return $this->em->find(User::class, (string)$id);
+    }
+
+    /**
+     * @param string $email
+     *
+     * @return User|null
+     */
+    public function findOneByEmail($email)
+    {
+        $persister = $this->em->getUnitOfWork()->getEntityPersister(User::class);
+
+        return $persister->load(['email' => (string)$email], null, null, [], null, 1);
+    }
+
+    /**
+     * @return User[]
+     */
+    public function findAll()
+    {
+        return $this->em->getUnitOfWork()->getEntityPersister(User::class)->loadAll();
     }
 }

@@ -14,7 +14,7 @@ import {Dashboard} from "../../dashboard/Dashboard";
 
 <h4>Modules</h4>
 <ul>
-    <li *ng-for="#module of site.modules">
+    <li *ngFor="#module of site.state.modules">
         <strong>{{ module.name }}</strong>
         <blockquote>{{ module.description }}</blockquote>
     </li>
@@ -22,34 +22,34 @@ import {Dashboard} from "../../dashboard/Dashboard";
 
 <h4>Themes</h4>
 <ul>
-    <li *ng-for="#theme of site.themes">
+    <li *ngFor="#theme of site.state.themes">
         <strong>{{ theme.name }}</strong>
         <blockquote>{{ theme.description }}</blockquote>
     </li>
 </ul>
 
 <h3>Updates</h3>
-<h4>Core ({{ site.coreUpdates.length }})</h4>
+<h4>Core ({{ site.state.coreUpdates.length }})</h4>
 <ul>
-    <li *ng-for="#update of site.coreUpdates">
+    <li *ngFor="#update of site.state.coreUpdates">
         <strong>{{ update.existingVersion }}</strong>
         ->
         <strong>{{ update.recommendedVersion }}</strong>
     </li>
 </ul>
 
-<h4>Module ({{ site.moduleUpdates.length }})</h4>
+<h4>Module ({{ site.state.moduleUpdates.length }})</h4>
 <ul>
-    <li *ng-for="#update of site.moduleUpdates">
+    <li *ngFor="#update of site.state.moduleUpdates">
         <strong>{{ update.existingVersion }}</strong>
         ->
         <strong>{{ update.recommendedVersion }}</strong>
     </li>
 </ul>
 
-<h4>Theme ({{ site.themeUpdates.length }})</h4>
+<h4>Theme ({{ site.state.themeUpdates.length }})</h4>
 <ul>
-    <li *ng-for="#update of site.themeUpdates">
+    <li *ngFor="#update of site.state.themeUpdates">
         <strong>{{ update.existingVersion }}</strong>
         ->
         <strong>{{ update.recommendedVersion }}</strong>
@@ -61,6 +61,7 @@ import {Dashboard} from "../../dashboard/Dashboard";
 export class SiteDashboardController {
     private site: ISite;
     constructor(routeParams: RouteParams, dashboard: Dashboard) {
-        this.site = _.find(dashboard.sites, {uid: routeParams.get('uid')});
+        let id: string = routeParams.get('id');
+        this.site = dashboard.sites.find(site => site.id === id);
     }
 }

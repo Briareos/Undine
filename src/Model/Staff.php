@@ -2,13 +2,14 @@
 
 namespace Undine\Model;
 
+use Ramsey\Uuid\Uuid;
 use Undine\Security\User\UserActivityAwareInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class Staff implements UserInterface, UserActivityAwareInterface
 {
     /**
-     * @var int
+     * @var string
      */
     private $id;
 
@@ -53,13 +54,15 @@ class Staff implements UserInterface, UserActivityAwareInterface
      */
     public function __construct($name, $email, $password)
     {
-        $this->name     = $name;
-        $this->email    = $email;
-        $this->password = $password;
+        $this->id        = \Undine\Functions\generate_uuid1();
+        $this->name      = $name;
+        $this->email     = $email;
+        $this->password  = $password;
+        $this->createdAt = new \DateTime();
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getId()
     {

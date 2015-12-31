@@ -26,6 +26,7 @@ use Undine\Event\UserDeleteAccountEvent;
 use Undine\Event\UserRegisterEvent;
 use Undine\Event\UserResetPasswordEvent;
 use Undine\Event\UserResetPasswordFailedEvent;
+use Undine\Form\Type\Web\RegistrationType;
 use Undine\Model\User;
 use Undine\Web\Command\RegistrationCommand;
 
@@ -73,7 +74,7 @@ class SecurityController extends AppController
             return $this->redirectToRoute('web-home');
         }
 
-        $form = $this->createForm('web__registration', null, [
+        $form = $this->createForm(RegistrationType::class, null, [
             'method' => 'POST',
             'action' => $this->generateUrl('web-register'),
         ]);
@@ -122,7 +123,7 @@ class SecurityController extends AppController
         $isAuthenticated = $this->isGranted('IS_AUTHENTICATED_REMEMBERED');
         if ($isAuthenticated) {
             // The user is authenticated.
-            $form = $this->createNamedForm('request_password', 'form', $formOptions);
+            $form = $this->createNamedForm('request_password', FormType::class, $formOptions);
             $user = $this->getUser();
         } else {
             // This might look weird, but the event listener below will set this value if the form's valid.
@@ -143,7 +144,7 @@ class SecurityController extends AppController
                         // Other validators will pick up from here.
                         return;
                     }
-                    if ($user = $this->userRepository->findOneBy(['email' => $data['email']])) {
+                    if ($user = $this->userRepository->findOneByEmail($data['email'])) {
                         return;
                     }
                     $event->getForm()->get('email')->addError(new FormError('A user with the specified email address could not be found.'));
@@ -182,7 +183,7 @@ class SecurityController extends AppController
         $hash = $this->getLoginToken($user, $currentTimestamp);
 
         $url = $this->generateUrl('web-set_password', [
-            'uid'       => $user->getUid(),
+            'id'       => $user->getId(),
             'timestamp' => $currentTimestamp,
             'hash'      => $hash,
         ], UrlGeneratorInterface::ABSOLUTE_URL);
@@ -203,7 +204,7 @@ class SecurityController extends AppController
                 'sha256',
                 sprintf('%d|%s',
                     $timestamp,
-                    $user->getUid()
+                    $user->getId()
                 ),
                 sprintf('%s|%s',
                     $user->getPassword(),
@@ -218,15 +219,15 @@ class SecurityController extends AppController
     }
 
     /**
-     * @Route("/set-password/{uid}/{timestamp}/{hash}", name="web-set_password", requirements={"uid"="^U\d{10}$", "timestamp"="^\d+$", "hash"="^[a-zA-Z0-9_-]+$"})
-     * @ParamConverter("resetUser", class="Model:User", options={"id":"uid", "repository_method":"findOneByUid"})
+     * @Route("/set-password/{id}/{timestamp}/{hash}", name="web-set_password", requirements={"id"="^[a-z0-9-]{36}$", "timestamp"="^\d+$", "hash"="^[a-zA-Z0-9_-]+$"})
+     * @ParamConverter("resetUser", class="Model:User")
      * @Template("web/security/set-password.html.twig")
      */
     public function setPassword(User $resetUser, $timestamp, $hash, Request $request)
     {
         $currentUser = $this->getUser();
 
-        if ($currentUser && $currentUser->getUid() !== $resetUser->getUid()) {
+        if ($currentUser && $currentUser->getId() !== $resetUser->getId()) {
             // User is logged in as a different user.
             $this->addFlash('error', \Undine\Functions\format('Another user (%current_user) is already logged into the site on this computer, but you tried to use a one-time link for user %reset_user. Please <a href="!logout">logout</a> and try using the link again.', [
                 '%current_user' => $currentUser->getName(),
@@ -272,7 +273,7 @@ class SecurityController extends AppController
         $form = $this->createFormBuilder(null, [
             'method' => 'POST',
             // Current URL.
-            'action' => $this->generateUrl('web-set_password', ['uid' => $resetUser->getUid(), 'timestamp' => $timestamp, 'hash' => $hash]),
+            'action' => $this->generateUrl('web-set_password', ['id' => $resetUser->getId(), 'timestamp' => $timestamp, 'hash' => $hash]),
         ])
             ->add('password', 'password', [
                 'attr'        => ['autofocus' => true],

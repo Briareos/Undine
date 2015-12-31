@@ -1,34 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd" xmlns:gedmo="http://gediminasm.org/schemas/orm/doctrine-extensions-mapping">
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
     <entity repository-class="Undine\Repository\SiteRepository" name="Undine\Model\Site" change-tracking-policy="DEFERRED_EXPLICIT">
 
-        <id name="id" type="integer">
-            <generator strategy="AUTO"/>
-        </id>
+        <id name="id" type="uuid1_binary_optimized"/>
 
         <field name="url" type="uri" length="300"/>
         <field name="privateKey" type="string" length="1750"/>
         <field name="publicKey" type="string" length="500"/>
-        <field name="status" type="integer"/>
-        <field name="createdAt" type="datetime">
-            <gedmo:timestampable on="create"/>
-        </field>
+        <field name="createdAt" type="datetime"/>
+        <field name="thumbnailUrl" type="string" nullable="true"/>
+        <field name="thumbnailUpdatedAt" type="datetime" nullable="true"/>
 
-        <field name="deletedAt" type="datetime" nullable="true"/>
-        <gedmo:soft-deleteable field-name="deletedAt" time-aware="false"/>
-
-        <many-to-one target-entity="Undine\Model\User" field="user" inversed-by="sites">
-        </many-to-one>
-
-        <one-to-many target-entity="Undine\Model\SiteExtension" field="siteExtensions" mapped-by="site" index-by="slug">
-        </one-to-many>
-        <one-to-many target-entity="Undine\Model\SiteUpdate" field="siteUpdates" mapped-by="site" index-by="slug">
-        </one-to-many>
-
-        <embedded name="siteState" class="Undine\Model\Site\SiteState" column-prefix="state_"/>
         <embedded name="httpCredentials" class="Undine\Model\Site\HttpCredentials" column-prefix="http_"/>
         <embedded name="ftpCredentials" class="Undine\Model\Site\FtpCredentials" column-prefix="ftp_"/>
+
+        <one-to-one target-entity="Undine\Model\SiteState" field="siteState" inversed-by="site">
+            <join-column nullable="false"/>
+        </one-to-one>
+
+        <many-to-one target-entity="Undine\Model\User" field="user" inversed-by="sites">
+            <join-column nullable="false"/>
+        </many-to-one>
 
     </entity>
 

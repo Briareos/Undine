@@ -13,14 +13,8 @@ if (isset($_SERVER['HTTP_CLIENT_IP'])
     exit('You ('.@$_SERVER['REMOTE_ADDR'].') are not allowed to access this file. Check '.basename(__FILE__).' for more information.');
 }
 
-if (empty($_COOKIE['XDEBUG_SESSION']) && empty($_REQUEST['XDEBUG_SESSION_START'])) {
-    $loader = require_once __DIR__.'/../var/bootstrap.php.cache';
-} else {
-    $loader = require_once __DIR__.'/../app/autoload.php';
-}
+$loader = require_once __DIR__.'/../app/autoload.php';
 Debug::enable();
-
-require_once __DIR__.'/../app/AppKernel.php';
 
 $kernel = new AppKernel('dev', true);
 

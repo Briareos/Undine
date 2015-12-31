@@ -15,15 +15,13 @@
         assets to work. An alternative is to rewrite CSS routes on build time. #}
         <link rel="stylesheet" href="/tmp/css/dashboard/dashboard.css">
 
-        <script src="/bower_components/lodash/lodash.js"></script>
-        <script src="/bower_components/system.js/dist/system-register-only.js"></script>
-        <script src="/bower_components/jquery/dist/jquery.js"></script>
+        <script src="/node_modules/systemjs/dist/system-register-only.js"></script>
+        <script src="/node_modules/jquery/dist/jquery.js"></script>
         <script src="/node_modules/angular2/bundles/angular2.dev.js"></script>
         <script src="/node_modules/angular2/bundles/router.dev.js"></script>
 
         <script src="/tmp/js/dashboard/dashboard.js"></script>
     {% else %}
-
     <link rel="stylesheet" href="/css/dashboard/{% asset 'dashboard.css' 'rev-css-dashboard.json' %}">
 
         {# While the development dependencies are declared inline, production dependencies
@@ -34,7 +32,7 @@
     {% endif %}
 
 </head>
-<body class="stretched body">
+<body>
 
 {{ include('dashboard/data.html.twig') }}
 
@@ -42,11 +40,10 @@
 
 {% if app.environment == 'dev' %}
     {{ include('live-reload.html.twig') }}
-    {{ include('toolbar/angular_toolbar_js.html.twig') }}
 {% endif %}
 
 <script>
-    System.import('app/app');
+    System.import('app');
 </script>
 
 </body>

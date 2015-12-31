@@ -2,7 +2,7 @@
 
 namespace Undine\Api\Exception;
 
-use Undine\Api\Constraint\ConstraintInterface;
+use Undine\Api\Error\ConstraintInterface;
 
 class ConstraintViolationException extends ApiException
 {

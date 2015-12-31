@@ -2,7 +2,9 @@
 
 namespace Undine\AppBundle\Controller\Admin;
 
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Undine\AppBundle\Controller\AppController;
+use Undine\Form\Type\Admin\UserType;
 use Undine\Model\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -36,7 +38,7 @@ class UserController extends AppController
      */
     public function createAction(Request $request)
     {
-        $createForm = $this->createForm('admin__user', null, [
+        $createForm = $this->createForm(UserType::class, null, [
             'method'            => 'POST',
             'validation_groups' => ['create'],
         ]);
@@ -65,7 +67,7 @@ class UserController extends AppController
      */
     public function editAction(User $user, Request $request)
     {
-        $editForm = $this->createForm('admin__user', $user, [
+        $editForm = $this->createForm(UserType::class, $user, [
             'method' => 'PUT',
         ]);
 
@@ -95,7 +97,7 @@ class UserController extends AppController
         $deleteForm = $this->createFormBuilder(null, [
             'method' => 'DELETE',
         ])
-            ->add('id', 'hidden', ['data' => $user->getId()])
+            ->add('id', HiddenType::class, ['data' => $user->getId()])
             ->getForm();
 
         $deleteForm->handleRequest($request);

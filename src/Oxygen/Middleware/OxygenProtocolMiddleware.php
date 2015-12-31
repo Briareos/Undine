@@ -2,17 +2,22 @@
 
 namespace Undine\Oxygen\Middleware;
 
-use GuzzleHttp\RequestOptions;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Promise\RejectionException;
+use GuzzleHttp\TransferStats;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Security\Core\Util\SecureRandomInterface;
+use Symfony\Component\OptionsResolver\Exception\ExceptionInterface;
 use Undine\Functions\Exception\JsonParseException;
 use Undine\Model\Site;
 use Undine\Oxygen\Action\ActionInterface;
+use Undine\Oxygen\Exception\ConnectionException;
 use Undine\Oxygen\Exception\InvalidBodyException;
 use Undine\Oxygen\Exception\OxygenException;
+use Undine\Oxygen\Exception\ProtocolException;
+use Undine\Oxygen\Exception\ResponseException;
+use Undine\Oxygen\Exception\UnexpectedErrorException;
 use Undine\Oxygen\Reaction\ReactionInterface;
 use Undine\Oxygen\State\SiteStateResultTracker;
 
@@ -25,11 +30,6 @@ class OxygenProtocolMiddleware
      * @var string
      */
     private $moduleVersion;
-
-    /**
-     * @var SecureRandomInterface
-     */
-    private $secureRandom;
 
     /**
      * @var \DateTime
@@ -58,17 +58,15 @@ class OxygenProtocolMiddleware
 
     /**
      * @param string                 $moduleVersion
-     * @param SecureRandomInterface  $secureRandom
      * @param \DateTime              $currentTime
      * @param string                 $handshakeKeyName
      * @param string                 $handshakeKeyValue
      * @param SiteStateResultTracker $stateTracker
      * @param callable               $nextHandler
      */
-    public function __construct($moduleVersion, SecureRandomInterface $secureRandom, \DateTime $currentTime, $handshakeKeyName, $handshakeKeyValue, SiteStateResultTracker $stateTracker, callable $nextHandler)
+    public function __construct($moduleVersion, \DateTime $currentTime, $handshakeKeyName, $handshakeKeyValue, SiteStateResultTracker $stateTracker, callable $nextHandler)
     {
         $this->moduleVersion     = $moduleVersion;
-        $this->secureRandom      = $secureRandom;
         $this->currentTime       = $currentTime;
         $this->handshakeKeyName  = $handshakeKeyName;
         $this->handshakeKeyValue = $handshakeKeyValue;
@@ -76,10 +74,10 @@ class OxygenProtocolMiddleware
         $this->nextHandler       = $nextHandler;
     }
 
-    public static function create($moduleVersion, SecureRandomInterface $secureRandom, \DateTime $currentTime, $handshakeKeyName, $handshakeKeyValue, SiteStateResultTracker $stateTracker)
+    public static function create($moduleVersion, \DateTime $currentTime, $handshakeKeyName, $handshakeKeyValue, SiteStateResultTracker $stateTracker)
     {
-        return function (callable $nextHandler) use ($moduleVersion, $secureRandom, $currentTime, $handshakeKeyName, $handshakeKeyValue, $stateTracker) {
-            return new self($moduleVersion, $secureRandom, $currentTime, $handshakeKeyName, $handshakeKeyValue, $stateTracker, $nextHandler);
+        return function (callable $nextHandler) use ($moduleVersion, $currentTime, $handshakeKeyName, $handshakeKeyValue, $stateTracker) {
+            return new self($moduleVersion, $currentTime, $handshakeKeyName, $handshakeKeyValue, $stateTracker, $nextHandler);
         };
     }
 
@@ -95,20 +93,32 @@ class OxygenProtocolMiddleware
             throw new \RuntimeException(sprintf('The option "oxygen_action" is expected to contain an instance of %s.', ActionInterface::class));
         }
 
+        $transferInfo = $oldCallable = null;
+        if (isset($options['on_stats'])) {
+            $oldCallable = $options['on_stats'];
+        }
+        $options['on_stats'] = function (TransferStats $stats) use (&$transferInfo, $oldCallable) {
+            $transferInfo = $stats->getHandlerStats();
+            if ($oldCallable) {
+                /** @var callable $oldCallable */
+                $oldCallable($stats);
+            }
+        };
+
         /** @var Site $site */
         $site = $options['oxygen_site'];
         /** @var ActionInterface $action */
         $action = $options['oxygen_action'];
 
-        $requestId = substr(base_convert(bin2hex($this->secureRandom->nextBytes(32)), 16, 36), 0, 32);
-        // Kind of like str_rot18 that includes support for numbers.
-        $responseId      = strtr($requestId, 'abcdefghijklmnopqrstuvwxyz0123456789', 'stuvwxyz0123456789abcdefghijklmnopqr');
+        $requestId = \Undine\Functions\generate_uuid1();
+        // Kind of like str_rot8, for hexadecimal strings.
+        $responseId      = strtr($requestId, 'abcdef0123456789', '23456789abcdef01');
         $expiresAt       = $this->currentTime->getTimestamp() + 86400;
         $userName        = '';
         $stateParameters = $this->stateTracker->getParameters($site);
 
         $requestData = [
-            // Request nonce/ID. It's also expected to be present in the response as oxygenResponseId = str_rot13(oxygenRequestId),
+            // Request nonce/ID. It's also expected to be present in the response as oxygenResponseId = str_rot18(oxygenRequestId),
             // so we are absolutely certain we got a response from the module.
             'oxygenRequestId'    => $requestId,
             // When the nonce should expire. There is no need for this value to be too low; the point is to persist
@@ -138,9 +148,11 @@ class OxygenProtocolMiddleware
             'actionParameters'   => $action->getParameters(),
             // This doesn't have use currently, but it's implemented at protocol level for statistic purposes.
             'userName'           => $userName,
-            // Implemented to tie in dashboard users and site administrators, also for statistic purposes.
-            // In LoginUrlGenerator it has more significant use.
-            'userUid'            => $site->getUser()->getUid(),
+            // Implemented to tie in dashboard users to site administrators, also for statistic purposes.
+            // Eg. when expiring one-time-login link sessions.
+            'userId'             => $site->getUser()->getId(),
+            // Each action, beside its response, returns site's "state". The parameters passed here are mostly regarding
+            // the current state info we have, eg. the checksum of the table that stores available updates.
             'stateParameters'    => $stateParameters,
         ];
 
@@ -153,38 +165,22 @@ class OxygenProtocolMiddleware
         }
 
         return $fn($oxygenRequest, $options)
-            ->then(function (ResponseInterface $response) use ($site, $request, $options, $responseId, $action) {
-                $responseData = $this->extractData($responseId, $request, $response, $options);
-                $this->validateData($request, $response, $responseData, $options);
-                $reaction = $this->createReaction($action, $responseData);
-                $this->stateTracker->setResult($site, $responseData['stateResult']);
+            ->then(
+                function (ResponseInterface $response) use ($site, $request, &$transferInfo, $responseId, $action) {
+                    $responseData = $this->extractData($responseId, $request, $response, $transferInfo);
+                    $reaction     = $this->createReaction($action, $responseData);
+                    try {
+                        $this->stateTracker->setResult($site, $responseData['stateResult']);
+                    } catch (\Exception $e) {
+                        throw new InvalidBodyException(InvalidBodyException::STATE_MALFORMED, $request, $response, $transferInfo, $e);
+                    }
 
-                return $reaction;
-            });
-    }
-
-    /**
-     * @param RequestInterface  $request
-     * @param ResponseInterface $response
-     * @param array             $responseData
-     * @param array             $options
-     */
-    private function validateData(RequestInterface $request, ResponseInterface $response, array $responseData, array $options)
-    {
-        // Was an exception thrown?
-        if (isset($responseData['exception'])) {
-            throw OxygenException::createFromResponseData('exception', $responseData['exception'], $request, $response, $options);
-        }
-
-        // Does the action result exist?
-        if (!isset($responseData['actionResult']) || !is_array($responseData['actionResult'])) {
-            throw new InvalidBodyException('Unable to find action result.', $request, $response, null, $options);
-        }
-
-        // Does the state result exist?
-        if (!isset($responseData['stateResult']) || !is_array($responseData['stateResult'])) {
-            throw new InvalidBodyException('Unable to find state result.', $request, $response, null, $options);
-        }
+                    return $reaction;
+                },
+                function (RequestException $e) use (&$transferInfo) {
+                    throw new ConnectionException($e->getRequest(), $e->getResponse(), $transferInfo);
+                }
+            );
     }
 
     /**
@@ -228,42 +224,61 @@ class OxygenProtocolMiddleware
      * @param string            $responseId
      * @param RequestInterface  $request
      * @param ResponseInterface $response
-     * @param array             $options
+     * @param array             $transferInfo
      *
      * @return array
+     *
+     * @throws InvalidBodyException
+     * @throws ResponseException
      */
-    private function extractData($responseId, RequestInterface $request, ResponseInterface $response, array $options)
+    private function extractData($responseId, RequestInterface $request, ResponseInterface $response, array $transferInfo)
     {
+        if ($response->getBody()->getSize() > 10 * 1024 * 1024) {
+            // Safe-guard; don't parse the body if it's larger than 10MB.
+            throw new InvalidBodyException(InvalidBodyException::BODY_TOO_LARGE, $request, $response, $transferInfo);
+        }
         // Find all lines that might represent a JSON string.
-        $matchCount = preg_match_all('{^({.*?})\s?$}m', (string)$response->getBody(), $matches);
+        $matchFound = preg_match(sprintf('{^({"oxygenResponseId":"%s",.*?})\s?$}m', preg_quote($responseId)), (string)$response->getBody(), $matches);
 
-        // First check if there are any matches at all.
-        if (!$matchCount) {
-            throw new InvalidBodyException('The Oxygen module response could not be found.', $request, $response, null, $options);
+        if (!$matchFound) {
+            throw new InvalidBodyException(InvalidBodyException::RESPONSE_NOT_FOUND, $request, $response, $transferInfo);
         }
 
-        // Iterate through all candidates.
-        foreach ($matches[1] as $line) {
+        try {
+            $data = \Undine\Functions\json_parse($matches[1]);
+        } catch (JsonParseException $e) {
+            throw new InvalidBodyException(InvalidBodyException::RESPONSE_INVALID_JSON, $request, $response, $transferInfo);
+        }
+
+        // Our response should always resolve to an array.
+        if (!is_array($data)) {
+            throw new InvalidBodyException(InvalidBodyException::RESPONSE_NOT_AN_ARRAY, $request, $response, $transferInfo);
+        }
+
+        if (isset($data['exception'])) {
+            if (!is_array($data['exception'])) {
+                throw new InvalidBodyException(InvalidBodyException::EXCEPTION_NOT_ARRAY, $request, $response, $transferInfo);
+            }
+
             try {
-                $data = \Undine\Functions\json_parse($line);
-            } catch (JsonParseException $e) {
-                // We'll ignore any lines that aren't valid json, since we're kinda greedy with capturing.
-                continue;
+                throw ResponseException::createFromData($data['exception'], $request, $response, $transferInfo);
+            } catch (ExceptionInterface $e) {
+                throw new InvalidBodyException(InvalidBodyException::MALFORMED_EXCEPTION, $request, $response, $transferInfo, $e);
             }
-
-            // Our response should always resolve to an array.
-            if (!is_array($data)) {
-                continue;
+        } elseif (isset($data['actionResult'])) {
+            if (!is_array($data['actionResult'])) {
+                throw new InvalidBodyException(InvalidBodyException::ACTION_RESULT_NOT_ARRAY, $request, $response, $transferInfo);
             }
-
-            // Look for data that's always available in our protocol.
-            if (!isset($data['oxygenResponseId']) || $data['oxygenResponseId'] !== $responseId) {
-                continue;
+            if (!isset($responseData['stateResult'])) {
+                throw new InvalidBodyException(InvalidBodyException::STATE_EMPTY, $request, $response, $transferInfo);
+            }
+            if (!is_array($responseData['stateResult'])) {
+                throw new InvalidBodyException(InvalidBodyException::STATE_NOT_ARRAY, $request, $response, $transferInfo);
             }
 
             return $data;
         }
 
-        throw new InvalidBodyException('The Oxygen module response could not be found.', $request, $response, null, $options);
+        throw new InvalidBodyException(InvalidBodyException::RESULT_NOT_FOUND, $request, $response, $transferInfo);
     }
 }

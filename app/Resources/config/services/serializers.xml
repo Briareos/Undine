@@ -40,7 +40,7 @@
         </service>
 
         <service id="undine.serializer.transformer.site_state" class="Undine\Api\Transformer\SiteStateTransformer" public="false" lazy="true">
-            <tag name="serializer.transformer" alias="Undine\Model\Site\SiteState"/>
+            <tag name="serializer.transformer" alias="Undine\Model\SiteState"/>
         </service>
 
     </services>

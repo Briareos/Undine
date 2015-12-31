@@ -3,15 +3,14 @@
 <head>
 
     <meta charset="UTF-8">
-    <title>{% block title %}Undine{% endblock %}</title>
+    <title>{% block title %}{{ brand }}{% endblock %}</title>
 
     {% if app.environment == 'dev' %}
         <link rel="stylesheet" href="/tmp/css/semantic/semantic.css">
         <link rel="stylesheet" href="/tmp/css/admin/admin.css">
 
-        <script src="/bower_components/lodash/lodash.js"></script>
-        <script src="/bower_components/system.js/dist/system-register-only.js"></script>
-        <script src="/bower_components/jquery/dist/jquery.js"></script>
+        <script src="/node_modules/systemjs/dist/system-register-only.js"></script>
+        <script src="/node_modules/jquery/dist/jquery.js"></script>
         <script src="/node_modules/angular2/bundles/angular2.dev.js"></script>
         <script src="/tmp/js/admin/admin.js"></script>
     {% else %}

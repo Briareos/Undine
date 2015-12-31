@@ -25,8 +25,8 @@ class ModuleController extends AppController
     /**
      * @Method("GET|POST")
      * @Route("module.enable", name="api-module.enable")
-     * @ParamConverter("site", class="Model:ISite", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
-     * @Api("api__module_enable")
+     * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site"})
+     * @Api("Undine\Form\Type\Api\ModuleEnableType")
      */
     public function enableAction(Site $site, ModuleEnableCommand $command)
     {
@@ -39,8 +39,8 @@ class ModuleController extends AppController
     /**
      * @Method("GET|POST")
      * @Route("module.disable", name="api-module.disable")
-     * @ParamConverter("site", class="Model:ISite", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
-     * @Api("api__module_disable")
+     * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site"})
+     * @Api("Undine\Form\Type\Api\ModuleDisableType")
      */
     public function disableAction(Site $site, ModuleDisableCommand $command)
     {
@@ -53,8 +53,8 @@ class ModuleController extends AppController
     /**
      * @Method("GET|POST")
      * @Route("module.uninstall", name="api-module.uninstall")
-     * @ParamConverter("site", class="Model:ISite", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
-     * @Api("api__module_disable")
+     * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site"})
+     * @Api("Undine\Form\Type\Api\ModuleDisableType")
      */
     public function uninstallAction(Site $site, ModuleDisableCommand $command)
     {

@@ -22,14 +22,14 @@ import {Api} from "../../../service/Api";
                 </div>
             </div>
         </div>
-        <div class="ui middle aligned very relaxed stackable grid" [ng-class]="loginFormFound ? ['two', 'column'] : ''">
+        <div class="ui middle aligned very relaxed stackable grid" [ngClass]="loginFormFound ? ['two', 'column'] : ''">
             <!-- @todo Duplicate code until https://github.com/angular/angular/issues/4805 gets resolved! -->
-            <div class="row" *ng-if="!loginFormFound">
+            <div class="row" *ngIf="!loginFormFound">
                 <div class="center aligned middle aligned column">
                     <p>
                         You can go to <a [href]="disconnectUrl" target="_blank">this page</a> and disconnect the website from any dashboard that it's connected to. Then click:
                     </p>
-                    <div *ng-if="errors.stillConnected" class="ui negative message">
+                    <div *ngIf="errors.stillConnected" class="ui negative message">
                         <p>The site still appears to be connected to the other account.</p>
                     </div>
                     <button class="ui primary labeled icon submit button" [class.loading]="connectWebsiteLoading" [disabled]="connectWebsiteActive" (click)="click()">
@@ -38,12 +38,12 @@ import {Api} from "../../../service/Api";
                     </button>
                 </div>
             </div>
-            <div class="row" *ng-if="loginFormFound">
+            <div class="row" *ngIf="loginFormFound">
                 <div class="center aligned middle aligned column">
                     <p>
                         You can go to <a [href]="disconnectUrl" target="_blank">this page</a> and disconnect the website from any dashboard that it's connected to. Then click:
                     </p>
-                    <div *ng-if="errors.stillConnected" class="ui negative message">
+                    <div *ngIf="errors.stillConnected" class="ui negative message">
                         <p>The site still appears to be connected to the other account.</p>
                     </div>
                     <button class="ui primary labeled icon submit button" [class.loading]="connectWebsiteLoading" [disabled]="connectWebsiteActive" (click)="click()">
@@ -56,22 +56,22 @@ import {Api} from "../../../service/Api";
                 </div>
                 <div class="column">
                     <p>... we can do that for you if you provide us with <strong>{{ url }}</strong> administrator credentials:</p>
-                    <form class="ui form" (submit)="submit(form.value)" [ng-form-model]="form">
+                    <form class="ui form" (submit)="submit(form.value)" [ngFormModel]="form">
                         <div class="field">
                             <label>Username</label>
                             <div class="ui left icon input">
-                                <input type="text" placeholder="Your Drupal username" [ng-form-control]="form.controls['username']" required>
+                                <input type="text" placeholder="Your Drupal username" [ngFormControl]="form.controls['username']" required>
                                 <i class="user icon"></i>
                             </div>
                         </div>
                         <div class="field">
                             <label>Password</label>
                             <div class="ui left icon input">
-                                <input placeholder="Your Drupal password" type="password" [ng-form-control]="form.controls['password']" required>
+                                <input placeholder="Your Drupal password" type="password" [ngFormControl]="form.controls['password']" required>
                                 <i class="lock icon"></i>
                             </div>
                         </div>
-                        <div *ng-if="errors.invalidCredentials" class="ui negative message">
+                        <div *ngIf="errors.invalidCredentials" class="ui negative message">
                             <p>Invalid credentials provided.</p>
                         </div>
                         <button class="ui primary labeled icon submit button" [class.loading]="autoConnectWebsiteLoading" [disabled]="connectWebsiteActive">
@@ -101,8 +101,8 @@ export class ConnectWebsiteReconnectController {
     constructor(private session: ConnectWebsiteSession, private api: Api, private router: Router, params: RouteParams, fb: FormBuilder) {
         this.url = decodeURIComponent(params.get('url'));
         this.disconnectUrl = this.url.replace(/\/?$/, '/?q=admin/config/oxygen/disconnect');
-        this.lookedForLoginForm = params.get('lookedForLoginForm') === 'true';
-        this.loginFormFound = params.get('loginFormFound') === 'true';
+        this.lookedForLoginForm = params.get('lookedForLoginForm') === 'yes';
+        this.loginFormFound = params.get('loginFormFound') === 'yes';
         this.form = fb.group({
             username: [''],
             password: [''],
@@ -122,11 +122,11 @@ export class ConnectWebsiteReconnectController {
             (result): void => {
                 _finally();
                 this.session.clearAll();
-                this.router.navigate(['/SiteDashboard', {uid: result.site.uid}]);
+                this.router.navigate(['/SiteDashboard', {id: result.site.id}]);
             },
             (constraint: Constraint.IConstraint): void => {
                 _finally();
-                if (constraint instanceof Constraint.SiteAlreadyConnected) {
+                if (constraint instanceof Constraint.SiteConnectAlreadyConnected) {
                     this.errors.stillConnected = true;
                     return;
                 }
@@ -147,7 +147,7 @@ export class ConnectWebsiteReconnectController {
             (result: Result.ISiteConnect): void => {
                 _finally();
                 this.session.clearAll();
-                this.router.navigate(['/SiteDashboard', {uid: result.site.uid}]);
+                this.router.navigate(['/SiteDashboard', {id: result.site.id}]);
             },
             (constraint: Constraint.IConstraint): void => {
                 _finally();

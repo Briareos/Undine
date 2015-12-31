@@ -16,7 +16,7 @@ import {Api} from "../../service/Api";
         <input type="text" placeholder="Search sites">
         <i class="search icon"></i>
     </div>
-    <a [router-link]="['/ConnectSite']" class="fluid large ui light gray button margin-bottom-20">
+    <a [routerLink]="['/ConnectSite']" class="fluid large ui light gray button margin-bottom-20">
         <i class="plus icon"></i>
         Connect Website
     </a>
@@ -40,9 +40,12 @@ export class SitePickerDirective {
     }
 
     refresh() {
+        if (this._sites.length === 0) {
+            return;
+        }
         this._api.bulk(()=> {
             this._sites.forEach((s) => {
-                this._api.sitePing(s.uid)
+                this._api.sitePing(s.id)
                     .result.subscribe(
                     (result) => {
                         console.log(result);

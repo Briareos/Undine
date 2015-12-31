@@ -1,6 +1,6 @@
 import {Injectable, Inject} from 'angular2/angular2';
-import Observable from '@reactivex/rxjs/dist/cjs/Observable';
-import Observer from '@reactivex/rxjs/dist/cjs/Observer';
+import {Observable} from 'rxjs/Observable';
+import {Observer} from 'rxjs/Observer';
 
 import * as Result from '../api/result';
 import * as Progress from '../api/progress';
@@ -236,8 +236,8 @@ export class Api {
         );
     }
 
-    public sitePing(uid: string): IProgressAwareApiResponse<Result.ISiteConnect, Progress.ISiteConnect> {
-        return this.command('site.ping', {site: uid});
+    public sitePing(id: string): IProgressAwareApiResponse<Result.ISiteConnect, Progress.ISiteConnect> {
+        return this.command('site.ping', {site: id});
     }
 
     private command(command: string, parameters?: Object): ApiResponse<Progress.IProgress, Result.IResult> {

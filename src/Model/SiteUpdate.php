@@ -2,6 +2,8 @@
 
 namespace Undine\Model;
 
+use Ramsey\Uuid\Uuid;
+
 class SiteUpdate
 {
     const TYPE_CORE = 'core';
@@ -41,9 +43,14 @@ class SiteUpdate
     ];
 
     /**
-     * @var Site
+     * @var string
      */
-    private $site;
+    private $id;
+
+    /**
+     * @var SiteState
+     */
+    private $siteState;
 
     /**
      * @var string
@@ -119,13 +126,22 @@ class SiteUpdate
     private $subThemes = [];
 
     /**
-     * @param Site   $site
-     * @param string $slug
+     * @param SiteState $siteState
+     * @param string    $slug
      */
-    public function __construct(Site $site, $slug)
+    public function __construct(SiteState $siteState, $slug)
     {
-        $this->site = $site;
-        $this->slug = $slug;
+        $this->id        = \Undine\Functions\generate_uuid1();
+        $this->siteState = $siteState;
+        $this->slug      = $slug;
+    }
+
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**
@@ -139,17 +155,9 @@ class SiteUpdate
     /**
      * @return Site
      */
-    public function getSite()
+    public function getSiteState()
     {
-        return $this->site;
-    }
-
-    /**
-     * @param Site $site
-     */
-    public function setSite($site)
-    {
-        $this->site = $site;
+        return $this->siteState;
     }
 
     /**

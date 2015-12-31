@@ -18,10 +18,9 @@ import {ConnectWebsiteReconnectController} from "./reconnect/controller";
         `
 })
 @RouteConfig([
-    {path: '/', redirectTo: '/url'},
-    {path: '/url', as: 'ConnectSiteUrl', component: ConnectWebsiteUrlController},
-    {path: '/new', as: 'ConnectSiteNew', component: ConnectWebsiteNewController},
-    {path: '/reconnect', as: 'ConnectSiteReconnect', component: ConnectWebsiteReconnectController}
+    {path: '/url', name: 'ConnectSiteUrl', component: ConnectWebsiteUrlController, useAsDefault: true},
+    {path: '/new', name: 'ConnectSiteNew', component: ConnectWebsiteNewController},
+    {path: '/reconnect', name: 'ConnectSiteReconnect', component: ConnectWebsiteReconnectController}
 ])
 export class ConnectWebsiteController {
 }

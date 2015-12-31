@@ -2,7 +2,6 @@
 
 namespace Undine\EventListener;
 
-use GuzzleHttp\Promise\Promise;
 use GuzzleHttp\Promise\PromiseInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,21 +13,16 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
-use Undine\Api\Constraint\ConstraintInterface;
-use Undine\Api\Constraint\Security\BadCredentialsConstraint;
-use Undine\Api\Constraint\Security\NotAuthenticatedConstraint;
-use Undine\Api\Constraint\Security\NotAuthorizedConstraint;
-use Undine\Api\Constraint\SecurityConstraint;
-use Undine\Api\Constraint\Site\InvalidBodyConstraint;
-use Undine\Api\Constraint\Site\OxygenErrorConstraint;
+use Undine\Api\Error\ConstraintInterface;
+use Undine\Api\Error\Security\BadCredentials;
+use Undine\Api\Error\Security\NotAuthenticated;
+use Undine\Api\Error\Security\NotAuthorized;
 use Undine\Api\Exception\CommandInvalidException;
 use Undine\Api\Exception\ConstraintViolationException;
 use Undine\Api\Result\ResultInterface;
 use Undine\Api\Serializer\Context;
 use Undine\Api\Serializer\Normalizer;
 use Undine\Oxygen\Exception\InvalidBodyException;
-use Undine\Oxygen\Exception\OxygenException;
-use Undine\Oxygen\Exception\ProtocolException;
 
 class ApiResultListener implements EventSubscriberInterface
 {
@@ -100,17 +94,13 @@ class ApiResultListener implements EventSubscriberInterface
         } elseif ($exception instanceof ConstraintViolationException) {
             $this->mergeConstraintData($data, $exception->getConstraint());
         } elseif ($exception instanceof UsernameNotFoundException) {
-            $this->mergeConstraintData($data, new BadCredentialsConstraint());
+            $this->mergeConstraintData($data, new BadCredentials());
         } elseif ($exception instanceof AccessDeniedException) {
             if ($this->tokenStorage->getToken() && $this->tokenStorage->getToken()->getRoles()) {
-                $this->mergeConstraintData($data, new NotAuthorizedConstraint());
+                $this->mergeConstraintData($data, new NotAuthorized());
             } else {
-                $this->mergeConstraintData($data, new NotAuthenticatedConstraint());
+                $this->mergeConstraintData($data, new NotAuthenticated());
             }
-        } elseif ($exception instanceof OxygenException) {
-            $this->mergeConstraintData($data, new OxygenErrorConstraint($exception->getCode(), $exception->getType()));
-        } elseif ($exception instanceof InvalidBodyException) {
-            $this->mergeConstraintData($data, new InvalidBodyConstraint());
         } else {
             // Show full exceptions for now.
             return;

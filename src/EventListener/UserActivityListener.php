@@ -55,10 +55,8 @@ class UserActivityListener implements EventSubscriberInterface
                 return;
             }
             $user->setLastActiveAt($this->currentTime);
-            if (!$uow->isScheduledForInsert($user)) {
-                $this->em->persist($user);
-                $this->em->flush($user);
-            }
+            $this->em->persist($user);
+            $this->em->flush($user);
         }, -10);
     }
 
@@ -77,10 +75,7 @@ class UserActivityListener implements EventSubscriberInterface
             }
             $user->setLastLoginAt($this->currentTime);
             $this->em->persist($user);
-            if (!$uow->isScheduledForInsert($user)) {
-                $this->em->persist($user);
-                $this->em->flush($user);
-            }
+            $this->em->flush($user);
         }, -10);
     }
 }

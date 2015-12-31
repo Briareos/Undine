@@ -2,24 +2,15 @@
 
 namespace Undine\Model;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Psr\Http\Message\UriInterface;
+use Ramsey\Uuid\Uuid;
 use Undine\Model\Site\FtpCredentials;
 use Undine\Model\Site\HttpCredentials;
-use Undine\Model\Site\SiteState;
-use Undine\Uid\UidInterface;
-use Undine\Uid\UidTrait;
 
-class Site implements UidInterface
+class Site
 {
-    use UidTrait;
-
-    const STATUS_DISCONNECTED = 0;
-    const STATUS_CONNECTED = 1;
-    const STATUS_PAUSED = 2;
-
     /**
-     * @var int
+     * @var string
      */
     private $id;
 
@@ -59,34 +50,21 @@ class Site implements UidInterface
     private $httpCredentials;
 
     /**
-     * @var SiteExtension[]
-     */
-    private $siteExtensions;
-
-    /**
-     * @var SiteUpdate[]
-     */
-    private $siteUpdates;
-
-    /**
-     * @var int
-     */
-    private $status = self::STATUS_DISCONNECTED;
-
-    /**
-     * @var \DateTime
-     */
-    private $lastCommunicatedAt;
-
-    /**
      * @var \DateTime
      */
     private $createdAt;
 
     /**
+     * @var string|null
+     */
+    private $thumbnailUrl;
+
+    /**
      * @var \DateTime|null
      */
-    private $deletedAt;
+    private $thumbnailUpdatedAt;
+
+
 
     /**
      * @param UriInterface $url
@@ -96,19 +74,19 @@ class Site implements UidInterface
      */
     public function __construct(UriInterface $url, User $user, $privateKey, $publicKey)
     {
+        $this->id              = \Undine\Functions\generate_uuid1();
         $this->url             = $url;
         $this->user            = $user;
         $this->privateKey      = $privateKey;
         $this->publicKey       = $publicKey;
-        $this->siteState       = new SiteState();
+        $this->siteState       = new SiteState($this);
         $this->ftpCredentials  = new FtpCredentials();
         $this->httpCredentials = new HttpCredentials();
-        $this->siteExtensions  = new ArrayCollection();
-        $this->siteUpdates     = new ArrayCollection();
+        $this->createdAt       = new \DateTime();
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getId()
     {
@@ -232,86 +210,6 @@ class Site implements UidInterface
     }
 
     /**
-     * @return SiteExtension[]
-     */
-    public function getSiteExtensions()
-    {
-        return $this->siteExtensions->toArray();
-    }
-
-    /**
-     * @param SiteExtension[] $siteExtensions
-     *
-     * @return $this
-     */
-    public function setSiteExtensions(array $siteExtensions)
-    {
-        $this->siteExtensions = new ArrayCollection($siteExtensions);
-
-        return $this;
-    }
-
-    /**
-     * @return SiteUpdate[]
-     */
-    public function getSiteUpdates()
-    {
-        return $this->siteUpdates->toArray();
-    }
-
-    /**
-     * @param SiteUpdate[] $siteUpdates
-     *
-     * @return $this
-     */
-    public function setSiteUpdates(array $siteUpdates)
-    {
-        $this->siteUpdates = new ArrayCollection($siteUpdates);
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getStatus()
-    {
-        return $this->status;
-    }
-
-    /**
-     * @return $this
-     */
-    public function setConnected()
-    {
-        $this->status = self::STATUS_CONNECTED;
-
-        return $this;
-    }
-
-    /**
-     * @param $reason
-     *
-     * @return $this
-     */
-    public function setDisconnected($reason)
-    {
-        $this->status = self::STATUS_DISCONNECTED;
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function setPaused()
-    {
-        $this->status = self::STATUS_PAUSED;
-
-        return $this;
-    }
-
-    /**
      * @return \DateTime
      */
     public function getCreatedAt()
@@ -320,10 +218,27 @@ class Site implements UidInterface
     }
 
     /**
+     * @return string|null
+     */
+    public function getThumbnailUrl()
+    {
+        return $this->thumbnailUrl;
+    }
+
+    /**
+     * @param string|null $thumbnailUrl
+     */
+    public function setThumbnailUrl($thumbnailUrl = null)
+    {
+        $this->thumbnailUrl       = $thumbnailUrl;
+        $this->thumbnailUpdatedAt = new \DateTime();
+    }
+
+    /**
      * @return \DateTime|null
      */
-    public function getDeletedAt()
+    public function getThumbnailUpdatedAt()
     {
-        return $this->deletedAt;
+        return $this->thumbnailUpdatedAt;
     }
 }

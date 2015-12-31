@@ -4,7 +4,7 @@ namespace Undine\Event;
 
 use Symfony\Component\EventDispatcher\Event;
 use Undine\Model\Site;
-use Undine\Oxygen\State\SiteStateResult;
+use Undine\Oxygen\State\Result\SiteStateResult;
 
 class SiteStateResultEvent extends Event
 {

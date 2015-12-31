@@ -11,8 +11,8 @@ import {StripUrlPipe} from "../../filters/strip_url";
     template: `
 <section class="site-picker-site-list">
     <div class="ui site list">
-        <div class="item site-item" *ng-for="#site of sites">
-            <a class="site-name" [router-link]="['/SiteDashboard', {uid: site.uid}]">
+        <div class="item site-item" *ngFor="#site of sites">
+            <a class="site-name" [routerLink]="['/SiteDashboard', {id: site.id}]">
                 <span class="status">
                     <span class="site status connected"></span>
                 </span>

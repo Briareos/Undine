@@ -1,8 +1,0 @@
-{
-    "name": "undine",
-    "dependencies": {
-        "lodash": "3.10.1",
-        "jquery": "2.1.4",
-        "system.js": "0.19.5"
-    }
-}

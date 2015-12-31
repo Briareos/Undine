@@ -9,15 +9,11 @@ security:
             cost:      15
     providers:
         user_provider:
-            entity:
-                class: Undine\Model\User
-                property: email
+            id: undine.user_provider.user
         api_provider:
             id: undine.user_provider.api_token
         staff_provider:
-            entity:
-                class: Undine\Model\Staff
-                property: email
+            id: undine.user_provider.staff
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -30,14 +26,14 @@ security:
                 check_path:             admin-login_check
                 username_parameter:     email
                 password_parameter:     password
-                csrf_provider:          security.csrf.token_manager
+#                csrf_provider:          security.csrf.token_manager
                 csrf_parameter:         token
-                intention:              authenticate
+#                intention:              authenticate
                 post_only:              true
                 login_path:             admin-login
                 default_target_path:    admin-home
             remember_me:
-                key:                    %secret%
+                secret:                 %secret%
                 name:                   ADMINREMEMBERME
                 secure:                 false
                 httponly:               true
@@ -68,12 +64,12 @@ security:
                 username_parameter:     email
                 password_parameter:     password
                 csrf_parameter:         token
-                csrf_provider:          security.csrf.token_manager
-                intention:              authenticate
+#                csrf_provider:          security.csrf.token_manager
+#                intention:              authenticate
                 post_only:              true
                 default_target_path:    web-home
             remember_me:
-                key:                    %secret%
+                secret:                 %secret%
                 name:                   WEBREMEMBERME
                 secure:                 false
                 httponly:               true

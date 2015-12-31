@@ -3,6 +3,7 @@
 namespace Undine\Form\Type\Api;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -14,17 +15,9 @@ class ExtensionUpdateType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function getName()
-    {
-        return 'api__extension_update';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('extension', 'text', [
+        $builder->add('extension', TextType::class, [
             'constraints' => [
                 new NotBlank(),
             ],

@@ -3,6 +3,9 @@
 namespace Undine\Form\Type\Web;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
@@ -29,29 +32,21 @@ class RegistrationType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function getName()
-    {
-        return 'web__registration';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('name', 'text', [
+        $builder->add('name', TextType::class, [
             'constraints' => [
                 new Type(['type' => 'string']),
                 new NotBlank(),
             ],
         ]);
-        $builder->add('email', 'email', [
+        $builder->add('email', EmailType::class, [
             'constraints' => [
                 new Type(['type' => 'string']),
                 new NotBlank(),
             ],
         ]);
-        $builder->add('plainPassword', 'password', [
+        $builder->add('plainPassword', PasswordType::class, [
             'label'       => 'Password',
             'constraints' => [
                 new Type(['type' => 'string']),
@@ -70,7 +65,7 @@ class RegistrationType extends AbstractType
             $command = $event->getData();
             $email   = $command->getEmail();
 
-            $users = $this->userRepository->findBy(['email' => $email]);
+            $users = $this->userRepository->findOneByEmail($email);
             if (!$users) {
                 return;
             }

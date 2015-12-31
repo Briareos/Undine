@@ -8,12 +8,12 @@
 
         <service id="undine.form.type.admin.user" class="Undine\Form\Type\Admin\UserType">
             <argument type="service" id="security.user_password_encoder.generic"/>
-            <tag name="form.type" alias="admin__user"/>
+            <tag name="form.type"/>
         </service>
 
         <service id="undine.form.type.admin.staff" class="Undine\Form\Type\Admin\StaffType">
             <argument type="service" id="security.user_password_encoder.generic"/>
-            <tag name="form.type" alias="admin__staff"/>
+            <tag name="form.type"/>
         </service>
 
     </services>

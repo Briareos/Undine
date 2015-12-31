@@ -8,7 +8,7 @@
 
         <service id="undine.form.type.web.registration" class="Undine\Form\Type\Web\RegistrationType">
             <argument type="service" id="doctrine.repository.user"/>
-            <tag name="form.type" alias="web__registration"/>
+            <tag name="form.type"/>
         </service>
 
     </services>

@@ -2,6 +2,9 @@
 
 namespace Undine\Form\Type\Admin;
 
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Undine\Model\Staff;
 use Symfony\Component\Form\AbstractType;
@@ -22,20 +25,15 @@ class StaffType extends AbstractType
         $this->passwordEncoder = $passwordEncoder;
     }
 
-    public function getName()
-    {
-        return 'admin__staff';
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('name', 'text');
-        $builder->add('email', 'email', [
+        $builder->add('name', TextType::class);
+        $builder->add('email', EmailType::class, [
             'constraints' => [
                 new NotBlank(['groups' => ['create']]),
             ],
         ]);
-        $builder->add('plainPassword', 'password', [
+        $builder->add('plainPassword', PasswordType::class, [
             'constraints' => [
                 new NotBlank(['groups' => ['create']]),
                 new Length([

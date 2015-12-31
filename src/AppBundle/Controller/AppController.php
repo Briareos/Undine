@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManager;
 use Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\FormTypeInterface;
@@ -98,7 +99,7 @@ abstract class AppController extends Controller
      */
     protected function createNamedFormBuilder($name, $data = null, array $options = [])
     {
-        return $this->get('form.factory')->createNamedBuilder($name, 'form', $data, $options);
+        return $this->get('form.factory')->createNamedBuilder($name, FormType::class, $data, $options);
     }
 
     /**

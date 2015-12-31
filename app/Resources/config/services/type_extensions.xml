@@ -10,11 +10,11 @@
             <argument type="collection">
                 <argument key="required">false</argument>
             </argument>
-            <tag name="form.type_extension" alias="form"/>
+            <tag name="form.type_extension" extended-type="form"/>
         </service>
 
         <service id="undine.form.type_extension.field_type_help" class="Undine\Form\Extension\FieldTypeHelpExtension">
-            <tag name="form.type_extension" alias="form"/>
+            <tag name="form.type_extension" extended-type="form"/>
         </service>
 
     </services>

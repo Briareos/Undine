@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd" xmlns:gedmo="http://gediminasm.org/schemas/orm/doctrine-extensions-mapping">
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
     <entity repository-class="Undine\Repository\SiteExtensionRepository" name="Undine\Model\SiteExtension" change-tracking-policy="DEFERRED_EXPLICIT">
 
-        <id name="site" association-key="true"/>
-        <id name="slug" type="string"/>
+        <unique-constraints>
+            <unique-constraint columns="siteState_id,slug"/>
+        </unique-constraints>
 
+        <id name="id" type="uuid1_binary_optimized"/>
+
+        <field name="slug" type="string"/>
         <field name="filename" type="string"/>
         <field name="type" type="string"/>
         <field name="parent" type="string" nullable="true"/>
@@ -18,7 +22,7 @@
         <field name="dependencies" type="simple_array" nullable="true"/>
         <field name="project" type="string" nullable="true"/>
 
-        <many-to-one target-entity="Undine\Model\Site" field="site" inversed-by="siteExtensions">
+        <many-to-one target-entity="Undine\Model\SiteState" field="siteState" inversed-by="siteExtensions">
             <join-column nullable="false"/>
         </many-to-one>
 

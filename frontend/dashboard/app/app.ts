@@ -2,7 +2,7 @@ import {bootstrap, provide, Component, FORM_PROVIDERS} from 'angular2/angular2';
 import {RouteConfig, ROUTER_PROVIDERS, ROUTER_DIRECTIVES} from 'angular2/router';
 
 import {DashboardController} from './page/dashboard/controller';
-import {Sidebar} from './dashboard/Sidebar';
+import {Navigation} from './dashboard/navigation';
 import {SitePickerDirective} from './component/sitePicker/sitePickerDirective';
 import {Dashboard} from './dashboard/Dashboard';
 import {Api} from './service/Api';
@@ -20,44 +20,47 @@ import {ConnectWebsiteController} from "./page/connect_website/controller";
 
 @Component({
     selector: 'dashboard-app',
-    directives: [ROUTER_DIRECTIVES, Sidebar, SitePickerDirective],
+    directives: [ROUTER_DIRECTIVES, Navigation, SitePickerDirective],
     template: `
-<div class="stretched dashboard container">
-    <sidebar></sidebar>
-    <site-picker></site-picker>
-    <div class="main content">
-        <div class="content header">
-            <div class="ui huge breadcrumb">
-            </div>
+<div class="page-wrapper">
+    <navigation class="navigation"></navigation>
+    <div class="content-wrapper">
+        <site-picker class="site-picker"></site-picker>
+        <div class="content">
+            <div>
+                <div class="ui huge breadcrumb">
+                breadcrumb
+                </div>
 
-            <div class="ui secondary icon action menu">
-                <a class="item" [router-link]="['/Account']">
-                    <i class="setting icon"></i>
-                </a>
-                <a class="item" [router-link]="['/Logout']">
-                    <i class="sign out icon"></i>
-                </a>
+                <div class="ui secondary icon action menu">
+                    <a class="item" [routerLink]="['/Account']">
+                        <i class="setting icon"></i>
+                    </a>
+                    <a class="item" [routerLink]="['/Logout']">
+                        <i class="sign out icon"></i>
+                    </a>
+                </div>
             </div>
-        </div>
-        <div class="state content">
-            <router-outlet></router-outlet>
+            <div>
+                <router-outlet></router-outlet>
+            </div>
         </div>
     </div>
 </div>
 `
 })
 @RouteConfig([
-    {path: '/', as: 'Dashboard', component: DashboardController},
-    {path: '/account', as: 'Account', component: AccountController},
-    {path: '/logout', as: 'Logout', component: LogoutController},
-    {path: '/site/:uid', as: 'SiteDashboard', component: SiteDashboardController},
-    {path: '/connect/...', as: 'ConnectSite', component: ConnectWebsiteController}
+    {path: '/', name: 'Dashboard', component: DashboardController, useAsDefault: true},
+    {path: '/account', name: 'Account', component: AccountController},
+    {path: '/logout', name: 'Logout', component: LogoutController},
+    {path: '/site/:id', name: 'SiteDashboard', component: SiteDashboardController},
+    {path: '/connect/...', name: 'ConnectSite', component: ConnectWebsiteController}
 ])
 class DashboardComponent {
 }
 
 class AppData {
-    constructor(private data:any){
+    constructor(private data: any) {
     }
 
     get apiUrl(): string {

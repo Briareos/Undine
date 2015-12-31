@@ -1,53 +1,53 @@
 {
-    "name": "briareos/undine",
-    "license": "MIT",
-    "type": "project",
-    "description": "Undine application for Drupal site management.",
     "autoload": {
         "psr-4": {
-            "Undine\\Tests\\": "tests/",
             "Undine\\": "src/"
         },
         "files": [
+            "app/AppKernel.php",
             "src/Functions/json.php",
             "src/Functions/openssl.php",
-            "src/Functions/string.php"
+            "src/Functions/string.php",
+            "src/Functions/uuid.php"
         ]
     },
+    "autoload-dev": {
+        "Undine\\Tests\\": "tests/"
+    },
     "require": {
-        "php": ">=5.3.9",
-        "symfony/symfony": "^2.7.3",
+        "php": ">=7.0.0",
+        "symfony/symfony": "^3.0.0",
         "doctrine/orm": "^2.5.0",
-        "doctrine/dbal": "^2.5.0",
-        "doctrine/doctrine-bundle": "^1.5.0",
-        "symfony/swiftmailer-bundle": "^2.3.8",
-        "symfony/monolog-bundle": "^2.7.1",
-        "sensio/distribution-bundle": "^4.0.1",
-        "sensio/framework-extra-bundle": "^3.0.10",
-        "incenteev/composer-parameter-handler": "^2.1.1",
-        "twig/extensions": "^1.2.0",
-        "stof/doctrine-extensions-bundle": "^1.1.0",
-        "guzzlehttp/guzzle": "^6.1.0",
-        "knplabs/knp-menu-bundle": "^2.0.0",
-        "doctrine/doctrine-migrations-bundle": "^1.0.1",
-        "league/fractal": "^0.12.0",
-        "omnipay/stripe": "^2.2.1",
-        "jenssegers/optimus": "^0.1.3",
-        "react/react": "^0.4.2"
+        "doctrine/doctrine-bundle": "^1.6.1",
+        "doctrine/doctrine-cache-bundle": "^1.2.2",
+        "symfony/swiftmailer-bundle": "^2.3.9",
+        "symfony/monolog-bundle": "^2.8.2",
+        "sensio/distribution-bundle": "^5.0.2",
+        "sensio/framework-extra-bundle": "^3.0.11",
+        "incenteev/composer-parameter-handler": "^2.1.2",
+        "twig/extensions": "^1.3.0",
+        "guzzlehttp/guzzle": "^6.1.1",
+        "knplabs/knp-menu-bundle": "^2.1.0@dev",
+        "league/fractal": "^0.13.0",
+        "ramsey/uuid": "^3.0.1"
     },
     "require-dev": {
-        "sensio/generator-bundle": "^2.5.3",
+        "sensio/generator-bundle": "^3.0.0",
+        "symfony/phpunit-bridge": "^2.7.0",
         "doctrine/doctrine-fixtures-bundle": "^2.2.0"
     },
     "scripts": {
+        "pre-install-cmd": [
+            "Undine\\Composer\\ScriptHandler::install"
+        ],
+        "pre-update-cmd": [
+            "Undine\\Composer\\ScriptHandler::install"
+        ],
         "post-install-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
             "npm install",
             "npm prune",
-            "npm run tsd-reinstall",
-            "npm run bower-install",
-            "npm run bower-prune",
             "npm run gulp-build",
             "npm run gulp-build-dev",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
@@ -57,12 +57,8 @@
         "post-update-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
-            "npm update",
+            "npm install",
             "npm prune",
-            "npm shrinkwrap --dev",
-            "npm run tsd-reinstall",
-            "npm run bower-install",
-            "npm run bower-prune",
             "npm run gulp-build",
             "npm run gulp-build-dev",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
@@ -82,9 +78,6 @@
         "symfony-assets-install": "relative",
         "incenteev-parameters": {
             "file": "app/config/parameters.yml"
-        },
-        "branch-alias": {
-            "dev-master": "2.7-dev"
         }
     }
 }

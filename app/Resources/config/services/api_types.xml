@@ -7,27 +7,27 @@
     <services>
 
         <service id="undine.form.type.api.site_connect" class="Undine\Form\Type\Api\SiteConnectType">
-            <tag name="form.type" alias="api__site_connect"/>
+            <tag name="form.type"/>
         </service>
 
         <service id="undine.form.type.api.module_enable" class="Undine\Form\Type\Api\ModuleEnableType">
-            <tag name="form.type" alias="api__module_enable"/>
+            <tag name="form.type"/>
         </service>
 
         <service id="undine.form.type.api.module_disable" class="Undine\Form\Type\Api\ModuleDisableType">
-            <tag name="form.type" alias="api__module_disable"/>
+            <tag name="form.type"/>
         </service>
 
         <service id="undine.form.type.api.extension_install_from_url" class="Undine\Form\Type\Api\ExtensionDownloadFromUrlType">
-            <tag name="form.type" alias="api__extension_install_from_url"/>
+            <tag name="form.type"/>
         </service>
 
         <service id="undine.form.type.api.extension_update" class="Undine\Form\Type\Api\ExtensionUpdateType">
-            <tag name="form.type" alias="api__extension_update"/>
+            <tag name="form.type"/>
         </service>
 
         <service id="undine.form.type.api.site_ping" class="Undine\Form\Type\Api\SitePingType">
-            <tag name="form.type" alias="api__site_ping"/>
+            <tag name="form.type"/>
         </service>
 
     </services>

@@ -15,7 +15,7 @@ class UserTransformer extends AbstractTransformer
     public function transform(User $user)
     {
         return [
-            'uid'      => $user->getUid(),
+            'id'       => $user->getId(),
             'email'    => $user->getEmail(),
             'emailMd5' => md5($user->getEmail()),
         ];

@@ -2,6 +2,9 @@
 
 namespace Undine\Form\Type\Admin;
 
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
@@ -26,24 +29,19 @@ class UserType extends AbstractType
         $this->passwordEncoder = $passwordEncoder;
     }
 
-    public function getName()
-    {
-        return 'admin__user';
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('name', 'text', [
+        $builder->add('name', TextType::class, [
             'constraints' => [
                 new NotBlank(['groups' => ['create']]),
             ],
         ]);
-        $builder->add('email', 'email', [
+        $builder->add('email', EmailType::class, [
             'constraints' => [
                 new NotBlank(['groups' => ['create']]),
             ],
         ]);
-        $builder->add('plainPassword', 'password', [
+        $builder->add('plainPassword', PasswordType::class, [
             'constraints' => [
                 new NotBlank(['groups' => ['create']]),
                 new Length([

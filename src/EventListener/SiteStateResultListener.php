@@ -4,10 +4,10 @@ namespace Undine\EventListener;
 
 use Doctrine\ORM\EntityManager;
 use Undine\Event\SiteStateResultEvent;
-use Undine\Model\Site;
+use Undine\Model\SiteState;
 use Undine\Model\SiteExtension;
 use Undine\Model\SiteUpdate;
-use Undine\Oxygen\State\SiteStateResult;
+use Undine\Oxygen\State\Result\SiteStateResult;
 
 class SiteStateResultListener
 {
@@ -26,8 +26,7 @@ class SiteStateResultListener
 
     public function onSiteStateResult(SiteStateResultEvent $event)
     {
-        $site   = $event->getSite();
-        $state  = $site->getSiteState();
+        $state  = $event->getSite()->getSiteState();
         $result = $event->getSiteStateResult();
 
         $state->setSiteKey($result->siteKey)
@@ -54,52 +53,52 @@ class SiteStateResultListener
             ->setOs($result->os)
             ->setWindows($result->windows);
 
-        // Initialize them extension arrays here we don't have to check twice if we should persist the entities below.
-        $siteExtensions = $deletedExtensions = [];
+        // Initialize the extension arrays here we don't have to check twice if we should persist the entities below.
+        $stateExtensions = $deletedExtensions = [];
         if (!$result->extensionsCacheHit) {
             // Extensions are indexed by their slug, which is part of their primary key (second part is site's ID).
-            $siteExtensions    = $this->getExtensions($site, $result);
-            $deletedExtensions = array_diff_key($site->getSiteExtensions(), $siteExtensions);
-            $site->setSiteExtensions($siteExtensions);
+            $stateExtensions    = $this->getExtensions($state, $result);
+            $deletedExtensions = array_diff_key($state->getSiteExtensions(), $stateExtensions);
+            $state->setSiteExtensions($stateExtensions);
 
             $state->setExtensionsChecksum($result->extensionsChecksum);
         }
 
         // @todo: Check for some kind of update cache hit?
-        $siteUpdates    = $this->getUpdates($site, $result);
-        $deletedUpdates = array_diff_key($site->getSiteUpdates(), $siteUpdates);
-        $site->setSiteUpdates($siteUpdates);
+        $siteUpdates    = $this->getUpdates($state, $result);
+        $deletedUpdates = array_diff_key($state->getSiteUpdates(), $siteUpdates);
+        $state->setSiteUpdates($siteUpdates);
 
 
-        if ($this->em->getUnitOfWork()->isInIdentityMap($site) && !$this->em->getUnitOfWork()->isScheduledForInsert($site)) {
-            array_walk($siteExtensions, [$this->em, 'persist']);
+        if ($this->em->getUnitOfWork()->isInIdentityMap($state) && !$this->em->getUnitOfWork()->isScheduledForInsert($state)) {
+            array_walk($stateExtensions, [$this->em, 'persist']);
             array_walk($deletedExtensions, [$this->em, 'remove']);
             array_walk($siteUpdates, [$this->em, 'persist']);
             array_walk($deletedUpdates, [$this->em, 'remove']);
-            $this->em->persist($site);
+            $this->em->persist($state);
+            $this->em->flush();
         }
-        $this->em->flush();
     }
 
     /**
-     * @param Site            $site
+     * @param SiteState       $state
      * @param SiteStateResult $result
      *
      * @return SiteExtension[]
      */
-    private function getExtensions(Site $site, SiteStateResult $result)
+    private function getExtensions(SiteState $state, SiteStateResult $result)
     {
         if (!$result->extensions) {
             return [];
         }
 
-        $existingExtensions = $site->getSiteExtensions();
+        $existingExtensions = $state->getSiteExtensions();
         $extensions         = [];
         foreach ($result->extensions as $slug => $extensionData) {
             if (isset($existingExtensions[$slug])) {
                 $extension = $existingExtensions[$slug];
             } else {
-                $extension = new SiteExtension($site, $slug);
+                $extension = new SiteExtension($state, $slug);
             }
             $extension->setFilename($extensionData->filename)
                 ->setType($extensionData->type)
@@ -120,24 +119,24 @@ class SiteStateResultListener
     }
 
     /**
-     * @param Site            $site
+     * @param SiteState            $state
      * @param SiteStateResult $result
      *
      * @return SiteUpdate[]
      */
-    private function getUpdates(Site $site, SiteStateResult $result)
+    private function getUpdates(SiteState $state, SiteStateResult $result)
     {
         if (!$result->updates) {
             return [];
         }
 
-        $existingUpdates = $site->getSiteUpdates();
+        $existingUpdates = $state->getSiteUpdates();
         $updates         = [];
         foreach ($result->updates as $slug => $updateData) {
             if (isset($existingUpdates[$slug])) {
                 $update = $existingUpdates[$slug];
             } else {
-                $update = new SiteUpdate($site, $slug);
+                $update = new SiteUpdate($state, $slug);
             }
             $update->setType($updateData->type)
                 ->setName($updateData->name)

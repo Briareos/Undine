@@ -4,6 +4,7 @@ namespace Undine\Event;
 
 /**
  * This class contains the list of all available events in the application.
+ * All event classes map to the event names in camel case format (eg. USER_REGISTER => UserRegisterEvent).
  */
 final class Events
 {
@@ -26,6 +27,11 @@ final class Events
      * User deleted their own account.
      */
     const USER_DELETE_ACCOUNT = 'user.delete_account';
+
+    /**
+     * Fires after site.connect API call. The site is persisted to the database right after.
+     */
+    const SITE_CONNECT = 'site.connect';
 
     /**
      * Fires after site.disconnect API call. The site is deleted immediately afterwards.

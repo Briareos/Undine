@@ -1,7 +1,6 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
-    - { resource: services.yml }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
@@ -17,7 +16,7 @@ framework:
         strict_requirements: ~
     form:            ~
     csrf_protection: ~
-    validation:      { enable_annotations: true }
+    validation:      { enable_annotations: false }
     templating:
         engines: ['twig']
     default_locale:  "%locale%"
@@ -26,8 +25,10 @@ framework:
     session:
         # handler_id set to null will use default session handler from php.ini
         handler_id:  ~
+        save_path:   "%kernel.root_dir%/../var/sessions/%kernel.environment%"
     fragments:       ~
     http_method_override: true
+    assets: ~
 
 # Twig Configuration
 twig:
@@ -36,9 +37,9 @@ twig:
     form_themes:
         - 'form/form.html.twig'
     globals:
-        domain: %domain%
-        brand: %brand%
-        oxygenZipUrl: %oxygen_zip_url%
+        domain:         %domain%
+        brand:          %brand%
+        oxygenZipUrl:   %oxygen_zip_url%
 
 # Doctrine Configuration
 doctrine:
@@ -53,11 +54,8 @@ doctrine:
         types:
             uri: Undine\Doctrine\Type\UriType
             timezone: Undine\Doctrine\Type\TimezoneType
+            uuid1_binary_optimized: Undine\Doctrine\Type\Uuid1BinaryOptimizedType
     orm:
-        filters:
-            softdeleteable:
-                class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter
-                enabled: true
         auto_generate_proxy_classes: "%kernel.debug%"
         naming_strategy: doctrine.orm.naming_strategy.default
         mappings:
@@ -75,13 +73,6 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
-
-# Doctrine Extensions (Gedmo) Configuration
-stof_doctrine_extensions:
-    orm:
-        default:
-            timestampable:  true
-            softdeleteable: true
 
 sensio_framework_extra:
     request:

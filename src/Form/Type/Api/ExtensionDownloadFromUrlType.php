@@ -3,6 +3,7 @@
 namespace Undine\Form\Type\Api;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -15,17 +16,9 @@ class ExtensionDownloadFromUrlType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function getName()
-    {
-        return 'api__extension_download_from_url';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('url', 'url', [
+        $builder->add('url', UrlType::class, [
             'constraints' => [
                 new NotBlank(),
                 new Url(),

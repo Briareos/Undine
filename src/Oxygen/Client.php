@@ -7,6 +7,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Promise\Promise;
 use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\RequestOptions;
 use Undine\Model\Site;
 use Undine\Oxygen\Action\ActionInterface;
 use Undine\Oxygen\Middleware\OxygenProtocolMiddleware;
@@ -20,41 +21,11 @@ class Client
     private $handler;
 
     /**
-     * @var callable
-     */
-    private $protocolMiddleware;
-
-    /**
-     * @var HttpClient|null
-     */
-    private $cachedClient;
-
-    /**
      * @param callable $handler
-     * @param callable $protocolMiddleware
      */
-    public function __construct(callable $handler, callable $protocolMiddleware)
+    public function __construct(callable $handler)
     {
-        $this->handler            = $handler;
-        $this->protocolMiddleware = $protocolMiddleware;
-    }
-
-    /**
-     * @return HttpClient
-     */
-    private function getHttpClient()
-    {
-        if ($this->cachedClient === null) {
-            $stack = new HandlerStack($this->handler);
-            $stack->push($this->protocolMiddleware, 'oxygen_protocol');
-            $stack->push(Middleware::redirect(), 'allow_redirects');
-            $stack->push(Middleware::cookies(), 'cookies');
-            $stack->push(Middleware::prepareBody(), 'prepare_body');
-
-            $this->cachedClient = new HttpClient(['handler' => $stack->resolve()]);
-        }
-
-        return $this->cachedClient;
+        $this->handler = $handler;
     }
 
     /**
@@ -63,7 +34,6 @@ class Client
      * @param array           $options
      *
      * @return ReactionInterface
-     * @throws
      */
     public function send(Site $site, ActionInterface $action, array $options = [])
     {
@@ -79,17 +49,22 @@ class Client
      */
     public function sendAsync(Site $site, ActionInterface $action, array $options = [])
     {
-        $options['oxygen_site']     = $site;
-        $options['oxygen_action']   = $action;
-        $options['allow_redirects'] = [
-            'max'      => 1,
-            // Strict redirect following means that you follow up with a GET request; don't do that.
-            'strict'   => true,
-            'referrer' => true,
+        $options += [
+            'oxygen_site'=>$site,
+            'oxygen_action'=>$action,
+            RequestOptions::ALLOW_REDIRECTS => [
+                'max'      => 1,
+                // Strict redirect following means that you follow up with a GET request; don't do that.
+                'strict'   => true,
+                'referrer' => true,
+            ],
+            RequestOptions::VERIFY=>false,
         ];
 
         $request = new Request('POST', $site->getUrl(), ['cookie' => 'XDEBUG_SESSION=PHPSTORM']);
 
-        return $this->getHttpClient()->sendAsync($request, $options);
+        $fn = $this->handler;
+
+        return $fn($request, $options);
     }
 }

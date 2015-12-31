@@ -2,6 +2,8 @@
 
 namespace Undine\Model;
 
+use Ramsey\Uuid\Uuid;
+
 class SiteExtension
 {
     const TYPE_MODULE = 'module';
@@ -9,9 +11,14 @@ class SiteExtension
     const TYPE_THEME = 'theme';
 
     /**
-     * @var Site
+     * @var string
      */
-    private $site;
+    private $id;
+
+    /**
+     * @var SiteState
+     */
+    private $siteState;
 
     /**
      * @var string
@@ -76,21 +83,31 @@ class SiteExtension
     private $project;
 
     /**
-     * @param Site   $site
-     * @param string $slug
+     * @param SiteState $siteState
+     * @param string    $slug
      */
-    public function __construct(Site $site, $slug)
+    public function __construct(SiteState $siteState, $slug)
     {
-        $this->site = $site;
-        $this->slug = $slug;
+        $this->id        = \Undine\Functions\generate_uuid1();
+        $this->siteState = $siteState;
+        $this->siteState = $siteState;
+        $this->slug      = $slug;
+    }
+
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**
      * @return Site
      */
-    public function getSite()
+    public function getSiteState()
     {
-        return $this->site;
+        return $this->siteState;
     }
 
     /**

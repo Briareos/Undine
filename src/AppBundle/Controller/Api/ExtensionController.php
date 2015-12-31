@@ -27,7 +27,7 @@ class ExtensionController extends AppController
     /**
      * @Method("GET|POST")
      * @Route("extension.downloadFromUrl", name="api-extension.downloadFromUrl")
-     * @ParamConverter("site", class="Model:ISite", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
+     * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
      * @Api("api__extension_download_from_url")
      */
     public function downloadFromUrlAction(Site $site, ExtensionDownloadFromUrlCommand $command)
@@ -41,12 +41,12 @@ class ExtensionController extends AppController
     /**
      * @Method("GET|POST")
      * @Route("extension.update", name="api-project.update")
-     * @ParamConverter("site", class="Model:ISite", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
-     * @Api("api__extension_update")
+     * @ParamConverter("site", class="Model:Site", options={"request_path":"site", "query_path":"site", "repository_method":"findOneByUid"})
+     * @Api("Undine\Form\Type\Api\ExtensionUpdateType")
      */
     public function downloadUpdateFromUrlAction(Site $site, ExtensionUpdateCommand $command)
     {
-        $updates = $site->getSiteUpdates();
+        $updates = $site->getSiteState()->getSiteUpdates();
         if (!isset($updates[$command->getExtension()])) {
             throw $this->createNotFoundException('The extension could not be found.');
         }

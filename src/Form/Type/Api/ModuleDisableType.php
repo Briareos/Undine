@@ -3,6 +3,8 @@
 namespace Undine\Form\Type\Api;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -14,22 +16,14 @@ class ModuleDisableType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function getName()
-    {
-        return 'api__module_disable';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('module', 'text', [
+        $builder->add('module', TextType::class, [
             'constraints' => [
                 new NotBlank(),
             ],
         ]);
-        $builder->add('disableDependents', 'checkbox');
+        $builder->add('disableDependents', CheckboxType::class);
     }
 
     /**

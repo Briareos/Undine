@@ -2,7 +2,10 @@
 
 namespace Undine\Oxygen\Reaction;
 
+use Symfony\Component\OptionsResolver\Exception\ExceptionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Undine\Oxygen\Reaction\Exception\ReactionException;
+use Undine\Oxygen\Reaction\Exception\ReactionMalformedException;
 
 abstract class AbstractReaction implements ReactionInterface
 {
@@ -21,25 +24,13 @@ abstract class AbstractReaction implements ReactionInterface
      */
     public function setData(array $data)
     {
-        $this->data = $this->resolve($data);
-    }
-
-    /**
-     * @param mixed $data
-     *
-     * @return array
-     */
-    protected function resolve($data)
-    {
-        if (!is_array($data)) {
-            throw new \InvalidArgumentException(sprintf('The resolving data is expected to be an array, "%s" given.', gettype($data)));
-        }
-
-        return $this->getResolver()->resolve($data);
+        $this->data = $this->getResolver()->resolve($data);
     }
 
     /**
      * @return OptionsResolver
+     *
+     * @throws ReactionException
      */
     private function getResolver()
     {
@@ -47,7 +38,11 @@ abstract class AbstractReaction implements ReactionInterface
 
         if (!isset(self::$resolvers[$class])) {
             self::$resolvers[$class] = new OptionsResolver();
-            $this->configureOptions(self::$resolvers[$class]);
+            try {
+                $this->configureOptions(self::$resolvers[$class]);
+            } catch (ExceptionInterface $e) {
+                throw new ReactionMalformedException('The reaction data did not pass our expected format.', 0, $e);
+            }
         }
 
         return self::$resolvers[$class];

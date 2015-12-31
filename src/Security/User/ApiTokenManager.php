@@ -3,7 +3,6 @@
 namespace Undine\Security\User;
 
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\Security\Core\Util\SecureRandom;
 use Undine\Model\User;
 
 class ApiTokenManager
@@ -12,19 +11,13 @@ class ApiTokenManager
      * @var EntityManager
      */
     private $em;
-    /**
-     * @var SecureRandom
-     */
-    private $secureRandom;
 
     /**
      * @param EntityManager $em
-     * @param SecureRandom  $secureRandom
      */
-    public function __construct(EntityManager $em, SecureRandom $secureRandom)
+    public function __construct(EntityManager $em)
     {
-        $this->em           = $em;
-        $this->secureRandom = $secureRandom;
+        $this->em = $em;
     }
 
     /**
@@ -34,7 +27,7 @@ class ApiTokenManager
      */
     public function issueToken(User $user)
     {
-        $token = strtoupper(bin2hex($this->secureRandom->nextBytes(32)));
+        $token = bin2hex(random_bytes(32));
         $user->setApiToken($token);
         $this->em->persist($user);
         $this->em->flush($user);
@@ -54,6 +47,6 @@ class ApiTokenManager
 
     public function getToken(User $user)
     {
-        return $user->getUid().'-'.$user->getApiToken();
+        return $user->getId().'-'.$user->getApiToken();
     }
 }

@@ -3,6 +3,10 @@
 namespace Undine\Form\Type\Api;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -11,11 +15,10 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Constraints\Url;
 use Undine\Api\Command\SiteConnectCommand;
-use Undine\Api\Constraint\Site\EmptyUrlConstraint;
-use Undine\Api\Constraint\Site\UrlEmptyConstraint;
-use Undine\Api\Constraint\Site\UrlInvalidConstraint;
-use Undine\Api\Constraint\Site\UrlTooLongConstraint;
-use Undine\Api\Constraint\SiteConstraint;
+use Undine\Api\Error\Site\UrlEmpty;
+use Undine\Api\Error\Site\UrlInvalid;
+use Undine\Api\Error\Site\UrlTooLong;
+use Undine\Api\Error\SiteConstraint;
 use Undine\Form\Transformer\StringToUriTransformer;
 use Undine\Model\Site\FtpCredentials;
 
@@ -24,48 +27,40 @@ class SiteConnectType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function getName()
-    {
-        return 'api__site_connect';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('url', 'url', [
+        $builder->add('url', UrlType::class, [
             'constraints'     => [
                 new NotBlank([
-                    'message' => new UrlEmptyConstraint(),
+                    'message' => new UrlEmpty(),
                 ]),
                 new Url([
-                    'message' => new UrlInvalidConstraint(),
+                    'message' => new UrlInvalid(),
                 ]),
                 new Length([
                     'max'        => 255,
-                    'maxMessage' => new UrlTooLongConstraint(),
+                    'maxMessage' => new UrlTooLong(),
                 ]),
             ],
-            'invalid_message' => SiteConstraint::URL_INVALID,
+            'invalid_message' => new UrlInvalid(),
         ]);
         $builder->get('url')->addViewTransformer(new StringToUriTransformer());
 
-        $builder->add('checkUrl', 'checkbox');
-        $builder->add('httpUsername', 'text');
-        $builder->add('httpPassword', 'text');
-        $builder->add('adminUsername', 'text');
-        $builder->add('adminPassword', 'text');
-        $builder->add('ftpMethod', 'choice', [
+        $builder->add('checkUrl', CheckboxType::class);
+        $builder->add('httpUsername', TextType::class);
+        $builder->add('httpPassword', TextType::class);
+        $builder->add('adminUsername', TextType::class);
+        $builder->add('adminPassword', TextType::class);
+        $builder->add('ftpMethod', ChoiceType::class, [
             'choices' => [
                 FtpCredentials::METHOD_FTP => 'FTP',
                 FtpCredentials::METHOD_SSH => 'SSH',
             ],
         ]);
-        $builder->add('ftpUsername', 'text');
-        $builder->add('ftpPassword', 'text');
-        $builder->add('ftpHost', 'text');
-        $builder->add('ftpPort', 'text', [
+        $builder->add('ftpUsername', TextType::class);
+        $builder->add('ftpPassword', TextType::class);
+        $builder->add('ftpHost', TextType::class);
+        $builder->add('ftpPort', TextType::class, [
             'constraints' => [
                 new Regex([
                     'pattern' => '/^\d+$/',

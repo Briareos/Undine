@@ -10,46 +10,8 @@ export class SiteCanNotInstallOxygen extends Constraint {
     }
 }
 
-export class SiteAlreadyConnected extends Constraint {
-    get lookedForLoginForm(): boolean {
-        return this.data.lookedForLoginForm;
-    }
-
-    get loginFormFound(): boolean {
-        return this.data.loginFormFound;
-    }
-}
-
 export class SiteInvalidCredentials extends Constraint {
 }
 
 export class SiteUrlInvalid extends Constraint {
-}
-
-export class SiteOxygenNotEnabled extends Constraint {
-    get lookedForLoginForm(): boolean {
-        return this.data.lookedForLoginForm;
-    }
-
-    get loginFormFound(): boolean {
-        return this.data.loginFormFound;
-    }
-}
-
-export class SiteFtpCredentialsRequired extends Constraint {
-}
-
-export class SiteFtpCredentialsError extends Constraint {
-    get ftpError(): string {
-        return this.data.ftpError;
-    }
-}
-
-export class SiteHttpAuthenticationRequired extends Constraint {
-}
-
-export class SiteHttpAuthenticationFailed extends Constraint {
-}
-
-export class SiteCanNotResolveHost extends Constraint {
 }

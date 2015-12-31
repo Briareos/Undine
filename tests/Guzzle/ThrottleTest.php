@@ -6,10 +6,10 @@ use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Promise;
-use Undine\Guzzle\Handler\CurlMultiHandler;
 use Undine\Guzzle\Middleware\ThrottleMiddleware;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Undine\Loop\LoopHandler;
 
 class MultiAdapterTest extends \PHPUnit_Framework_TestCase
 {
@@ -105,7 +105,7 @@ class MultiAdapterTest extends \PHPUnit_Framework_TestCase
 
     private function createHandler()
     {
-        $handler  = HandlerStack::create(new CurlMultiHandler());
+        $handler  = HandlerStack::create(new Handler());
         $throttle = new ThrottleMiddleware();
         $handler->unshift($throttle->create(), 'throttle');
 

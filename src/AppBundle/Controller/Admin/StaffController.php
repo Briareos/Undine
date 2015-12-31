@@ -3,6 +3,7 @@
 namespace Undine\AppBundle\Controller\Admin;
 
 use Undine\AppBundle\Controller\AppController;
+use Undine\Form\Type\Admin\StaffType;
 use Undine\Model\Staff;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -36,7 +37,7 @@ class StaffController extends AppController
      */
     public function createAction(Request $request)
     {
-        $createForm = $this->createForm('admin__staff', null, [
+        $createForm = $this->createForm(StaffType::class, null, [
             'method'            => 'POST',
             'validation_groups' => ['create'],
         ]);
@@ -65,7 +66,7 @@ class StaffController extends AppController
      */
     public function editAction(Staff $staff, Request $request)
     {
-        $editForm = $this->createForm('admin__staff', $staff, [
+        $editForm = $this->createForm(StaffType::class, $staff, [
             'method' => 'PUT',
         ]);
 

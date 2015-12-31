@@ -6,16 +6,28 @@
 
     <services>
 
-        <service id="doctrine.repository.user" class="Undine\Repository\UserRepository" factory-service="doctrine.orm.default_entity_manager" factory-method="getRepository">
+        <service id="doctrine.repository.user" class="Undine\Repository\UserRepository">
+            <factory service="doctrine.orm.default_entity_manager" method="getRepository">
+            </factory>
             <argument>Model:User</argument>
         </service>
 
-        <service id="doctrine.repository.staff" class="Undine\Repository\StaffRepository" factory-service="doctrine.orm.default_entity_manager" factory-method="getRepository">
+        <service id="doctrine.repository.staff" class="Undine\Repository\StaffRepository">
+            <factory service="doctrine.orm.default_entity_manager" method="getRepository">
+            </factory>
             <argument>Model:Staff</argument>
         </service>
 
-        <service id="doctrine.repository.site" class="Undine\Repository\SiteRepository" factory-service="doctrine.orm.default_entity_manager" factory-method="getRepository">
+        <service id="doctrine.repository.site" class="Undine\Repository\SiteRepository">
+            <factory service="doctrine.orm.default_entity_manager" method="getRepository">
+            </factory>
             <argument>Model:Site</argument>
+        </service>
+
+        <service id="doctrine.repository.site_state" class="Undine\Repository\SiteStateRepository">
+            <factory service="doctrine.orm.default_entity_manager" method="getRepository">
+            </factory>
+            <argument>Model:SiteState</argument>
         </service>
 
     </services>
