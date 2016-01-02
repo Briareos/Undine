@@ -20,6 +20,10 @@ $sidebar-width: 235px;
   .content-wrapper {
     display: flex;
     flex: 1;
+    overflow: hidden;
+    .site-picker, .content {
+      overflow-y: auto;
+    }
     .site-picker {
       flex-basis: $sidebar-width;
     }
