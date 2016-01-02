@@ -1,4 +1,4 @@
-import {Component} from 'angular2/angular2';
+import {Component} from 'angular2/core';
 import {Router, RouterLink, ROUTER_PROVIDERS, RouterOutlet, RouteConfig} from 'angular2/router';
 import {ConnectWebsiteUrlController} from "./url/controller";
 import {ConnectWebsiteNewController} from "./new/controller";

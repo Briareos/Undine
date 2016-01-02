@@ -1,4 +1,4 @@
-import {Component, ViewContainerRef} from 'angular2/angular2';
+import {Component, ViewContainerRef} from 'angular2/core';
 import {RouterLink} from 'angular2/router';
 
 import {SitePickerSiteList} from './sitePickerSiteListDirective';

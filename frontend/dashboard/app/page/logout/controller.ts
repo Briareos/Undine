@@ -1,4 +1,4 @@
-import {Inject, Component} from 'angular2/angular2';
+import {Inject, Component} from 'angular2/core';
 
 @Component({
     selector: 'logout-controller',

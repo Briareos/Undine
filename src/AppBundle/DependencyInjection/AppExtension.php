@@ -26,5 +26,6 @@ class AppExtension extends Extension
         $loader->load('serializers.xml');
         $loader->load('menu.xml');
         $loader->load('oxygen.xml');
+        $loader->load('framework.xml');
     }
 }

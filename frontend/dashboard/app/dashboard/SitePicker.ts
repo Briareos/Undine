@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/angular2';
+import {Injectable} from 'angular2/core';
 import {Dashboard} from './Dashboard';
 import {ISite} from '../api/model/site';
 

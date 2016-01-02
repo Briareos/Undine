@@ -1,4 +1,5 @@
-import {Component, Injectable, CORE_DIRECTIVES} from 'angular2/angular2';
+import {Component, Injectable} from 'angular2/core';
+import {CORE_DIRECTIVES} from 'angular2/common';
 import {RouterLink} from 'angular2/router';
 import {ISite} from '../../api/model/site';
 import {SitePicker} from '../../dashboard/SitePicker';

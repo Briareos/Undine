@@ -39,7 +39,7 @@ class Uuid1BinaryOptimizedType extends Type
             throw ConversionException::conversionFailed($value, self::NAME);
         }
 
-        $unpacked = unpack('H8p3/H4p2/H4p1/H4p4/H12p5', $value);
+        $unpacked = unpack('H4p3/H4p2/H8p1/H4p4/H12p5', $value);
 
         return $unpacked['p1'].'-'.$unpacked['p2'].'-'.$unpacked['p3'].'-'.$unpacked['p4'].'-'.$unpacked['p5'];
     }

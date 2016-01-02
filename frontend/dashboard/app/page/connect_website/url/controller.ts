@@ -1,4 +1,5 @@
-import {Component, ControlGroup, FormBuilder, CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angular2/angular2';
+import {Component} from 'angular2/core';
+import {ControlGroup, FormBuilder, CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angular2/common';
 import {Router} from 'angular2/router';
 
 import * as Constraint from '../../../api/constraint';

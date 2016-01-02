@@ -1,4 +1,5 @@
-import {Component, FormBuilder, ControlGroup, CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angular2/angular2';
+import {Component} from 'angular2/core';
+import {FormBuilder, ControlGroup, CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angular2/common';
 import {Router, RouteParams} from 'angular2/router';
 
 import * as Result from "../../../api/result";
@@ -23,8 +24,7 @@ import {Api} from "../../../service/Api";
             </div>
         </div>
         <div class="ui middle aligned very relaxed stackable grid" [ngClass]="loginFormFound ? ['two', 'column'] : ''">
-            <!-- @todo Duplicate code until https://github.com/angular/angular/issues/4805 gets resolved! -->
-            <div class="row" *ngIf="!loginFormFound">
+            <div class="row">
                 <div class="center aligned middle aligned column">
                     <p>
                         You can go to <a [href]="disconnectUrl" target="_blank">this page</a> and disconnect the website from any dashboard that it's connected to. Then click:
@@ -37,24 +37,11 @@ import {Api} from "../../../service/Api";
                         Connect Website
                     </button>
                 </div>
-            </div>
-            <div class="row" *ngIf="loginFormFound">
-                <div class="center aligned middle aligned column">
-                    <p>
-                        You can go to <a [href]="disconnectUrl" target="_blank">this page</a> and disconnect the website from any dashboard that it's connected to. Then click:
-                    </p>
-                    <div *ngIf="errors.stillConnected" class="ui negative message">
-                        <p>The site still appears to be connected to the other account.</p>
-                    </div>
-                    <button class="ui primary labeled icon submit button" [class.loading]="connectWebsiteLoading" [disabled]="connectWebsiteActive" (click)="click()">
-                        <i class="linkify icon"></i>
-                        Connect Website
-                    </button>
-                </div>
-                <div class="ui vertical divider">
+                <!-- The elements below will create a column -->
+                <div class="ui vertical divider" *ngIf="loginFormFound">
                     Or
                 </div>
-                <div class="column">
+                <div class="column" *ngIf="loginFormFound">
                     <p>... we can do that for you if you provide us with <strong>{{ url }}</strong> administrator credentials:</p>
                     <form class="ui form" (submit)="submit(form.value)" [ngFormModel]="form">
                         <div class="field">

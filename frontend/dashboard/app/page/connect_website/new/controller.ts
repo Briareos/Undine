@@ -1,4 +1,5 @@
-import {Component, Inject, CORE_DIRECTIVES, FORM_DIRECTIVES, FormBuilder, ControlGroup} from 'angular2/angular2';
+import {Component, Inject} from 'angular2/core';
+import {CORE_DIRECTIVES, FORM_DIRECTIVES, FormBuilder, ControlGroup} from 'angular2/common';
 import {Router, RouteParams} from 'angular2/router'
 
 import * as Constraint from "../../../api/constraint";
@@ -21,30 +22,7 @@ import {Api} from "../../../service/Api";
             </div>
         </div>
         <div class="ui very relaxed stackable grid" [ngClass]="loginFormFound ? ['two', 'column'] : ''">
-            <!-- @todo Duplicate code until https://github.com/angular/angular/issues/4805 gets resolved! -->
-            <div class="row" *ngIf="!loginFormFound">
-                <div class="column">
-                    <p>Install and enable our client plugin, <strong>Oxygen</strong>, that allows you to manage the website remotely:</p>
-                    <div class="ui fluid action input">
-                        <input type="text" readonly [value]="oxygenZipUrl" onclick="this.select()">
-                        <a [attr.href]="oxygenZipUrl" class="ui right labeled icon button">
-                            <i class="download icon"></i>
-                            Download
-                        </a>
-                    </div>
-                    <div class="ui info message">
-                        If you have the Drupal's core module <strong>Updates</strong> enabled, go to the <a [attr.href]="updatesUrl" target="_blank">install module page</a> of your website, paste in the URL above and enable the "Oxygen" module.
-                    </div>
-                    <div *ngIf="errors.stillDisabled" class="ui negative message">
-                        <p>The Oxygen module still appears to be disabled.</p>
-                    </div>
-                    <button class="ui primary labeled icon submit button" [class.loading]="connectWebsiteLoading" [disabled]="connectWebsiteActive" (click)="click()">
-                        <i class="linkify icon"></i>
-                        Connect Website
-                    </button>
-                </div>
-            </div>
-            <div class="row" *ngIf="loginFormFound">
+            <div class="row">
                 <div class="column">
                     <p>Install and enable our client plugin, <strong>Oxygen</strong>, that allows you to manage the website remotely:</p>
 
@@ -66,10 +44,11 @@ import {Api} from "../../../service/Api";
                         Connect Website
                     </button>
                 </div>
-                <div class="ui vertical divider">
+                <!-- The elements below will create a column -->
+                <div class="ui vertical divider" *ngIf="loginFormFound">
                     Or
                 </div>
-                <div class="column">
+                <div class="column" *ngIf="loginFormFound">
                     <form class="ui form warning" (submit)="submit(form.value)" [ngFormModel]="form">
                         <div *ngIf="!ftpFormFound" class="field">
                             <p>... we can do that for you if you provide us with <strong>{{ url }}</strong> administrator credentials:</p>

@@ -1,4 +1,6 @@
-import {bootstrap, provide, Component, FORM_PROVIDERS} from 'angular2/angular2';
+import {bootstrap} from 'angular2/platform/browser';
+import {provide, Component} from 'angular2/core';
+import {FORM_PROVIDERS} from 'angular2/common';
 import {RouteConfig, ROUTER_PROVIDERS, ROUTER_DIRECTIVES} from 'angular2/router';
 
 import {DashboardController} from './page/dashboard/controller';

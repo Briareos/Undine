@@ -1,4 +1,4 @@
-import {Injectable, Inject} from 'angular2/angular2';
+import {Injectable, Inject} from 'angular2/core';
 import {Api} from '../service/Api';
 import {IUser} from "../api/model/user";
 import {ISite} from "../api/model/site";

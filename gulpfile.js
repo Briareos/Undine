@@ -13,7 +13,6 @@ var autoprefixer = require('gulp-autoprefixer');
 var tsc = require('gulp-typescript');
 var del = require('del');
 var debug = require('gulp-debug');
-var systemjsModules = require('gulp-systemjs-module-name-injector');
 var less = require('gulp-less');
 var minifyImages = require('gulp-imagemin');
 var minifyCss = require('gulp-minify-css');
@@ -51,11 +50,10 @@ function cleanDev(cb) {
     ], cb);
 }
 
-function symlinkTheme(cb) {
+function copyTheme() {
     // Semantic looks for a hardcoded theme.config file, so use this hack.
-    del('./node_modules/semantic-ui-less/theme.config', function () {
-        fs.symlink(__dirname + '/frontend/semantic/theme.config', './node_modules/semantic-ui-less/theme.config', cb);
-    });
+    return gulp.src('./frontend/semantic/theme.config')
+        .pipe(gulp.dest('./node_modules/semantic-ui-less'));
 }
 
 function clean(cb) {
@@ -191,7 +189,7 @@ function buildDashboardTypescriptDev() {
 function buildAdminTypescriptDev() {
     return gulp.src('./frontend/admin/app/app.ts', {base: './frontend/admin'})
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.init()))
-        .pipe(tsc(Object.assign(tscOptions, {outfile: 'admin.js'})))
+        .pipe(tsc(Object.assign(tscOptions, {outFile: 'admin.js'})))
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.write()))
         .pipe(gulp.dest('./var/tmp/js/admin'));
 }
@@ -199,17 +197,19 @@ function buildAdminTypescriptDev() {
 function buildWebTypescriptDev() {
     return gulp.src('./frontend/web/app/app.ts', {base: './frontend/web'})
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.init()))
-        .pipe(tsc(Object.assign(tscOptions, {outfile: 'web.js'})))
+        .pipe(tsc(Object.assign(tscOptions, {outFile: 'web.js'})))
         .pipe(gulpIf(config.useSourceMaps, sourcemaps.write()))
         .pipe(gulp.dest('./var/tmp/js/web'));
 }
 
 function buildDashboardTypescript() {
     var typescriptFilter = filter('app/**/*.ts', {restore: true});
-    var vendorFilter = filter(['../../bower_components/**/*.js', '../../node_modules/**/*.js'], {restore: true});
+    var vendorFilter = filter('../../node_modules/**/*.js', {restore: true});
 
     return gulp.src([
+            './node_modules/angular2/bundles/angular2-polyfills.js',
             './node_modules/systemjs/dist/system-register-only.js',
+            './node_modules/rxjs/bundles/Rx.min.js',
             './node_modules/angular2/bundles/angular2.min.js',
             './node_modules/angular2/bundles/router.min.js',
             './frontend/dashboard/app/**/*.ts'
@@ -218,9 +218,7 @@ function buildDashboardTypescript() {
         .pipe(concat('vendor.js'))
         .pipe(vendorFilter.restore)
         .pipe(typescriptFilter)
-        .pipe(tsc(tscOptions))
-        .pipe(systemjsModules())
-        .pipe(concat('app.js'))
+        .pipe(tsc(Object.assign(tscOptions, {outFile: 'app.js'})))
         .pipe(minifyJs())
         .pipe(typescriptFilter.restore)
         .pipe(concat('dashboard.js'))
@@ -245,9 +243,7 @@ function buildAdminTypescript() {
         .pipe(vendorFilter.restore)
         .pipe(minifyJs())
         .pipe(typescriptFilter)
-        .pipe(tsc(tscOptions))
-        .pipe(systemjsModules())
-        .pipe(concat('admin.js'))
+        .pipe(tsc(Object.assign(tscOptions, {outFile: 'admin.js'})))
         .pipe(minifyJs())
         .pipe(typescriptFilter.restore)
         .pipe(concat('admin.js'))
@@ -274,9 +270,16 @@ function buildWebTypescript() {
         .pipe(concat('vendor.js'))
         .pipe(vendorFilter.restore)
         .pipe(typescriptFilter)
-        .pipe(tsc(tscOptions))
-        .pipe(systemjsModules())
-        .pipe(concat('web.js'))
+        .pipe(tsc({
+            typescript: require('typescript'),
+            target: 'ES5',
+            module: 'system',
+            experimentalDecorators: true,
+            moduleResolution: 'node',
+            sortOutput: true,
+            emitDecoratorMetadata: true,
+            outFile:'web.js'
+        }))
         .pipe(minifyJs())
         .pipe(typescriptFilter.restore)
         .pipe(concat('web.js'))
@@ -337,7 +340,7 @@ function reloadComponent(component) {
 }
 
 function watchDev() {
-    watch('./frontend/semantic/**/*', gulp.series(buildSemanticCssDev, reloadComponent.bind(null, 'css')));
+    watch('./frontend/semantic/**/*', gulp.series(buildSemanticCssDev, copyTheme, reloadComponent.bind(null, 'css')));
 
     watch('./frontend/image/**/*', gulp.series(reloadComponent.bind(null, 'html')));
 
@@ -357,7 +360,7 @@ function watchDev() {
 gulp.task('build-dev',
     gulp.series(
         cleanDev,
-        symlinkTheme,
+        copyTheme,
         gulp.parallel(
             buildSemanticCssDev,
             buildSemanticThemeDev,
@@ -379,7 +382,7 @@ gulp.task('build-dev',
 gulp.task('build',
     gulp.series(
         clean,
-        symlinkTheme,
+        copyTheme,
         buildImage,
         gulp.parallel(
             buildSemanticTheme,
