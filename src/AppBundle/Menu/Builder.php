@@ -21,7 +21,7 @@ class Builder implements ContainerAwareInterface
 
         $rightMenu = $menu->addChild('RightMenu', [
             'childrenAttributes' => ['class' => 'right menu'],
-            'extras'             => ['type' => 'right-menu'],
+            'extras' => ['type' => 'right-menu'],
         ]);
 
         $rightMenu->addChild('Logout', [
@@ -38,5 +38,4 @@ class Builder implements ContainerAwareInterface
     {
         $this->container = $container;
     }
-
 }

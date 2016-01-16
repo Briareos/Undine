@@ -38,7 +38,7 @@ class StaffController extends AppController
     public function createAction(Request $request)
     {
         $createForm = $this->createForm(StaffType::class, null, [
-            'method'            => 'POST',
+            'method' => 'POST',
             'validation_groups' => ['create'],
         ]);
 
@@ -80,7 +80,7 @@ class StaffController extends AppController
         }
 
         return [
-            'staff'    => $staff,
+            'staff' => $staff,
             'editForm' => $editForm->createView(),
         ];
     }
@@ -101,13 +101,13 @@ class StaffController extends AppController
         if ($deleteForm->isValid()) {
             $this->em->remove($staff);
             $this->em->flush($staff);
-            $this->addFlash('success', "Staff member removed.");
+            $this->addFlash('success', 'Staff member removed.');
 
             return $this->redirectToRoute('admin-staff_list');
         }
 
         return [
-            'staff'      => $staff,
+            'staff' => $staff,
             'deleteForm' => $deleteForm->createView(),
         ];
     }

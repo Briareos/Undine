@@ -56,7 +56,7 @@ class ModuleList
     {
         $node = new Crawler($form->getFormNode());
         // Example: <input type="checkbox" id="edit-modules-other-oxygen-enable" name="modules[Other][oxygen][enable]" value="1" class="form-checkbox" />
-        $inputs  = $node->filter('input[type="checkbox"][id^="edit-modules-"]');
+        $inputs = $node->filter('input[type="checkbox"][id^="edit-modules-"]');
         $modules = [];
         foreach ($inputs as $input) {
             /** @var \DOMElement $input */
@@ -64,7 +64,7 @@ class ModuleList
                 continue;
             }
             $enabled = $input->hasAttribute('checked');
-            $match   = preg_match('{^modules\[([^\]]+)\]\[([^\]]+)\]\[enable\]$}', $input->getAttribute('name'), $matches);
+            $match = preg_match('{^modules\[([^\]]+)\]\[([^\]]+)\]\[enable\]$}', $input->getAttribute('name'), $matches);
             if (!$match) {
                 continue;
             }
@@ -72,6 +72,6 @@ class ModuleList
             $modules[] = new ModuleListItem($package, $slug, $enabled);
         }
 
-        return new ModuleList($modules);
+        return new self($modules);
     }
 }

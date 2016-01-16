@@ -16,11 +16,10 @@ class ModuleUninstallReaction extends AbstractReaction
     }
 
     /**
-     * {@inheritdoc}
+     * @return bool
      */
-    public function setData(array $data)
+    public function isSuccessful()
     {
-        // @TODO: The data set here will determine if the uninstallation was successful, so we should throw an exception.
-        parent::setData($data);
+        return $this->data['success'];
     }
 }

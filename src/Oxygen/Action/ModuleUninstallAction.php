@@ -20,7 +20,7 @@ class ModuleUninstallAction extends AbstractAction
      */
     public function __construct(array $modules, $uninstallDependents = true)
     {
-        $this->modules             = $modules;
+        $this->modules = $modules;
         $this->uninstallDependents = $uninstallDependents;
     }
 
@@ -38,7 +38,7 @@ class ModuleUninstallAction extends AbstractAction
     public function getParameters()
     {
         return [
-            'modules'             => $this->modules,
+            'modules' => $this->modules,
             'uninstallDependents' => $this->uninstallDependents,
         ];
     }

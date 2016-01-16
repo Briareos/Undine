@@ -24,7 +24,7 @@ class UserResetPasswordFailedEvent
     public function __construct(Request $request, User $user)
     {
         $this->request = $request;
-        $this->user    = $user;
+        $this->user = $user;
     }
 
     /**

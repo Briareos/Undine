@@ -9,7 +9,7 @@ class IdNotProvided extends AbstractError
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public static function getName()
     {
         return 'site.id_not_provided';
     }

@@ -2,8 +2,6 @@
 
 namespace Undine\Oxygen\Action;
 
-use Psr\Http\Message\UriInterface;
-
 class ExtensionDownloadUpdateFromUrlAction extends AbstractAction
 {
     /**
@@ -22,7 +20,7 @@ class ExtensionDownloadUpdateFromUrlAction extends AbstractAction
      */
     public function __construct($extension, $url)
     {
-        $this->url       = $url;
+        $this->url = $url;
         $this->extension = $extension;
     }
 
@@ -41,7 +39,7 @@ class ExtensionDownloadUpdateFromUrlAction extends AbstractAction
     {
         return [
             'extension' => $this->extension,
-            'url'       => $this->url,
+            'url' => $this->url,
         ];
     }
 }

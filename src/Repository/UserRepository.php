@@ -4,7 +4,6 @@ namespace Undine\Repository;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Undine\Model\User;
 
 class UserRepository
@@ -21,7 +20,7 @@ class UserRepository
 
     public function __construct(EntityManager $em, ClassMetadata $metadata)
     {
-        $this->em       = $em;
+        $this->em = $em;
         $this->metadata = $metadata;
     }
 
@@ -32,7 +31,7 @@ class UserRepository
      */
     public function find($id)
     {
-        if (!\Undine\Functions\valid_uuid1($id)) {
+        if (!\Undine\Functions\valid_uuid($id)) {
             return null;
         }
 

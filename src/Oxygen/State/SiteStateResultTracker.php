@@ -61,7 +61,7 @@ class SiteStateResultTracker
             $updateData = new SiteUpdateResult(self::getUpdateResolver()->resolve($updateData));
         }
         foreach ($stateData as $key => $value) {
-            // @TODO think of a better way to do safe-guard against long data.
+            // @todo: Think of a better way to do safe-guard against long data.
             if (is_string($value) && mb_strlen($value) > 255) {
                 throw new \RuntimeException(sprintf('The string value "%s" for key "%s" is too long.', $value, $key));
             }
@@ -71,7 +71,7 @@ class SiteStateResultTracker
         }
 
         $siteStateResult = new SiteStateResult($stateData);
-        $event           = new SiteStateResultEvent($site, $siteStateResult);
+        $event = new SiteStateResultEvent($site, $siteStateResult);
         $this->dispatcher->dispatch(Events::SITE_STATE_RESULT, $event);
     }
 
@@ -89,7 +89,7 @@ class SiteStateResultTracker
         }
 
         if ($resolver === null) {
-            /** @noinspection PhpUnusedParameterInspection */
+            /* @noinspection PhpUnusedParameterInspection */
             $resolver = (new OptionsResolver())
                 ->setRequired(['siteKey', 'cronKey', 'cronLastRunAt', 'siteMail', 'siteName', 'siteRoot', 'drupalRoot', 'drupalVersion', 'drupalMajorVersion', 'updatesLastCheckAt', 'timezone', 'phpVersion', 'phpVersionId', 'databaseDriver', 'databaseDriverVersion', 'databaseTablePrefix', 'memoryLimit', 'processArchitecture', 'internalIp', 'uname', 'hostname', 'os', 'windows', 'extensionsChecksum', 'extensionsCacheHit', 'extensions', 'updates'])
                 ->setAllowedTypes('siteKey', 'string')
@@ -204,8 +204,8 @@ class SiteStateResultTracker
      */
     private static function createStringArrayNormalizer($optionName)
     {
-        /** @noinspection PhpUnusedParameterInspection */
-        /** @noinspection PhpDocSignatureInspection */
+        /* @noinspection PhpUnusedParameterInspection */
+        /* @noinspection PhpDocSignatureInspection */
         return function (OptionsResolver $resolver, array $values) use ($optionName) {
             foreach ($values as $value) {
                 if (!is_string($value)) {

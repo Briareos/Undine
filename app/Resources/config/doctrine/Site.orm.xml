@@ -3,19 +3,20 @@
 
     <entity repository-class="Undine\Repository\SiteRepository" name="Undine\Model\Site" change-tracking-policy="DEFERRED_EXPLICIT">
 
-        <id name="id" type="uuid1_binary_optimized"/>
+        <id name="id" type="uuid_binary"/>
 
         <field name="url" type="uri" length="300"/>
         <field name="privateKey" type="string" length="1750"/>
         <field name="publicKey" type="string" length="500"/>
         <field name="createdAt" type="datetime"/>
-        <field name="thumbnailUrl" type="string" nullable="true"/>
+        <field name="thumbnailPath" type="string" nullable="true"/>
         <field name="thumbnailUpdatedAt" type="datetime" nullable="true"/>
+        <field name="thumbnailLockedAt" type="datetime" nullable="true"/>
 
         <embedded name="httpCredentials" class="Undine\Model\Site\HttpCredentials" column-prefix="http_"/>
         <embedded name="ftpCredentials" class="Undine\Model\Site\FtpCredentials" column-prefix="ftp_"/>
 
-        <one-to-one target-entity="Undine\Model\SiteState" field="siteState" inversed-by="site">
+        <one-to-one target-entity="Undine\Model\SiteState" field="siteState">
             <join-column nullable="false"/>
         </one-to-one>
 

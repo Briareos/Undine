@@ -40,5 +40,4 @@ class StringToUriTransformer implements DataTransformerInterface
             throw new TransformationFailedException($e->getMessage());
         }
     }
-
 }

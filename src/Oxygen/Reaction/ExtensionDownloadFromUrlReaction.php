@@ -16,11 +16,10 @@ class ExtensionDownloadFromUrlReaction extends AbstractReaction
     }
 
     /**
-     * {@inheritdoc}
+     * @return array
      */
-    public function setData(array $data)
+    public function getContext()
     {
-        // @TODO: The data set here will determine if the installation was successful, so we should throw an exception.
-        parent::setData($data);
+        return $this->data['context'];
     }
 }

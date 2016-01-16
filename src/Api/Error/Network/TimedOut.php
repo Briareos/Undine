@@ -22,7 +22,7 @@ class TimedOut extends AbstractError
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public static function getName()
     {
         return 'network.timed_out';
     }

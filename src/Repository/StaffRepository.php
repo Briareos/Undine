@@ -20,7 +20,7 @@ class StaffRepository
 
     public function __construct(EntityManager $em, ClassMetadata $metadata)
     {
-        $this->em       = $em;
+        $this->em = $em;
         $this->metadata = $metadata;
     }
 
@@ -31,8 +31,8 @@ class StaffRepository
      */
     public function find($id)
     {
-        if (!\Undine\Functions\valid_uuid1($id)) {
-            return null;
+        if (!\Undine\Functions\valid_uuid($id)) {
+            return;
         }
 
         return $this->em->find(Staff::class, (string)$id);

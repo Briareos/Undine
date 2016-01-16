@@ -29,7 +29,7 @@ class Normalizer
      */
     public function __construct(Manager $manager, TransformerRegistry $transformerRegistry)
     {
-        $this->manager             = $manager;
+        $this->manager = $manager;
         $this->transformerRegistry = $transformerRegistry;
     }
 

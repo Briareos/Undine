@@ -25,7 +25,7 @@ class StreamPump
         }
 
         $this->outputFlusher = $outputFlusher;
-        $this->index         = $index;
+        $this->index = $index;
     }
 
     /**

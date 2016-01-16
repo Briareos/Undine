@@ -2,8 +2,6 @@
 
 namespace Undine\Oxygen\Action;
 
-use Psr\Http\Message\UriInterface;
-
 class ExtensionDownloadFromUrlAction extends AbstractAction
 {
     /**

@@ -17,7 +17,7 @@ class EmailFactory
     /**
      * @see AppEmails
      *
-     * @param string $type One of AppEmails constants.
+     * @param string $type       One of AppEmails constants.
      * @param array  $parameters Parameters to be used in the email.
      *
      * @return \Swift_Message

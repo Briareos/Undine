@@ -77,8 +77,8 @@ class LoopHandler
 
     public function __construct()
     {
-        $this->factory[self::TYPE_HTTP]     = new CurlFactory(50);
-        $this->factory[self::TYPE_PROCESS]  = new HandleFactory();
+        $this->factory[self::TYPE_HTTP] = new CurlFactory(50);
+        $this->factory[self::TYPE_PROCESS] = new HandleFactory();
         $this->factory[self::TYPE_CALLABLE] = new HandleFactory();
     }
 
@@ -137,10 +137,10 @@ class LoopHandler
         );
 
         $entry = [
-            'id'       => $id,
-            'easy'     => $easy,
+            'id' => $id,
+            'easy' => $easy,
             'deferred' => $promise,
-            'type'     => $type,
+            'type' => $type,
         ];
 
         if (empty($options[RequestOptions::DELAY])) {
@@ -164,9 +164,8 @@ class LoopHandler
                 $this->httpHandles[$id] = $entry;
                 // This will get overridden in curl_multi_exec(), but fill it here so we don't treat the first tick
                 // like it doesn't have any ongoing requests and hence wait for delayed requests.
-                $this->activeHttp++;
+                ++$this->activeHttp;
                 \GuzzleHttp\Promise\queue()->add(function () use ($easy) {
-                    /** @noinspection PhpUndefinedFieldInspection */
                     if ($this->multiHandle === null) {
                         $this->multiHandle = curl_multi_init();
                     }
@@ -176,7 +175,7 @@ class LoopHandler
                 break;
             case self::TYPE_PROCESS:
                 $this->processHandles[$id] = $entry;
-                $this->activeProcess++;
+                ++$this->activeProcess;
                 \GuzzleHttp\Promise\queue()->add([$easy->handle, 'start']);
                 break;
             case self::TYPE_CALLABLE:
@@ -186,9 +185,14 @@ class LoopHandler
                     /** @var callable $fn */
                     $fn = $entry['easy']->handle;
                     try {
-                        $value = $fn();
+                        if (isset($entry['easy']->options[CallbackOptions::ARGS])) {
+                            $value = call_user_func_array($fn, $entry['easy']->options[CallbackOptions::ARGS]);
+                        } else {
+                            $value = $fn();
+                        }
                     } catch (\Exception $e) {
                         $deferred->reject($e);
+
                         return;
                     }
                     $deferred->resolve($value);
@@ -243,7 +247,7 @@ class LoopHandler
         $process = $this->processHandles[$id]['easy']->handle;
         $options = $this->processHandles[$id]['easy']->options;
         $timeout = isset($options[ProcessOptions::STOP_TIMEOUT]) ? $options[ProcessOptions::STOP_TIMEOUT] : 10000;
-        $signal  = isset($options[ProcessOptions::STOP_SIGNAL]) ? $options[ProcessOptions::STOP_SIGNAL] : null;
+        $signal = isset($options[ProcessOptions::STOP_SIGNAL]) ? $options[ProcessOptions::STOP_SIGNAL] : null;
         $process->stop($timeout / 1000, $signal);
 
         unset($this->delays[$id], $this->processHandles[$id]);
@@ -293,7 +297,8 @@ class LoopHandler
             $this->processProcessMessages();
             if ($this->activeHttp) {
                 do {
-                    while (curl_multi_exec($this->multiHandle, $this->activeHttp) === CURLM_CALL_MULTI_PERFORM) ;
+                    while (curl_multi_exec($this->multiHandle, $this->activeHttp) === CURLM_CALL_MULTI_PERFORM) {
+                    }
                 } while ($this->processHttpMessages());
             }
 
@@ -316,7 +321,8 @@ class LoopHandler
             if ($this->httpNeedsExec) {
                 $queueClean = false;
                 do {
-                    while (curl_multi_exec($this->multiHandle, $this->activeHttp) === CURLM_CALL_MULTI_PERFORM) ;
+                    while (curl_multi_exec($this->multiHandle, $this->activeHttp) === CURLM_CALL_MULTI_PERFORM) {
+                    }
                     $this->processHttpMessages();
                 } while ($this->processHttpMessages());
             }
@@ -329,7 +335,8 @@ class LoopHandler
         }
 
         do {
-            while (curl_multi_exec($this->multiHandle, $this->activeHttp) === CURLM_CALL_MULTI_PERFORM) ;
+            while (curl_multi_exec($this->multiHandle, $this->activeHttp) === CURLM_CALL_MULTI_PERFORM) {
+            }
         } while ($this->processHttpMessages());
     }
 
@@ -378,14 +385,14 @@ class LoopHandler
             } else {
                 $deferred->reject(new ProcessFailedException($easy->handle));
             }
-            $this->activeProcess--;
+            --$this->activeProcess;
         }
     }
 
     private function timeToNext()
     {
         $currentTime = microtime(true);
-        $nextTime    = PHP_INT_MAX;
+        $nextTime = PHP_INT_MAX;
         foreach ($this->delays as $entry) {
             if ($entry['delay'] < $nextTime) {
                 $nextTime = $entry['delay'];

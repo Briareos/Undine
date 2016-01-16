@@ -2,7 +2,6 @@
 
 namespace Undine\Form\Type\Api;
 
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
@@ -11,6 +10,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Undine\Api\Command\SitePingCommand;
 use Undine\Api\Error\Site\NotFound;
 use Undine\Api\Error\Site\IdNotProvided;
+use Undine\Form\Type\ModelType;
 use Undine\Model\Site;
 
 class SitePingType extends AbstractType
@@ -20,10 +20,10 @@ class SitePingType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('site', EntityType::class, [
-            'class'           => Site::class,
+        $builder->add('site', ModelType::class, [
+            'model' => Site::class,
             'invalid_message' => new NotFound(),
-            'constraints'     => [
+            'constraints' => [
                 new NotBlank([
                     'message' => new IdNotProvided(),
                 ]),

@@ -98,10 +98,10 @@ class FtpCredentials
             throw new \InvalidArgumentException('Port must be a null or a number between 0 and 65535.');
         }
 
-        $this->method   = $method;
+        $this->method = $method;
         $this->username = (string)$username;
         $this->password = (string)$password;
-        $this->host     = strlen($host) ? (string)$host : 'localhost';
+        $this->host = strlen($host) ? (string)$host : 'localhost';
 
         if ($port === null) {
             $this->port = self::$defaultPortMap[$method];

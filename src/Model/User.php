@@ -3,11 +3,11 @@
 namespace Undine\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Ramsey\Uuid\Uuid;
+use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Undine\Security\User\UserActivityAwareInterface;
 
-class User implements UserInterface, UserActivityAwareInterface
+class User implements UserInterface, UserActivityAwareInterface, EquatableInterface, \Serializable
 {
     /**
      * @var string
@@ -65,10 +65,10 @@ class User implements UserInterface, UserActivityAwareInterface
      */
     public function __construct($name, $email)
     {
-        $this->id        = \Undine\Functions\generate_uuid1();
-        $this->name      = $name;
-        $this->email     = $email;
-        $this->sites     = new ArrayCollection();
+        $this->id = \Undine\Functions\generate_uuid();
+        $this->name = $name;
+        $this->email = $email;
+        $this->sites = new ArrayCollection();
         $this->createdAt = new \DateTime();
     }
 
@@ -278,5 +278,42 @@ class User implements UserInterface, UserActivityAwareInterface
     public function getCreatedAt()
     {
         return $this->createdAt;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isEqualTo(UserInterface $user)
+    {
+        if ($this->getPassword() !== $user->getPassword()) {
+            return false;
+        }
+
+        $currentRoles = array_map('strval', $this->getRoles());
+        $passedRoles = array_map('strval', $user->getRoles());
+        sort($currentRoles);
+        sort($passedRoles);
+
+        if ($currentRoles !== $passedRoles) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
+    {
+        return serialize($this->id);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function unserialize($serialized)
+    {
+        $this->id = unserialize($serialized);
     }
 }

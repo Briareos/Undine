@@ -16,7 +16,6 @@ function escape($text)
  * users, since in that case it prevents cross-site scripting and other security problems).
  *
  * @param string   $string A string containing placeholders.
- *
  * @param string[] $args   An associative array of replacements to make. Occurrences in $string of
  *                         any key in $args are replaced with the corresponding value, after optional
  *                         sanitization and formatting. The type of sanitization and formatting
@@ -39,12 +38,12 @@ function format($string, array $args)
                 break;
             case '%':
                 // Escaped and emphasised.
-                $value      = escape($value);
+                $value = escape($value);
                 $args[$key] = '<em>'.$value.'</em>';
                 break;
             case '*':
                 // Escaped and strong.
-                $value      = escape($value);
+                $value = escape($value);
                 $args[$key] = '<strong>'.$value.'</strong>';
                 break;
             case '!':

@@ -41,7 +41,7 @@ class StaffType extends AbstractType
                     'max' => 72,
                 ]),
             ],
-            'required'    => false,
+            'required' => false,
         ]);
 
         $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {

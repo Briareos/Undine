@@ -15,7 +15,7 @@ var del = require('del');
 var debug = require('gulp-debug');
 var less = require('gulp-less');
 var minifyImages = require('gulp-imagemin');
-var minifyCss = require('gulp-minify-css');
+var minifyCss = require('gulp-cssnano');
 var minifyJs = require('gulp-uglify');
 
 var tscOptions = {

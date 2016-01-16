@@ -20,7 +20,7 @@ trait StateResultTrait
     /**
      * {@inheritdoc}
      */
-    function __get($name)
+    public function __get($name)
     {
         if (!array_key_exists($name, $this->data)) {
             throw new \OutOfBoundsException(sprintf('Property "%s" could not be found.', $name));
@@ -32,7 +32,7 @@ trait StateResultTrait
     /**
      * {@inheritdoc}
      */
-    function __isset($name)
+    public function __isset($name)
     {
         return array_key_exists($this->data, $name);
     }

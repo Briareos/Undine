@@ -9,7 +9,7 @@ class InvalidCredentials extends AbstractError
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public static function getName()
     {
         return 'drupal_client.invalid_credentials';
     }

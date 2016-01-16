@@ -78,17 +78,17 @@ class SiteConnectCommand extends AbstractCommand
     public function __construct($url, $checkUrl = false, $httpUsername = null, $httpPassword = null, $adminUsername = null, $adminPassword = null, $ftpMethod = null, $ftpUsername = null, $ftpPassword = null, $ftpHost = null, $ftpPort = null)
     {
         // These properties are set by the Form component through reflection, that's why we can't initialize all the properties here.
-        $this->url           = $url;
-        $this->checkUrl      = $checkUrl;
-        $this->httpUsername  = $httpUsername;
-        $this->httpPassword  = $httpPassword;
+        $this->url = $url;
+        $this->checkUrl = $checkUrl;
+        $this->httpUsername = $httpUsername;
+        $this->httpPassword = $httpPassword;
         $this->adminUsername = $adminUsername;
         $this->adminPassword = $adminPassword;
-        $this->ftpMethod     = $ftpMethod;
-        $this->ftpUsername   = $ftpUsername;
-        $this->ftpPassword   = $ftpPassword;
-        $this->ftpHost       = $ftpHost;
-        $this->ftpPort       = $ftpPort;
+        $this->ftpMethod = $ftpMethod;
+        $this->ftpUsername = $ftpUsername;
+        $this->ftpPassword = $ftpPassword;
+        $this->ftpHost = $ftpHost;
+        $this->ftpPort = $ftpPort;
     }
 
     /**
@@ -133,7 +133,7 @@ class SiteConnectCommand extends AbstractCommand
      */
     public function hasAdminCredentials()
     {
-        return (strlen($this->adminUsername) && strlen($this->adminPassword));
+        return strlen($this->adminUsername) && strlen($this->adminPassword);
     }
 
     /**
@@ -154,7 +154,7 @@ class SiteConnectCommand extends AbstractCommand
      */
     public function hasFtpCredentials()
     {
-        return (strlen($this->ftpMethod) && strlen($this->ftpUsername));
+        return strlen($this->ftpMethod) && strlen($this->ftpUsername);
     }
 
     /**

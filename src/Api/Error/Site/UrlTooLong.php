@@ -9,7 +9,7 @@ class UrlTooLong extends AbstractError
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public static function getName()
     {
         return 'site.url_too_long';
     }

@@ -39,7 +39,7 @@ class UserController extends AppController
     public function createAction(Request $request)
     {
         $createForm = $this->createForm(UserType::class, null, [
-            'method'            => 'POST',
+            'method' => 'POST',
             'validation_groups' => ['create'],
         ]);
 
@@ -81,7 +81,7 @@ class UserController extends AppController
         }
 
         return [
-            'user'     => $user,
+            'user' => $user,
             'editForm' => $editForm->createView(),
         ];
     }
@@ -104,13 +104,13 @@ class UserController extends AppController
         if ($deleteForm->isValid()) {
             $this->em->remove($user);
             $this->em->flush($user);
-            $this->addFlash('success', "User removed.");
+            $this->addFlash('success', 'User removed.');
 
             return $this->redirectToRoute('admin-user_list');
         }
 
         return [
-            'user'       => $user,
+            'user' => $user,
             'deleteForm' => $deleteForm->createView(),
         ];
     }

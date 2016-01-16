@@ -35,11 +35,11 @@ class ApiTokenUserProvider implements UserProviderInterface
      */
     public function loadUserByApiToken($token)
     {
-        if (!preg_match('{^([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{12})-([0-9a-f]{16,})$}', $token, $matches)) {
+        if (!preg_match('{^([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{12})-([0-9a-f]{16,})$}', $token, $matches)) {
             throw new UsernameNotFoundException('The token is invalid.');
         }
 
-        $user        = $this->userRepository->find("$matches[1]-$matches[2]-$matches[3]-$matches[4]-$matches[5]");
+        $user = $this->userRepository->find("$matches[1]-$matches[2]-$matches[3]-$matches[4]-$matches[5]");
         $accessToken = $matches[6];
 
         if ($user === null) {

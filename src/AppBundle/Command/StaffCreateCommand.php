@@ -22,10 +22,10 @@ class StaffCreateCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $validator = $this->getContainer()->get('validator');
-        $name      = $input->getArgument('name');
-        $email     = $input->getArgument('email');
+        $name = $input->getArgument('name');
+        $email = $input->getArgument('email');
 
-        $dialog   = $this->getHelper('dialog');
+        $dialog = $this->getHelper('dialog');
         $password = $dialog->askHiddenResponse($output, sprintf('<info>Password to use for [<comment>%s</comment>]</info>: ', $email), false);
 
         $encoder = $this->getContainer()->get('security.encoder_factory')->getEncoder(Staff::class);
@@ -37,7 +37,7 @@ class StaffCreateCommand extends ContainerAwareCommand
         if ($violations->count()) {
             $output->writeln('<error>Error</error>');
             foreach ($violations as $violation) {
-                /** @var ConstraintViolationInterface $violation */
+                /* @var ConstraintViolationInterface $violation */
                 $output->writeln(sprintf(' <info>> [<comment>%s</comment>]</info> %s', $violation->getPropertyPath(), $violation->getMessage()));
             }
 

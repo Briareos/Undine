@@ -9,7 +9,7 @@ class CanNotResolveHost extends AbstractError
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public static function getName()
     {
         return 'network.can_not_resolve_host';
     }

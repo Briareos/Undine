@@ -12,6 +12,7 @@ namespace Undine\Functions;
  * @param int           $options
  *
  * @return mixed
+ *
  * @throws Exception\JsonParseException
  */
 function json_parse($json, $assoc = true, $depth = 512, $options = 0)

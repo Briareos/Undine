@@ -10,8 +10,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Undine\Api\Progress\ProgressInterface;
-use Undine\Api\Result\ResultInterface;
 use Undine\Configuration\Api;
 use Undine\Http\AsyncHttpKernel;
 use Undine\Http\OutputFlusher;
@@ -39,9 +37,9 @@ class ApiListener implements EventSubscriberInterface
      */
     public function __construct(AsyncHttpKernel $httpKernel, OutputFlusher $outputFlusher)
     {
-        $this->httpKernel    = $httpKernel;
+        $this->httpKernel = $httpKernel;
         $this->outputFlusher = $outputFlusher;
-        $this->noop          = function () {
+        $this->noop = function () {
         };
     }
 
@@ -71,8 +69,8 @@ class ApiListener implements EventSubscriberInterface
         $api = $request->attributes->get('_api');
 
         $subRequests = $this->getSubRequests($request);
-        $bulk        = $api->isBulkable() && $subRequests;
-        $stream      = ($api->isStreamable() || $bulk) && ($this->shouldStream($request));
+        $bulk = $api->isBulkable() && $subRequests;
+        $stream = ($api->isStreamable() || $bulk) && ($this->shouldStream($request));
 
         if (!$bulk && !$stream) {
             $request->attributes->set('stream', $this->noop);
@@ -103,7 +101,7 @@ class ApiListener implements EventSubscriberInterface
                         // Also force-make it a POST request, so it can contain a body.
                         $subRequest->setMethod('POST');
                         $subRequest->attributes->set('stream', $stream ? $this->createStreamer($i) : $this->noop);
-                        /** @var PromiseInterface $promise */
+                        /* @var PromiseInterface $promise */
                         $promises[] = $promise = $this->httpKernel->handle($subRequest, HttpKernelInterface::SUB_REQUEST, true, false);
                         if ($stream) {
                             $streamer = $this->createStreamer($i);
@@ -115,10 +113,7 @@ class ApiListener implements EventSubscriberInterface
                     $responses = \GuzzleHttp\Promise\all($promises)->wait();
                     if (!$stream) {
                         echo '[';
-                        reset($responses);
-                        while ($response = current($responses)) {
-                            /** @var Response $response */
-                            next($responses);
+                        for (reset($responses); $response = current($responses); next($responses)) {
                             echo $response->getContent();
                             if (current($responses)) {
                                 echo ',';
@@ -132,7 +127,9 @@ class ApiListener implements EventSubscriberInterface
             $event->setController(function () use ($request, $headers) {
                 return new StreamedResponse(function () use ($request) {
                     $request->attributes->set('stream', $this->createStreamer());
-                    $response = $this->httpKernel->handle($request, HttpKernelInterface::SUB_REQUEST, true, true);
+                    // We duplicate the request because the profiler component's token keeps a reference to the parent request's token,
+                    // creating an infinite loop when attempting to display profiler info.
+                    $response = $this->httpKernel->handle($request->duplicate(), HttpKernelInterface::SUB_REQUEST, true, true);
                     // The streamer outputs a new line as the ending delimiter. In single action calls, the ending line should be
                     // the actual response without a new line at the end. That's why streaming single calls have a resulting
                     // response, but bulk calls don't have one.
@@ -184,7 +181,7 @@ class ApiListener implements EventSubscriberInterface
             if (!is_array($value)) {
                 return [];
             }
-            $index++;
+            ++$index;
         }
 
         return $payload;

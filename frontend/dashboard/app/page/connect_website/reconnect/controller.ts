@@ -3,7 +3,7 @@ import {FormBuilder, ControlGroup, CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angul
 import {Router, RouteParams} from 'angular2/router';
 
 import * as Result from "../../../api/result";
-import * as Constraint from "../../../api/constraint";
+import * as ApiErrors from "../../../api/errors";
 import {ConnectWebsiteSession} from "../../../service/ConnectWebsiteSession";
 import {Api} from "../../../service/Api";
 
@@ -111,9 +111,9 @@ export class ConnectWebsiteReconnectController {
                 this.session.clearAll();
                 this.router.navigate(['/SiteDashboard', {id: result.site.id}]);
             },
-            (constraint: Constraint.IConstraint): void => {
+            (constraint: ApiErrors.IError): void => {
                 _finally();
-                if (constraint instanceof Constraint.SiteConnectAlreadyConnected) {
+                if (constraint instanceof ApiErrors.SiteConnectAlreadyConnected) {
                     this.errors.stillConnected = true;
                     return;
                 }
@@ -136,9 +136,9 @@ export class ConnectWebsiteReconnectController {
                 this.session.clearAll();
                 this.router.navigate(['/SiteDashboard', {id: result.site.id}]);
             },
-            (constraint: Constraint.IConstraint): void => {
+            (constraint: ApiErrors.IError): void => {
                 _finally();
-                if (constraint instanceof Constraint.SiteInvalidCredentials) {
+                if (constraint instanceof ApiErrors.DrupalClientInvalidCredentials) {
                     this.errors.invalidCredentials = true;
                     return;
                 }

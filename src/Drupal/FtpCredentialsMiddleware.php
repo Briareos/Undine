@@ -3,7 +3,6 @@
 namespace Undine\Drupal;
 
 use GuzzleHttp\Psr7\Uri;
-use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\DomCrawler\Crawler;
@@ -36,7 +35,7 @@ class FtpCredentialsMiddleware
         };
     }
 
-    function __invoke(RequestInterface $request, array $options)
+    public function __invoke(RequestInterface $request, array $options)
     {
         $fn = $this->nextHandler;
 
@@ -61,7 +60,7 @@ class FtpCredentialsMiddleware
                     $ftpForm = $formNode->form();
                     if (!empty($options['__ftp_credentials_submitted'])) {
                         // The form was already submitted and we got it again - must be with an error message.
-                        $error     = null;
+                        $error = null;
                         $errorNode = $crawler->filter('p.error');
                         if ($errorNode->count()) {
                             $error = $errorNode->text() ?: null;
@@ -84,12 +83,12 @@ class FtpCredentialsMiddleware
                     $submitValues['process_updates'] = 'Continue';
 
                     $submitValues['connection_settings']['authorize_filetransfer_default'] = $credentials->getMethod();
-                    $submitValues['connection_settings'][$credentials->getMethod()]        = [
+                    $submitValues['connection_settings'][$credentials->getMethod()] = [
                         'username' => $credentials->getUsername(),
                         'password' => $credentials->getPassword(),
                         'advanced' => [
                             'hostname' => $credentials->getHost(),
-                            'port'     => $credentials->getPort(),
+                            'port' => $credentials->getPort(),
                         ],
                     ];
                 } catch (FtpCredentialsRequiredException $e) {

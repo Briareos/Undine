@@ -5,11 +5,11 @@ namespace Undine\Api\Error;
 interface ErrorInterface
 {
     /**
-     * Error name. Should be in format error_group.error_name
+     * Error name. Should be in format error_group.error_name.
      *
      * @return string
      */
-    public function getName();
+    public static function getName();
 
     /**
      * Any additional constraint info that should be passed in the API response.

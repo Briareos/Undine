@@ -6,8 +6,7 @@
 
     <services>
 
-        <service id="current_time" class="DateTime">
-            <argument>now</argument>
+        <service id="undine.loop_handler" class="Undine\Loop\LoopHandler" public="false">
         </service>
 
         <service id="undine.drupal_client.middleware.ftp_credentials" class="Undine\Drupal\FtpCredentialsMiddleware" public="false">

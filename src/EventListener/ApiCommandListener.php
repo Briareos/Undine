@@ -8,7 +8,6 @@ use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Undine\Api\Exception\CommandInvalidException;
 use Undine\Configuration\Api;
-use Undine\Configuration\ApiCommand;
 
 class ApiCommandListener implements EventSubscriberInterface
 {
@@ -45,14 +44,14 @@ class ApiCommandListener implements EventSubscriberInterface
         }
 
         $formOptions = [
-            'csrf_protection'    => false,
-            'validation_groups'  => $apiCommand->getGroups(),
+            'csrf_protection' => false,
+            'validation_groups' => $apiCommand->getGroups(),
             // "Loose" form validation, allow extra fields.
             // @todo: Change this to only accept "token" and a few generic others if needed.
             'allow_extra_fields' => true,
         ];
 
-        if (!empty($apiCommand->getGroups())) {
+        if (!count($apiCommand->getGroups()) !== 0) {
             $formOptions['validation_groups'] = $apiCommand->getGroups();
         }
 
@@ -68,7 +67,7 @@ class ApiCommandListener implements EventSubscriberInterface
         $form->submit(array_replace_recursive($request->request->all(), $request->query->all(), $request->files->all()), !$request->isMethod('PATCH'));
 
         if (!$form->isValid()) {
-            throw new CommandInvalidException($form);
+            throw new CommandInvalidException($type, $form);
         }
 
         $request->attributes->set($apiCommand->getName(), $form->getData());

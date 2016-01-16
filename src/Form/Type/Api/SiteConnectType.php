@@ -18,7 +18,6 @@ use Undine\Api\Command\SiteConnectCommand;
 use Undine\Api\Error\Site\UrlEmpty;
 use Undine\Api\Error\Site\UrlInvalid;
 use Undine\Api\Error\Site\UrlTooLong;
-use Undine\Api\Error\SiteConstraint;
 use Undine\Form\Transformer\StringToUriTransformer;
 use Undine\Model\Site\FtpCredentials;
 
@@ -30,7 +29,7 @@ class SiteConnectType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('url', UrlType::class, [
-            'constraints'     => [
+            'constraints' => [
                 new NotBlank([
                     'message' => new UrlEmpty(),
                 ]),
@@ -38,7 +37,7 @@ class SiteConnectType extends AbstractType
                     'message' => new UrlInvalid(),
                 ]),
                 new Length([
-                    'max'        => 255,
+                    'max' => 255,
                     'maxMessage' => new UrlTooLong(),
                 ]),
             ],

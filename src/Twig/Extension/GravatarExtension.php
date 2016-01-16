@@ -16,9 +16,9 @@ class GravatarExtension extends \Twig_Extension
         $this->resolver = new OptionsResolver();
         $this->resolver
             ->setDefaults([
-                'size'    => 80,
+                'size' => 80,
                 'default' => 'retro',
-                'rating'  => 'g',
+                'rating' => 'g',
             ])
             ->setAllowedTypes('size', 'integer')
             ->setAllowedTypes('default', 'string')
@@ -41,7 +41,7 @@ class GravatarExtension extends \Twig_Extension
     public function getGravatarUrl($email, array $options = [])
     {
         $options = $this->resolver->resolve($options);
-        $image   = sprintf(self::GRAVATAR_BASE_URL, md5($email), http_build_query($options));
+        $image = sprintf(self::GRAVATAR_BASE_URL, md5($email), http_build_query($options));
 
         return $image;
     }

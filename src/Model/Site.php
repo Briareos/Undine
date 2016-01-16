@@ -3,7 +3,6 @@
 namespace Undine\Model;
 
 use Psr\Http\Message\UriInterface;
-use Ramsey\Uuid\Uuid;
 use Undine\Model\Site\FtpCredentials;
 use Undine\Model\Site\HttpCredentials;
 
@@ -57,32 +56,36 @@ class Site
     /**
      * @var string|null
      */
-    private $thumbnailUrl;
+    private $thumbnailPath;
 
     /**
      * @var \DateTime|null
      */
     private $thumbnailUpdatedAt;
 
-
+    /**
+     * @var \DateTime|null
+     */
+    private $thumbnailLockedAt;
 
     /**
      * @param UriInterface $url
+     * @param SiteState    $siteState
      * @param User         $user
      * @param string       $privateKey
      * @param string       $publicKey
      */
-    public function __construct(UriInterface $url, User $user, $privateKey, $publicKey)
+    public function __construct(UriInterface $url, SiteState $siteState, User $user, $privateKey, $publicKey)
     {
-        $this->id              = \Undine\Functions\generate_uuid1();
-        $this->url             = $url;
-        $this->user            = $user;
-        $this->privateKey      = $privateKey;
-        $this->publicKey       = $publicKey;
-        $this->siteState       = new SiteState($this);
-        $this->ftpCredentials  = new FtpCredentials();
+        $this->id = \Undine\Functions\generate_uuid();
+        $this->url = $url;
+        $this->siteState = $siteState;
+        $this->user = $user;
+        $this->privateKey = $privateKey;
+        $this->publicKey = $publicKey;
+        $this->ftpCredentials = new FtpCredentials();
         $this->httpCredentials = new HttpCredentials();
-        $this->createdAt       = new \DateTime();
+        $this->createdAt = new \DateTime();
     }
 
     /**
@@ -220,17 +223,17 @@ class Site
     /**
      * @return string|null
      */
-    public function getThumbnailUrl()
+    public function getThumbnailPath()
     {
-        return $this->thumbnailUrl;
+        return $this->thumbnailPath;
     }
 
     /**
-     * @param string|null $thumbnailUrl
+     * @param string|null $thumbnailPath
      */
-    public function setThumbnailUrl($thumbnailUrl = null)
+    public function setThumbnailPath($thumbnailPath = null)
     {
-        $this->thumbnailUrl       = $thumbnailUrl;
+        $this->thumbnailPath = $thumbnailPath;
         $this->thumbnailUpdatedAt = new \DateTime();
     }
 

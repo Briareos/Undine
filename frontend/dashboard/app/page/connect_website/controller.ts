@@ -8,10 +8,10 @@ import {ConnectWebsiteReconnectController} from "./reconnect/controller";
     selector: 'connect-website-controller',
     directives: [RouterOutlet],
     template: `
-        <div class="ui grid">
-            <div class="doubling two column row">
-                <div class="column">
-                    <router-outlet></router-outlet>
+        <div class="ui fluid container">
+            <div class="ui padded grid">
+                <div class="six wide tablet five wide computer column">
+                        <router-outlet></router-outlet>
                 </div>
             </div>
         </div>

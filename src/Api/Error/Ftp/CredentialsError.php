@@ -5,7 +5,7 @@ namespace Undine\Api\Error\Ftp;
 use Undine\Api\Error\AbstractError;
 
 /**
- * We captured an FTP error while attempting to install
+ * We captured an FTP error while attempting to install.
  */
 class CredentialsError extends AbstractError
 {
@@ -25,7 +25,7 @@ class CredentialsError extends AbstractError
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public static function getName()
     {
         return 'ftp.credentials_error';
     }

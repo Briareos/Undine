@@ -9,7 +9,7 @@ class BadCredentials extends AbstractError
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public static function getName()
     {
         return 'security.bad_credentials';
     }

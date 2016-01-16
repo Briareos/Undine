@@ -27,7 +27,6 @@ class GlobNode extends \Twig_Node
         parent::__construct($nodes, $attributes, $lineno, $tag);
     }
 
-
     public function compile(Twig_Compiler $compiler)
     {
         $compiler->addDebugInfo($this);

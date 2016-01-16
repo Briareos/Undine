@@ -24,14 +24,14 @@ class ScriptHandler
 
     public static function install(Event $event)
     {
-//        self::installPhantomJsBinary($event);
+        //        self::installPhantomJsBinary($event);
         self::checkPrerequisites($event);
     }
 
     public static function installPhantomJsBinary(Event $event)
     {
         $options = self::getOptions($event);
-        $binDir  = $options['symfony-bin-dir'];
+        $binDir = $options['symfony-bin-dir'];
 
         $fs = new Filesystem();
         $fs->copy(__DIR__.'/../Thumbnail/Resources/phantomjs-capture.js', $binDir.'/phantomjs-capture.js', true);

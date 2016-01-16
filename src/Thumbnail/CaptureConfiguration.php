@@ -54,10 +54,10 @@ class CaptureConfiguration
      */
     public function __construct(UriInterface $url, $captureWidth, $captureHeight, $captureFormat = self::FORMAT_PNG, $captureQuality = 100)
     {
-        $this->url            = $url;
-        $this->captureWidth   = $captureWidth;
-        $this->captureHeight  = $captureHeight;
-        $this->captureFormat  = $captureFormat;
+        $this->url = $url;
+        $this->captureWidth = $captureWidth;
+        $this->captureHeight = $captureHeight;
+        $this->captureFormat = $captureFormat;
         $this->captureQuality = $captureQuality;
     }
 

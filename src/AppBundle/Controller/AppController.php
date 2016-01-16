@@ -11,7 +11,6 @@ use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\FormTypeInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Undine\Api\Progress\ProgressInterface;
 use Undine\Email\EmailFactory;
 use Undine\Model\User;
 use Undine\Oxygen\Client as OxygenClient;
@@ -35,7 +34,7 @@ use Undine\Security\Authentication\Token\ApiToken;
  */
 abstract class AppController extends Controller
 {
-    function __get($name)
+    public function __get($name)
     {
         switch ($name) {
             case 'em':
@@ -49,6 +48,7 @@ abstract class AppController extends Controller
             case 'oxygenClient':
                 return $this->get('undine.oxygen.client');
             case 'oxygenLoginUrlGenerator';
+
                 return $this->get('undine.oxygen.login_url_generator');
             case 'currentTime':
                 return $this->get('current_time');
@@ -107,6 +107,6 @@ abstract class AppController extends Controller
      */
     protected function isStateless()
     {
-        return ($this->get('security.token_storage')->getToken() instanceof ApiToken);
+        return $this->get('security.token_storage')->getToken() instanceof ApiToken;
     }
 }

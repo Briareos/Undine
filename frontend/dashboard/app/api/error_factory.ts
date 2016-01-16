@@ -1,4 +1,4 @@
-import * as Constraint from '../api/constraint';
+import * as Errors from './errors';
 
 /**
  * Transforms strings like connect_site.unknown_error to ConnectSiteUnknownError.
@@ -12,12 +12,12 @@ function transformConstraintName(name: string): string {
 }
 
 export default class ConstraintFactory {
-    public static createConstraint(name: string, data: any): Constraint.IConstraint {
-        let constraintName: string = transformConstraintName(name);
-        if (Constraint[constraintName]) {
-            return new Constraint[constraintName](data);
+    public static createConstraint(name: string, data: any): Errors.IError {
+        let errorClass: string = transformConstraintName(name);
+        if (Errors[errorClass]) {
+            return new Errors[errorClass](data);
         }
-        // @todo: log this case, since it probably shouldn't happen.
-        return new Constraint.Constraint(data);
+
+        throw Error(`Unknown error returned: ${name} (class: ${errorClass})`);
     }
 }

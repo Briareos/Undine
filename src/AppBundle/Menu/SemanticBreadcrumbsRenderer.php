@@ -9,7 +9,7 @@ class SemanticBreadcrumbsRenderer extends ListRenderer
 {
     protected function renderList(ItemInterface $item, array $attributes, array $options)
     {
-        /**
+        /*
          * Return an empty string if any of the following are true:
          *   a) The menu has no children eligible to be displayed
          *   b) The depth is 0
@@ -39,10 +39,10 @@ class SemanticBreadcrumbsRenderer extends ListRenderer
 
         $html = '';
 
-        $children      = $item->getChildren();
+        $children = $item->getChildren();
         $childrenCount = count($children);
-        $lastIndex     = $childrenCount - 1;
-        $index         = 0;
+        $lastIndex = $childrenCount - 1;
+        $index = 0;
 
         foreach ($children as $child) {
             $html .= $this->renderItem($child, $options);
@@ -50,7 +50,7 @@ class SemanticBreadcrumbsRenderer extends ListRenderer
             if ($index !== $lastIndex) {
                 $html .= $this->renderSeparator($options);
             }
-            $index++;
+            ++$index;
         }
 
         return $html;
@@ -64,7 +64,7 @@ class SemanticBreadcrumbsRenderer extends ListRenderer
         }
 
         // create an array than can be imploded as a class list
-        $class = (array) $item->getAttribute('class');
+        $class = (array)$item->getAttribute('class');
 
         if ($this->matcher->isCurrent($item)) {
             $class[] = $options['currentClass'];
@@ -104,10 +104,10 @@ class SemanticBreadcrumbsRenderer extends ListRenderer
 
         if ($item->hasChildren()) {
             // renders the embedded ul
-            $childrenClass   = (array) $item->getChildrenAttribute('class');
+            $childrenClass = (array)$item->getChildrenAttribute('class');
             $childrenClass[] = 'menu_level_'.$item->getLevel();
 
-            $childrenAttributes          = $item->getChildrenAttributes();
+            $childrenAttributes = $item->getChildrenAttributes();
             $childrenAttributes['class'] = implode(' ', $childrenClass);
 
             $html .= $this->renderList($item, $childrenAttributes, $options);
@@ -121,10 +121,10 @@ class SemanticBreadcrumbsRenderer extends ListRenderer
 
     protected function renderLinkElement(ItemInterface $item, array $options)
     {
-        $class   = (array) $item->getLinkAttribute('class');
+        $class = (array)$item->getLinkAttribute('class');
         $class[] = 'section';
 
-        $attributes          = $item->getLinkAttributes();
+        $attributes = $item->getLinkAttributes();
         $attributes['class'] = implode(' ', $class);
 
         return sprintf('<a href="%s"%s>%s</a>', $this->escape($item->getUri()), $this->renderHtmlAttributes($attributes), $this->renderLabel($item, $options));

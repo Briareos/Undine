@@ -39,7 +39,7 @@ class UriType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        /** @var UriInterface|null $value */
+        /* @var UriInterface|null $value */
         return ($value === null) ? null : (string)$value;
     }
 

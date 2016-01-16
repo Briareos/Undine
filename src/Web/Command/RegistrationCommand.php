@@ -26,8 +26,8 @@ class RegistrationCommand
      */
     public function __construct($name, $email, $plainPassword)
     {
-        $this->name          = $name;
-        $this->email         = $email;
+        $this->name = $name;
+        $this->email = $email;
         $this->plainPassword = $plainPassword;
     }
 

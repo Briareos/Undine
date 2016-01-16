@@ -12,7 +12,7 @@ class UnexpectedError extends AbstractError
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public static function getName()
     {
         return 'api.unexpected_error';
     }

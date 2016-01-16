@@ -9,7 +9,7 @@ class HandleFactory
 {
     /**
      * @param RequestInterface|Process|callable $request
-     * @param array $options
+     * @param array                             $options
      *
      * @return LoopHandle
      */

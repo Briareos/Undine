@@ -54,7 +54,7 @@ doctrine:
         types:
             uri: Undine\Doctrine\Type\UriType
             timezone: Undine\Doctrine\Type\TimezoneType
-            uuid1_binary_optimized: Undine\Doctrine\Type\Uuid1BinaryOptimizedType
+            uuid_binary: Undine\Doctrine\Type\UuidBinaryType
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
         naming_strategy: doctrine.orm.naming_strategy.default

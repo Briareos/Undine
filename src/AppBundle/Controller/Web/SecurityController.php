@@ -54,12 +54,12 @@ class SecurityController extends AppController
 
         // last username entered by the user
         $lastUsername = (null === $session) ? '' : $session->get(Security::LAST_USERNAME);
-        $csrfToken    = $this->get('security.csrf.token_manager')->getToken('authenticate')->getValue();
+        $csrfToken = $this->get('security.csrf.token_manager')->getToken('authenticate')->getValue();
 
         return [
             'lastUsername' => $lastUsername,
-            'error'        => $error,
-            'csrfToken'    => $csrfToken,
+            'error' => $error,
+            'csrfToken' => $csrfToken,
         ];
     }
 
@@ -82,9 +82,9 @@ class SecurityController extends AppController
 
         if ($form->isValid()) {
             /** @var RegistrationCommand $command */
-            $command  = $form->getData();
+            $command = $form->getData();
             $password = $this->get('security.encoder_factory')->getEncoder(User::class)->encodePassword($command->getPlainPassword(), '');
-            $user     = (new User($command->getName(), $command->getEmail()))
+            $user = (new User($command->getName(), $command->getEmail()))
                 ->setPassword($password);
             $this->em->persist($user);
             $this->em->flush($user);
@@ -116,7 +116,7 @@ class SecurityController extends AppController
      */
     public function resetPasswordAction(Request $request)
     {
-        $formOptions     = [
+        $formOptions = [
             'method' => 'POST',
             'action' => $this->generateUrl('web-reset_password'),
         ];
@@ -131,7 +131,7 @@ class SecurityController extends AppController
             $user = null;
             $form = $this->createNamedFormBuilder('reset_password', null, $formOptions)
                 ->add('email', 'email', [
-                    'attr'        => ['autofocus' => true],
+                    'attr' => ['autofocus' => true],
                     'constraints' => [
                         new Type(['type' => 'string']),
                         new NotBlank(),
@@ -155,9 +155,9 @@ class SecurityController extends AppController
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $resetUrl   = $this->generateResetUrl($user, $this->currentTime->getTimestamp());
+            $resetUrl = $this->generateResetUrl($user, $this->currentTime->getTimestamp());
             $resetEmail = $this->emailFactory->createEmail(Emails::USER_RESET_PASSWORD, [
-                'user'     => $user,
+                'user' => $user,
                 'resetUrl' => $resetUrl,
             ]);
             $this->mailer->send($resetEmail);
@@ -183,9 +183,9 @@ class SecurityController extends AppController
         $hash = $this->getLoginToken($user, $currentTimestamp);
 
         $url = $this->generateUrl('web-set_password', [
-            'id'       => $user->getId(),
+            'id' => $user->getId(),
             'timestamp' => $currentTimestamp,
-            'hash'      => $hash,
+            'hash' => $hash,
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
         return $url;
@@ -231,8 +231,8 @@ class SecurityController extends AppController
             // User is logged in as a different user.
             $this->addFlash('error', \Undine\Functions\format('Another user (%current_user) is already logged into the site on this computer, but you tried to use a one-time link for user %reset_user. Please <a href="!logout">logout</a> and try using the link again.', [
                 '%current_user' => $currentUser->getName(),
-                '%reset_user'   => $resetUser->getName(),
-                '!logout'       => $this->container->get('security.logout_url_generator')->getLogoutUrl('web'),
+                '%reset_user' => $resetUser->getName(),
+                '!logout' => $this->container->get('security.logout_url_generator')->getLogoutUrl('web'),
             ]));
 
             return $this->redirectToRoute('web-reset_password');
@@ -259,9 +259,9 @@ class SecurityController extends AppController
             $this->dispatcher->dispatch(new UserResetPasswordFailedEvent($request, $resetUser), Events::USER_RESET_PASSWORD_FAILED);
 
             $this->logger->notice('Invalid reset password token used.', [
-                'ip'        => $request->getClientIp(),
-                'userId'    => $resetUser->getId(),
-                'userName'  => $resetUser->getName(),
+                'ip' => $request->getClientIp(),
+                'userId' => $resetUser->getId(),
+                'userName' => $resetUser->getName(),
                 'userEmail' => $resetUser->getEmail(),
             ]);
 
@@ -276,7 +276,7 @@ class SecurityController extends AppController
             'action' => $this->generateUrl('web-set_password', ['id' => $resetUser->getId(), 'timestamp' => $timestamp, 'hash' => $hash]),
         ])
             ->add('password', 'password', [
-                'attr'        => ['autofocus' => true],
+                'attr' => ['autofocus' => true],
                 'constraints' => [
                     new Type(['type' => 'string']),
                     new NotBlank(),
@@ -287,7 +287,7 @@ class SecurityController extends AppController
 
         if ($form->isValid()) {
             $plainPassword = $form->getData()['password'];
-            $password      = $this->get('security.encoder_factory')->getEncoder(User::class)->encodePassword($plainPassword, '');
+            $password = $this->get('security.encoder_factory')->getEncoder(User::class)->encodePassword($plainPassword, '');
             $resetUser->setPassword($password);
             $this->em->persist($resetUser);
             $this->em->flush($resetUser);
@@ -326,7 +326,7 @@ class SecurityController extends AppController
             'action' => $this->generateUrl('web-delete_account'),
         ])
             ->add('password', 'password', [
-                'attr'        => ['autofocus' => true],
+                'attr' => ['autofocus' => true],
                 'constraints' => [
                     new Type(['type' => 'string']),
                     new NotBlank(),

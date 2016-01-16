@@ -12,7 +12,7 @@ class OxygenNotFound extends AbstractError
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public static function getName()
     {
         return 'response.oxygen_not_found';
     }

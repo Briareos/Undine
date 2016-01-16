@@ -37,7 +37,7 @@ class TimezoneType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        /** @var \DateTimeZone|null $value */
+        /* @var \DateTimeZone|null $value */
         return ($value === null) ? null : $value->getName();
     }
 

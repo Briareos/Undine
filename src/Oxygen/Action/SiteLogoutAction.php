@@ -31,7 +31,7 @@ class SiteLogoutAction extends AbstractAction
     public function getParameters()
     {
         return [
-            'userUid'=>$this->userUid,
+            'userUid' => $this->userUid,
         ];
     }
 }

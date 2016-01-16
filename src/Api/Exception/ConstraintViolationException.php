@@ -2,14 +2,14 @@
 
 namespace Undine\Api\Exception;
 
-use Undine\Api\Error\ConstraintInterface;
+use Undine\Api\Error\ErrorInterface;
 
 class ConstraintViolationException extends ApiException
 {
     /**
-     * @var ConstraintInterface
+     * @var ErrorInterface
      */
-    private $constraint;
+    private $error;
 
     /**
      * @var string|null
@@ -17,22 +17,22 @@ class ConstraintViolationException extends ApiException
     private $path;
 
     /**
-     * @param ConstraintInterface $constraint
-     * @param string|null         $path
+     * @param ErrorInterface $error
+     * @param string|null    $path
      */
-    public function __construct(ConstraintInterface $constraint, $path = null)
+    public function __construct(ErrorInterface $error, $path = null)
     {
-        $this->constraint = $constraint;
-        $this->path       = $path;
-        parent::__construct("The constraint {$constraint->getName()} has been violated.");
+        $this->error = $error;
+        $this->path = $path;
+        parent::__construct(sprintf('The constraint %s has been violated.', $error->getName()));
     }
 
     /**
-     * @return ConstraintInterface
+     * @return ErrorInterface
      */
-    public function getConstraint()
+    public function getError()
     {
-        return $this->constraint;
+        return $this->error;
     }
 
     /**

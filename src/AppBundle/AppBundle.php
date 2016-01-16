@@ -8,8 +8,6 @@ use Undine\AppBundle\DependencyInjection\CompilerPass\ApiSerializationPass;
 use Undine\AppBundle\DependencyInjection\CompilerPass\MailerCompilerPass;
 use Undine\AppBundle\DependencyInjection\CompilerPass\TwigEnvironmentPass;
 use Undine\AppBundle\DependencyInjection\CompilerPass\ValidationPass;
-use Undine\Model\Site;
-use Undine\Model\User;
 
 class AppBundle extends Bundle
 {

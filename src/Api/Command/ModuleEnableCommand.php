@@ -20,7 +20,7 @@ class ModuleEnableCommand
      */
     public function __construct($module, $enableDependencies)
     {
-        $this->module             = $module;
+        $this->module = $module;
         $this->enableDependencies = $enableDependencies;
     }
 

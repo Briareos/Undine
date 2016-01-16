@@ -6,13 +6,13 @@ use Knp\Menu\ItemInterface;
 use Knp\Menu\Renderer\ListRenderer;
 
 /**
- * Renders MenuItem tree for semantic-ui
+ * Renders MenuItem tree for semantic-ui.
  */
 class SemanticMenuRenderer extends ListRenderer
 {
     protected function renderList(ItemInterface $item, array $attributes, array $options)
     {
-        /**
+        /*
          * Return an empty string if any of the following are true:
          *   a) The menu has no children eligible to be displayed
          *   b) The depth is 0
@@ -48,7 +48,7 @@ class SemanticMenuRenderer extends ListRenderer
         }
 
         // create an array than can be imploded as a class list
-        $class = (array) $item->getAttribute('class');
+        $class = (array)$item->getAttribute('class');
 
         if ($this->matcher->isCurrent($item)) {
             $class[] = $options['currentClass'];
@@ -77,7 +77,7 @@ class SemanticMenuRenderer extends ListRenderer
             $attributes['class'] = implode(' ', $class);
         }
 
-        $html        = '';
+        $html = '';
         $isRightMenu = $item->getExtra('type', 'left-menu') === 'right-menu';
 
         // Don't render the container if the menu has children but is a right aligned menu
@@ -93,10 +93,10 @@ class SemanticMenuRenderer extends ListRenderer
 
         if ($item->hasChildren()) {
             // renders the embedded ul
-            $childrenClass   = (array) $item->getChildrenAttribute('class');
+            $childrenClass = (array)$item->getChildrenAttribute('class');
             $childrenClass[] = 'menu_level_'.$item->getLevel();
 
-            $childrenAttributes          = $item->getChildrenAttributes();
+            $childrenAttributes = $item->getChildrenAttributes();
             $childrenAttributes['class'] = implode(' ', $childrenClass);
 
             $html .= $this->renderList($item, $childrenAttributes, $options);
@@ -110,7 +110,7 @@ class SemanticMenuRenderer extends ListRenderer
 
     /**
      * Renders the link in a a tag with link attributes or
-     * the label in a span tag with label attributes
+     * the label in a span tag with label attributes.
      *
      * Tests if item has a an uri and if not tests if it's
      * the current item and if the text has to be rendered
@@ -134,7 +134,7 @@ class SemanticMenuRenderer extends ListRenderer
 
     protected function renderLinkElement(ItemInterface $item, array $options)
     {
-        $attributes          = $item->getLinkAttributes();
+        $attributes = $item->getLinkAttributes();
         $attributes['class'] = isset($attributes['class']) ? $attributes['class'].' item' : 'item';
 
         if ($this->matcher->isCurrent($item)) {

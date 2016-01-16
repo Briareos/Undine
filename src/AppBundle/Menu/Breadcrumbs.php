@@ -20,7 +20,7 @@ class Breadcrumbs implements ContainerAwareInterface
     public function breadcrumbsMenu(FactoryInterface $factory, array $options)
     {
         $request = $this->container->get('request_stack')->getMasterRequest();
-        $route   = $request->get('_route');
+        $route = $request->get('_route');
 
         $menu = $factory->createItem('root');
         $menu->setChildrenAttribute('class', 'ui breadcrumb');
@@ -39,7 +39,7 @@ class Breadcrumbs implements ContainerAwareInterface
 
     private function staffMenu(ItemInterface $menu)
     {
-        $route   = $this->getRoute();
+        $route = $this->getRoute();
         $staffId = $this->getRequestAttribute('id');
 
         if ($staffId !== null) {
@@ -52,14 +52,14 @@ class Breadcrumbs implements ContainerAwareInterface
         if (isset($staff) && in_array($route, ['admin-staff_view', 'admin-staff_edit', 'admin-staff_delete'])) {
             $menu->addChild($staff->getEmail(),
                 [
-                    'route'           => 'admin-staff_view',
+                    'route' => 'admin-staff_view',
                     'routeParameters' => ['id' => $staffId],
                 ]);
         }
 
         $routeLabelMap = [
             'admin-staff_create' => 'Create',
-            'admin-staff_edit'   => 'Edit',
+            'admin-staff_edit' => 'Edit',
             'admin-staff_delete' => 'Delete',
         ];
 
@@ -70,7 +70,7 @@ class Breadcrumbs implements ContainerAwareInterface
 
     private function userMenu(ItemInterface $menu)
     {
-        $route  = $this->getRoute();
+        $route = $this->getRoute();
         $userId = $this->getRequestAttribute('id');
 
         if ($userId !== null) {
@@ -83,14 +83,14 @@ class Breadcrumbs implements ContainerAwareInterface
         if (isset($user) && in_array($route, ['admin-user_view', 'admin-user_edit', 'admin-user_delete'])) {
             $menu->addChild($user->getEmail(),
                 [
-                    'route'           => 'admin-user_view',
+                    'route' => 'admin-user_view',
                     'routeParameters' => ['id' => $userId],
                 ]);
         }
 
         $routeLabelMap = [
             'admin-user_create' => 'Create',
-            'admin-user_edit'   => 'Edit',
+            'admin-user_edit' => 'Edit',
             'admin-user_delete' => 'Delete',
         ];
 

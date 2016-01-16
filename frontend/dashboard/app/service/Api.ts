@@ -4,8 +4,8 @@ import {Observer} from 'rxjs/Observer';
 
 import * as Result from '../api/result';
 import * as Progress from '../api/progress';
-import * as Constraint from '../api/constraint';
-import ConstraintFactory from '../api/constraint_factory';
+import * as ApiError from '../api/errors';
+import ConstraintFactory from '../api/error_factory';
 
 function finalizeResponse(observer: Observer<any>, result: any): void {
     if (result.ok === true) {
@@ -105,7 +105,7 @@ class ApiXhrFactory {
 }
 
 interface IApiResponse<T> {
-    result: ErrorAwareObservable<T, Constraint.IConstraint>;
+    result: ErrorAwareObservable<T, ApiError.IError>;
 }
 
 interface IProgressAwareApiResponse<T, U> extends IApiResponse<T> {
@@ -128,7 +128,7 @@ class ApiResponse<T, U> implements IProgressAwareApiResponse<T, U> {
         return this._progress;
     }
 
-    get result(): ErrorAwareObservable<T, Constraint.IConstraint> {
+    get result(): ErrorAwareObservable<T, ApiError.IError> {
         return this._result;
     }
 }

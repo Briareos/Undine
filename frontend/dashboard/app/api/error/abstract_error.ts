@@ -1,8 +1,8 @@
-export interface IConstraint {
+export interface IError {
     name: string;
 }
 
-export class Constraint implements IConstraint{
+export abstract class AbstractError implements IError {
     protected data: any;
 
     constructor(data: any) {

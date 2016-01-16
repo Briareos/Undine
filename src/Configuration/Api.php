@@ -136,6 +136,4 @@ class Api extends ConfigurationAnnotation
     {
         $this->bulkable = $bulkable;
     }
-    
-    
 }

@@ -53,7 +53,7 @@ class Asset extends \Twig_TokenParser
 
         $asset = $this->extractAssetPath($assetName, $assetStore);
 
-        /** @noinspection PhpParamsInspection */
+        /* @noinspection PhpParamsInspection */
 
         return new \Twig_Node_Print(new \Twig_Node_Expression_Constant($asset, $token->getLine()), $token->getLine(), $this->getTag());
     }

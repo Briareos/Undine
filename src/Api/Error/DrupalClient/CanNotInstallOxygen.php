@@ -26,7 +26,7 @@ class CanNotInstallOxygen extends AbstractError
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public static function getName()
     {
         return 'drupal_client.can_not_install_oxygen';
     }

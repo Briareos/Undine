@@ -2,8 +2,6 @@
 
 namespace Undine\Model;
 
-use Ramsey\Uuid\Uuid;
-
 class SiteUpdate
 {
     const TYPE_CORE = 'core';
@@ -131,9 +129,9 @@ class SiteUpdate
      */
     public function __construct(SiteState $siteState, $slug)
     {
-        $this->id        = \Undine\Functions\generate_uuid1();
+        $this->id = \Undine\Functions\generate_uuid();
         $this->siteState = $siteState;
-        $this->slug      = $slug;
+        $this->slug = $slug;
     }
 
     /**
@@ -357,7 +355,7 @@ class SiteUpdate
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isEnabled()
     {
@@ -365,7 +363,7 @@ class SiteUpdate
     }
 
     /**
-     * @param boolean $enabled
+     * @param bool $enabled
      *
      * @return $this
      */

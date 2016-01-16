@@ -9,7 +9,7 @@ class OxygenPageNotFound extends AbstractError
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public static function getName()
     {
         return 'drupal_client.oxygen_page_not_found';
     }

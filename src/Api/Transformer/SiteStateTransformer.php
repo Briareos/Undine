@@ -2,7 +2,6 @@
 
 namespace Undine\Api\Transformer;
 
-use Undine\Model\Site;
 use Undine\Model\SiteState;
 use Undine\Model\SiteExtension;
 use Undine\Model\SiteUpdate;
@@ -24,7 +23,6 @@ class SiteStateTransformer extends AbstractTransformer
             'themeUpdates',
         ];
     }
-
 
     public function transform(SiteState $siteState)
     {

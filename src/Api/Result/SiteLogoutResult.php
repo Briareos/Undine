@@ -24,7 +24,7 @@ class SiteLogoutResult extends AbstractResult
      */
     public function __construct(Site $site, $destroyedSessions)
     {
-        $this->site              = $site;
+        $this->site = $site;
         $this->destroyedSessions = $destroyedSessions;
     }
 
@@ -34,7 +34,7 @@ class SiteLogoutResult extends AbstractResult
     public function normalize(Normalizer $normalizer, Context $context)
     {
         return [
-            'site'              => $normalizer->normalizeObject($this->site, $context),
+            'site' => $normalizer->normalizeObject($this->site, $context),
             'destroyedSessions' => $this->destroyedSessions,
         ];
     }

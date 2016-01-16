@@ -30,8 +30,8 @@ class UserResetPasswordEmail extends AbstractTwigEmail
     public function __construct($fromEmail, $fromName, $brand)
     {
         $this->fromEmail = $fromEmail;
-        $this->fromName  = $fromName;
-        $this->brand     = $brand;
+        $this->fromName = $fromName;
+        $this->brand = $brand;
     }
 
     /**

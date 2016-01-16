@@ -18,19 +18,16 @@ class UserActivityListener implements EventSubscriberInterface
 
     private $em;
 
-    private $currentTime;
-
-    public function __construct(TokenStorageInterface $tokenStorage, EntityManager $em, \DateTime $currentTime)
+    public function __construct(TokenStorageInterface $tokenStorage, EntityManager $em)
     {
         $this->tokenStorage = $tokenStorage;
-        $this->em           = $em;
-        $this->currentTime  = $currentTime;
+        $this->em = $em;
     }
 
     public static function getSubscribedEvents()
     {
         return [
-            KernelEvents::REQUEST             => ['onKernelRequest', -10],
+            KernelEvents::REQUEST => ['onKernelRequest', -10],
             SecurityEvents::INTERACTIVE_LOGIN => ['onSecurityInteractiveLogin', -10],
         ];
     }
@@ -46,15 +43,15 @@ class UserActivityListener implements EventSubscriberInterface
             if (!$token || !($user = $token->getUser()) instanceof UserActivityAwareInterface) {
                 return;
             }
-            /** @var UserActivityAwareInterface $user */
+            /* @var UserActivityAwareInterface $user */
             $uow = $this->em->getUnitOfWork();
             if (!$uow->isScheduledForInsert($user) && !$uow->isInIdentityMap($user)) {
                 return;
             }
-            if ($user->getLastActiveAt() && ($this->currentTime->getTimestamp() - $user->getLastActiveAt()->getTimestamp()) < 60) {
+            if ($user->getLastActiveAt() && ((new \DateTime())->getTimestamp() - $user->getLastActiveAt()->getTimestamp()) < 60) {
                 return;
             }
-            $user->setLastActiveAt($this->currentTime);
+            $user->setLastActiveAt(new \DateTime());
             $this->em->persist($user);
             $this->em->flush($user);
         }, -10);
@@ -68,12 +65,12 @@ class UserActivityListener implements EventSubscriberInterface
             if (!($user = $token->getUser()) instanceof UserActivityAwareInterface) {
                 return;
             }
-            /** @var UserActivityAwareInterface $user */
+            /* @var UserActivityAwareInterface $user */
             $uow = $this->em->getUnitOfWork();
             if (!$uow->isScheduledForInsert($user) && !$uow->isInIdentityMap($user)) {
                 return;
             }
-            $user->setLastLoginAt($this->currentTime);
+            $user->setLastLoginAt(new \DateTime());
             $this->em->persist($user);
             $this->em->flush($user);
         }, -10);

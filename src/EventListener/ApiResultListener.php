@@ -10,33 +10,33 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
-use Undine\Api\Error\ConstraintInterface;
-use Undine\Api\Error\Security\BadCredentials;
-use Undine\Api\Error\Security\NotAuthenticated;
-use Undine\Api\Error\Security\NotAuthorized;
-use Undine\Api\Exception\CommandInvalidException;
-use Undine\Api\Exception\ConstraintViolationException;
+use Undine\Api\Error\ErrorInterface;
 use Undine\Api\Result\ResultInterface;
 use Undine\Api\Serializer\Context;
 use Undine\Api\Serializer\Normalizer;
-use Undine\Oxygen\Exception\InvalidBodyException;
 
 class ApiResultListener implements EventSubscriberInterface
 {
+    /**
+     * @var Normalizer
+     */
     private $normalizer;
 
+    /**
+     * @var RequestMatcherInterface
+     */
     private $requestMatcher;
 
-    private $tokenStorage;
+    /**
+     * @var callable
+     */
+    private $errorFactory;
 
-    public function __construct(Normalizer $normalizer, RequestMatcherInterface $requestMatcher, TokenStorage $tokenStorage)
+    public function __construct(Normalizer $normalizer, RequestMatcherInterface $requestMatcher, callable $errorFactory)
     {
-        $this->normalizer     = $normalizer;
+        $this->normalizer = $normalizer;
         $this->requestMatcher = $requestMatcher;
-        $this->tokenStorage   = $tokenStorage;
+        $this->errorFactory = $errorFactory;
     }
 
     /**
@@ -45,7 +45,7 @@ class ApiResultListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            KernelEvents::VIEW      => ['onKernelView', -255],
+            KernelEvents::VIEW => ['onKernelView', -255],
             KernelEvents::EXCEPTION => ['onKernelException', 1],
         ];
     }
@@ -60,15 +60,20 @@ class ApiResultListener implements EventSubscriberInterface
 
         $result = $event->getControllerResult();
         if (!$result instanceof ResultInterface && !$result instanceof PromiseInterface) {
-            throw new \RuntimeException(sprintf('API controller result must be an instance of %s or %s.', ResultInterface::class, PromiseInterface::class));
+            throw new \RuntimeException(sprintf(
+                'API controller result must be an instance of %s or %s, got %s.',
+                ResultInterface::class,
+                PromiseInterface::class,
+                is_object($result) ? get_class($result) : json_encode($result)
+            ));
         }
 
         $includes = $request->get('include', null);
-        $context  = new Context(is_scalar($includes) ? $includes : '');
+        $context = new Context(is_scalar($includes) ? $includes : '');
 
         // Make the 'ok' property first.
         $result = array_merge(['ok' => true], $result->normalize($this->normalizer, $context));
-        $data   = json_encode($result);
+        $data = json_encode($result);
 
         $response = new Response($data, 200, ['content-type' => 'application/json']);
 
@@ -81,41 +86,29 @@ class ApiResultListener implements EventSubscriberInterface
             return;
         }
 
-        $exception = $event->getException();
-
-        $data = [];
-
-        if ($exception instanceof CommandInvalidException) {
-            $formError = $exception->getForm()->getErrors(true)->current();
-            $data += [
-                'error'    => $formError->getMessage(),
-                'property' => $formError->getOrigin()->getName(),
-            ];
-        } elseif ($exception instanceof ConstraintViolationException) {
-            $this->mergeConstraintData($data, $exception->getConstraint());
-        } elseif ($exception instanceof UsernameNotFoundException) {
-            $this->mergeConstraintData($data, new BadCredentials());
-        } elseif ($exception instanceof AccessDeniedException) {
-            if ($this->tokenStorage->getToken() && $this->tokenStorage->getToken()->getRoles()) {
-                $this->mergeConstraintData($data, new NotAuthorized());
-            } else {
-                $this->mergeConstraintData($data, new NotAuthenticated());
-            }
-        } else {
-            // Show full exceptions for now.
-            return;
-        }
-
-        $response = new JsonResponse(array_merge(['ok' => false], $data), 200, ['x-status-code' => 200]);
+        $errorFactory = $this->errorFactory;
+        /** @var ErrorInterface $error */
+        $error = $errorFactory($event->getException());
+        // Tell Symfony to not use 500 as status code.
+        $response = new JsonResponse(
+            array_merge(
+                [
+                    'ok' => false,
+                    'error' => $error->getName(),
+                ],
+                $error->getData()
+            ),
+            200,
+            ['x-status-code' => 200]);
 
         $event->setResponse($response);
     }
 
     /**
-     * @param array               $data
-     * @param ConstraintInterface $constraint
+     * @param array          $data
+     * @param ErrorInterface $constraint
      */
-    private function mergeConstraintData(array &$data, ConstraintInterface $constraint)
+    private function mergeConstraintData(array &$data, ErrorInterface $constraint)
     {
         $data['error'] = $constraint->getName();
         if ($constraint->getData()) {

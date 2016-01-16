@@ -23,13 +23,13 @@ class OxygenNotFound extends AbstractError
     public function __construct($lookedForLoginForm, $loginFormFound)
     {
         $this->lookedForLoginForm = $lookedForLoginForm;
-        $this->loginFormFound     = $loginFormFound;
+        $this->loginFormFound = $loginFormFound;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public static function getName()
     {
         return 'site_connect.oxygen_not_found';
     }
@@ -41,7 +41,7 @@ class OxygenNotFound extends AbstractError
     {
         return [
             'lookedForLoginForm' => $this->lookedForLoginForm,
-            'loginFormFound'     => $this->loginFormFound,
+            'loginFormFound' => $this->loginFormFound,
         ];
     }
 }

@@ -27,7 +27,7 @@ class ModuleListItem
     public function __construct($package, $slug, $enabled)
     {
         $this->package = $package;
-        $this->slug    = $slug;
+        $this->slug = $slug;
         $this->enabled = $enabled;
     }
 
@@ -48,7 +48,7 @@ class ModuleListItem
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isEnabled()
     {

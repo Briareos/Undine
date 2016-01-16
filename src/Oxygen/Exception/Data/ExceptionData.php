@@ -20,7 +20,7 @@ class ExceptionData
     private $code;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $type;
 
@@ -49,15 +49,26 @@ class ExceptionData
      */
     private $previous;
 
+    /**
+     * @param string             $class
+     * @param string             $message
+     * @param int                $code
+     * @param string|null        $type
+     * @param string             $file
+     * @param int                $line
+     * @param string             $traceString
+     * @param array              $context
+     * @param ExceptionData|null $previous
+     */
     public function __construct($class, $message, $code, $type, $file, $line, $traceString, array $context = array(), ExceptionData $previous = null)
     {
-        $this->class       = $class;
-        $this->message     = $message;
-        $this->code        = $code;
-        $this->type        = $type;
-        $this->context     = $context;
-        $this->file        = $file;
-        $this->line        = $line;
+        $this->class = $class;
+        $this->message = $message;
+        $this->code = $code;
+        $this->type = $type;
+        $this->context = $context;
+        $this->file = $file;
+        $this->line = $line;
         $this->traceString = $traceString;
     }
 

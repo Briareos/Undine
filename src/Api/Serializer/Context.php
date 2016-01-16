@@ -47,7 +47,7 @@ class Context
      */
     public function __construct($includes = null)
     {
-        $includes       = (string)$includes;
+        $includes = (string)$includes;
         $this->includes = $includes;
 
         if (is_string($includes)) {
@@ -85,7 +85,7 @@ class Context
 
             $modifierArr = [];
 
-            for ($modifierIt = 0; $modifierIt < $modifierCount; $modifierIt++) {
+            for ($modifierIt = 0; $modifierIt < $modifierCount; ++$modifierIt) {
                 // [1] is the modifier
                 $modifierName = $allModifiersArr[1][$modifierIt];
 
@@ -134,14 +134,12 @@ class Context
     }
 
     /**
-     * Auto-include Parents
+     * Auto-include Parents.
      *
      * Look at the requested includes and automatically include the parents if they
      * are not explicitly requested. E.g: [foo, bar.baz] becomes [foo, bar, bar.baz]
      *
      * @internal
-     *
-     * @return void
      */
     private function autoIncludeParents()
     {
@@ -150,7 +148,7 @@ class Context
         foreach ($this->requestedIncludes as $include) {
             $nested = explode('.', $include);
 
-            $part     = array_shift($nested);
+            $part = array_shift($nested);
             $parsed[] = $part;
 
             while (count($nested) > 0) {
@@ -163,7 +161,7 @@ class Context
     }
 
     /**
-     * Trim to Acceptable Recursion Level
+     * Trim to Acceptable Recursion Level.
      *
      * Strip off any requested resources that are too many levels deep, to avoid DiCaprio being chased
      * by trains or whatever the hell that movie was about.

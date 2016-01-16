@@ -3,7 +3,7 @@
 
     <entity repository-class="Undine\Repository\SiteStateRepository" name="Undine\Model\SiteState" change-tracking-policy="DEFERRED_EXPLICIT">
 
-        <id name="id" type="string"/>
+        <id name="id" type="uuid_binary"/>
 
         <!-- State fields are considered "user input". It's hard to determine validation constraints on most of them,
              (even though there are some) so they are all nullable and up to the default 255 characters. -->
@@ -43,10 +43,6 @@
         <field name="lastErrorType" type="string" nullable="true"/>
         <field name="lastErrorCode" type="integer" nullable="true"/>
         <field name="lastErrorContext" type="json_array" nullable="true"/>
-
-        <one-to-one target-entity="Undine\Model\Site" field="site" mapped-by="siteState">
-            <join-column nullable="false"/>
-        </one-to-one>
 
         <one-to-many target-entity="Undine\Model\SiteExtension" field="siteExtensions" mapped-by="siteState" index-by="slug">
         </one-to-many>

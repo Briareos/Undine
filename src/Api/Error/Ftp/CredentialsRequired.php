@@ -9,7 +9,7 @@ class CredentialsRequired extends AbstractError
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public static function getName()
     {
         return 'ftp.credentials_required';
     }

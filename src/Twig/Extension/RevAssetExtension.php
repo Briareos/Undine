@@ -61,6 +61,7 @@ class RevAssetExtension extends \Twig_Extension
      * @param string $manifestCollection Manifest collection, eg. "rev-styles.css". See gulpfile.js for available collections.
      *
      * @return mixed
+     *
      * @throws \Undine\Functions\Exception\JsonParseException
      */
     public function getRevAsset($assetName, $manifestCollection)

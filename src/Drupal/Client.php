@@ -52,16 +52,18 @@ class Client
      * @param UriInterface $url
      * @param Session      $session
      *
-     * @return Promise Resolves to Form.
+     * @return Promise
      *
-     * @throws RequestException
-     * @throws LoginFormNotFoundException
+     * @resolves Form
+     *
+     * @rejects  RequestException
+     * @rejects  LoginFormNotFoundException
      */
     public function findLoginFormAsync(UriInterface $url, Session $session)
     {
         return $this->client->getAsync($url->withQuery(\GuzzleHttp\Psr7\build_query(['q' => 'user/login'])), [
             RequestOptions::COOKIES => $session->getCookieJar(),
-            RequestOptions::AUTH    => $session->getAuthData(),
+            RequestOptions::AUTH => $session->getAuthData(),
         ])
             ->then(function (ResponseInterface $response) use ($url) {
                 $crawler = new Crawler((string)$response->getBody(), (string)$url);
@@ -93,10 +95,10 @@ class Client
      * @param string  $password
      * @param Session $session
      *
-     * @return Promise Resolves to null.
+     * @return Promise
      *
-     * @throws RequestException
-     * @throws InvalidCredentialsException
+     * @rejects RequestException
+     * @rejects InvalidCredentialsException
      */
     public function loginAsync(Form $form, $username, $password, Session $session)
     {
@@ -106,10 +108,10 @@ class Client
         ]);
 
         return $this->client->requestAsync($form->getMethod(), $form->getUri(), [
-            RequestOptions::COOKIES         => $session->getCookieJar(),
-            RequestOptions::AUTH            => $session->getAuthData(),
-            RequestOptions::FORM_PARAMS     => $form->getPhpValues(),
-            RequestOptions::HEADERS         => [
+            RequestOptions::COOKIES => $session->getCookieJar(),
+            RequestOptions::AUTH => $session->getAuthData(),
+            RequestOptions::FORM_PARAMS => $form->getPhpValues(),
+            RequestOptions::HEADERS => [
                 'referer' => $form->getUri(),
             ],
             RequestOptions::ALLOW_REDIRECTS => false,
@@ -140,16 +142,18 @@ class Client
      * @param UriInterface $url
      * @param Session      $session
      *
-     * @return Promise Resolves to Form.
+     * @return Promise
      *
-     * @throws RequestException
-     * @throws ModulesFormNotFoundException
+     * @resolves Form
+     *
+     * @rejects  RequestException
+     * @rejects  ModulesFormNotFoundException
      */
     public function getModulesFormAsync(UriInterface $url, Session $session)
     {
         return $this->client->getAsync($url->withQuery(\GuzzleHttp\Psr7\build_query(['q' => 'admin/modules'])), [
             RequestOptions::COOKIES => $session->getCookieJar(),
-            RequestOptions::AUTH    => $session->getAuthData(),
+            RequestOptions::AUTH => $session->getAuthData(),
         ])->then(function (ResponseInterface $response) use ($url) {
             $crawler = new Crawler((string)$response->getBody(), (string)$url);
             try {
@@ -181,7 +185,7 @@ class Client
      *
      * @return Promise Resolves to null.
      *
-     * @throws RequestException
+     * @rejects RequestException
      */
     public function enableModuleAsync(Form $form, $package, $slug, Session $session)
     {
@@ -195,10 +199,10 @@ class Client
         $formData['modules'][$package][$slug]['enable'] = '1';
 
         return $this->client->requestAsync($form->getMethod(), $form->getUri(), [
-            RequestOptions::COOKIES         => $session->getCookieJar(),
-            RequestOptions::AUTH            => $session->getAuthData(),
-            RequestOptions::FORM_PARAMS     => $formData,
-            RequestOptions::HEADERS         => [
+            RequestOptions::COOKIES => $session->getCookieJar(),
+            RequestOptions::AUTH => $session->getAuthData(),
+            RequestOptions::FORM_PARAMS => $formData,
+            RequestOptions::HEADERS => [
                 'referer' => $form->getUri(),
             ],
             RequestOptions::ALLOW_REDIRECTS => false,
@@ -226,9 +230,9 @@ class Client
      * @param string  $slug
      * @param Session $session
      *
-     * @return Promise Resolves to null.
+     * @return Promise
      *
-     * @throws RequestException
+     * @rejects RequestException
      */
     public function disableModuleAsync(Form $form, $package, $slug, Session $session)
     {
@@ -242,10 +246,10 @@ class Client
         unset($formData['modules'][$package][$slug]['enable']);
 
         return $this->client->requestAsync($form->getMethod(), $form->getUri(), [
-            RequestOptions::COOKIES         => $session->getCookieJar(),
-            RequestOptions::AUTH            => $session->getAuthData(),
-            RequestOptions::FORM_PARAMS     => $formData,
-            RequestOptions::HEADERS         => [
+            RequestOptions::COOKIES => $session->getCookieJar(),
+            RequestOptions::AUTH => $session->getAuthData(),
+            RequestOptions::FORM_PARAMS => $formData,
+            RequestOptions::HEADERS => [
                 'referer' => $form->getUri(),
             ],
             RequestOptions::ALLOW_REDIRECTS => false,
@@ -273,17 +277,17 @@ class Client
      * @param string       $extensionUrl
      * @param Session      $session
      *
-     * @return Promise Resolves to null.
+     * @return Promise
      *
-     * @throws RequestException
-     * @throws FtpCredentialsRequiredException
-     * @throws FtpCredentialsErrorException
+     * @rejects RequestException
+     * @rejects FtpCredentialsRequiredException
+     * @rejects FtpCredentialsErrorException
      */
     public function installExtensionFromUrlAsync(UriInterface $url, $extensionUrl, Session $session)
     {
         return $this->client->getAsync($url->withQuery(\GuzzleHttp\Psr7\build_query(['q' => 'admin/modules/install'])), [
             RequestOptions::COOKIES => $session->getCookieJar(),
-            RequestOptions::AUTH    => $session->getAuthData(),
+            RequestOptions::AUTH => $session->getAuthData(),
         ])->then(function (ResponseInterface $response) use ($url, $extensionUrl, $session) {
             $crawler = new Crawler((string)$response->getBody(), (string)$url);
             try {
@@ -295,12 +299,12 @@ class Client
             }
 
             return $this->client->requestAsync($form->getMethod(), $form->getUri(), [
-                RequestOptions::COOKIES        => $session->getCookieJar(),
-                RequestOptions::AUTH           => $session->getAuthData(),
-                RequestOptions::HEADERS        => [
+                RequestOptions::COOKIES => $session->getCookieJar(),
+                RequestOptions::AUTH => $session->getAuthData(),
+                RequestOptions::HEADERS => [
                     'referer' => $form->getUri(),
                 ],
-                RequestOptions::FORM_PARAMS    => $form->getPhpValues(),
+                RequestOptions::FORM_PARAMS => $form->getPhpValues(),
                 ClientOptions::FTP_CREDENTIALS => $session->getFtpCredentials(),
             ]);
         })->then(function (ResponseInterface $response) use ($session) {
@@ -314,9 +318,9 @@ class Client
 
                 return $this->client->getAsync(html_entity_decode($matches[2]), [
                     RequestOptions::COOKIES => $session->getCookieJar(),
-                    RequestOptions::AUTH    => $session->getAuthData(),
+                    RequestOptions::AUTH => $session->getAuthData(),
                     // Most of the time (always?), delay will be 0, but respect it either way.
-                    RequestOptions::DELAY   => (int)$matches[1] * 1000,
+                    RequestOptions::DELAY => (int)$matches[1] * 1000,
                 ]);
             };
             // Dynamic iterator that allows us to push requests as responses are received.
@@ -349,25 +353,27 @@ class Client
      * @param UriInterface $url
      * @param Session      $session
      *
-     * @return Promise Resolves to boolean.
+     * @return Promise
      *
-     * @throws RequestException
-     * @throws OxygenPageNotFoundException
+     * @resolves bool True if the module was just disconnected, false if it was already disconnected.
+     *
+     * @rejects  RequestException
+     * @rejects  OxygenPageNotFoundException
      */
     public function disconnectOxygenAsync(UriInterface $url, Session $session)
     {
         return $this->client->getAsync($url->withQuery(\GuzzleHttp\Psr7\build_query(['q' => 'admin/config/oxygen/disconnect'])), [
             RequestOptions::COOKIES => $session->getCookieJar(),
-            RequestOptions::AUTH    => $session->getAuthData(),
+            RequestOptions::AUTH => $session->getAuthData(),
         ])->then(function (ResponseInterface $response) use ($url, $session) {
             $crawler = new Crawler((string)$response->getBody(), (string)$url);
             try {
                 $form = $crawler->filter('form#oxygen-admin-disconnect')->form();
                 if ($form->get('oxygen_connected')->getValue() === 'yes') {
                     return $this->client->requestAsync($form->getMethod(), $form->getUri(), [
-                        RequestOptions::COOKIES     => $session->getCookieJar(),
-                        RequestOptions::AUTH        => $session->getAuthData(),
-                        RequestOptions::HEADERS     => [
+                        RequestOptions::COOKIES => $session->getCookieJar(),
+                        RequestOptions::AUTH => $session->getAuthData(),
+                        RequestOptions::HEADERS => [
                             'referer' => $form->getUri(),
                         ],
                         RequestOptions::FORM_PARAMS => $form->getPhpValues(),

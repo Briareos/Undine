@@ -20,7 +20,7 @@ class SiteConnectProgress extends AbstractProgress
     /**
      * {@inheritdoc}
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return [
             'message' => $this->message,

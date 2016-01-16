@@ -18,7 +18,7 @@ class LoopHandle
 
     public function __construct($handle, array $options)
     {
-        $this->handle  = $handle;
+        $this->handle = $handle;
         $this->options = $options;
     }
 }

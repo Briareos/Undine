@@ -51,7 +51,7 @@ class ExtensionController extends AppController
             throw $this->createNotFoundException('The extension could not be found.');
         }
         $extension = $command->getExtension();
-        $url       = $updates[$command->getExtension()]->getRecommendedDownloadLink();
+        $url = $updates[$command->getExtension()]->getRecommendedDownloadLink();
 
         $reaction = $this->oxygenClient
             ->sendAsync($site, new ExtensionDownloadUpdateFromUrlAction($extension, $url))

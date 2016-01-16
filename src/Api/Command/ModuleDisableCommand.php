@@ -20,7 +20,7 @@ class ModuleDisableCommand
      */
     public function __construct($module, $disableDependents)
     {
-        $this->module            = $module;
+        $this->module = $module;
         $this->disableDependents = $disableDependents;
     }
 

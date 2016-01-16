@@ -4,5 +4,4 @@ namespace Undine\Thumbnail;
 
 class FormatConfiguration
 {
-
 }

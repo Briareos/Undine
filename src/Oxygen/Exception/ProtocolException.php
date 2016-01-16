@@ -2,20 +2,16 @@
 
 namespace Undine\Oxygen\Exception;
 
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Undine\Oxygen\Exception\Data\TransferInfo;
-
 abstract class ProtocolException extends \Exception
 {
-    const LEVEL_NETWORK = 'network';
+    const LEVEL_NETWORK = 'NETWORK';
 
-    const LEVEL_RESPONSE = 'response';
+    const LEVEL_RESPONSE = 'RESPONSE';
 
-    const LEVEL_OXYGEN = 'oxygen';
+    const LEVEL_OXYGEN = 'OXYGEN';
 
     /**
-     * @return string One of the LEVEL_* constants above.
+     * @return string One of the LEVEL_* constants of this class.
      */
     abstract public function getLevel();
 
@@ -23,4 +19,16 @@ abstract class ProtocolException extends \Exception
      * @return string Error code transformed into a simple string (constant).
      */
     abstract public function getType();
+
+    /**
+     * Convenience method to check for all exception cases.
+     *
+     * @param int $code
+     *
+     * @return bool
+     */
+    public function is($code)
+    {
+        return $this->code === $code;
+    }
 }

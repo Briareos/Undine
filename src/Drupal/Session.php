@@ -6,7 +6,6 @@ use GuzzleHttp\Cookie\CookieJarInterface;
 use Undine\Model\Site\FtpCredentials;
 use Undine\Model\Site\HttpCredentials;
 
-
 /**
  * This class complies with RequestOptions, hence the inconsistent return values (sometimes null, other times false).
  * Just making the life easier, I hope.
@@ -37,9 +36,9 @@ class Session
      */
     public function __construct(CookieJarInterface $cookieJar = null, HttpCredentials $httpCredentials = null, FtpCredentials $ftpCredentials = null)
     {
-        $this->cookieJar       = $cookieJar;
+        $this->cookieJar = $cookieJar;
         $this->httpCredentials = $httpCredentials;
-        $this->ftpCredentials  = $ftpCredentials;
+        $this->ftpCredentials = $ftpCredentials;
     }
 
     /**

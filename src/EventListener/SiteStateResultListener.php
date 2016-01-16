@@ -26,7 +26,7 @@ class SiteStateResultListener
 
     public function onSiteStateResult(SiteStateResultEvent $event)
     {
-        $state  = $event->getSite()->getSiteState();
+        $state = $event->getSite()->getSiteState();
         $result = $event->getSiteStateResult();
 
         $state->setSiteKey($result->siteKey)
@@ -57,7 +57,7 @@ class SiteStateResultListener
         $stateExtensions = $deletedExtensions = [];
         if (!$result->extensionsCacheHit) {
             // Extensions are indexed by their slug, which is part of their primary key (second part is site's ID).
-            $stateExtensions    = $this->getExtensions($state, $result);
+            $stateExtensions = $this->getExtensions($state, $result);
             $deletedExtensions = array_diff_key($state->getSiteExtensions(), $stateExtensions);
             $state->setSiteExtensions($stateExtensions);
 
@@ -65,10 +65,9 @@ class SiteStateResultListener
         }
 
         // @todo: Check for some kind of update cache hit?
-        $siteUpdates    = $this->getUpdates($state, $result);
+        $siteUpdates = $this->getUpdates($state, $result);
         $deletedUpdates = array_diff_key($state->getSiteUpdates(), $siteUpdates);
         $state->setSiteUpdates($siteUpdates);
-
 
         if ($this->em->getUnitOfWork()->isInIdentityMap($state) && !$this->em->getUnitOfWork()->isScheduledForInsert($state)) {
             array_walk($stateExtensions, [$this->em, 'persist']);
@@ -93,7 +92,7 @@ class SiteStateResultListener
         }
 
         $existingExtensions = $state->getSiteExtensions();
-        $extensions         = [];
+        $extensions = [];
         foreach ($result->extensions as $slug => $extensionData) {
             if (isset($existingExtensions[$slug])) {
                 $extension = $existingExtensions[$slug];
@@ -119,7 +118,7 @@ class SiteStateResultListener
     }
 
     /**
-     * @param SiteState            $state
+     * @param SiteState       $state
      * @param SiteStateResult $result
      *
      * @return SiteUpdate[]
@@ -131,7 +130,7 @@ class SiteStateResultListener
         }
 
         $existingUpdates = $state->getSiteUpdates();
-        $updates         = [];
+        $updates = [];
         foreach ($result->updates as $slug => $updateData) {
             if (isset($existingUpdates[$slug])) {
                 $update = $existingUpdates[$slug];

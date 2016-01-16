@@ -9,7 +9,7 @@ class NotFound extends AbstractError
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public static function getName()
     {
         return 'site.not_found';
     }

@@ -47,8 +47,8 @@ class AsyncHttpKernel implements HttpKernelInterface, TerminableInterface
      */
     public function __construct(EventDispatcherInterface $dispatcher, ControllerResolverInterface $resolver, RequestStack $requestStack = null)
     {
-        $this->dispatcher   = $dispatcher;
-        $this->resolver     = $resolver;
+        $this->dispatcher = $dispatcher;
+        $this->resolver = $resolver;
         $this->requestStack = $requestStack ?: new RequestStack();
     }
 

@@ -22,30 +22,29 @@ class DrupalCronDaemonCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $loop        = $this->getContainer()->get('event_loop');
-        $conn        = $this->getContainer()->get('doctrine.dbal.default_connection');
+        $loop = $this->getContainer()->get('event_loop');
+        $conn = $this->getContainer()->get('doctrine.dbal.default_connection');
 
         $selectQuery = $conn->prepare('SELECT s.url, s.state_cronKey AS cronKey FROM Site s WHERE s.status = :status AND s.state_cronLastRunAt >= :cronTime');
 
-        $generator = function () use($selectQuery) {
+        $generator = function () use ($selectQuery) {
             $selectQuery->execute([
-                'status'   => Site::STATUS_CONNECTED,
+                'status' => Site::STATUS_CONNECTED,
                 'cronTime' => time() - 3600 * 3,
             ]);
 
-            while($row = $selectQuery->fetch(\PDO::FETCH_OBJ)) {
+            while ($row = $selectQuery->fetch(\PDO::FETCH_OBJ)) {
                 yield $row;
             }
         };
 
-        $callback = function(){
+        $callback = function () {
 
         };
 
-        /** @noinspection PhpParamsInspection */
+        /* @noinspection PhpParamsInspection */
         $loop->addPeriodicTimer(60, $callback);
 
         $loop->run();
     }
-
 }

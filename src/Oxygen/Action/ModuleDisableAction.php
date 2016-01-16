@@ -20,7 +20,7 @@ class ModuleDisableAction extends AbstractAction
      */
     public function __construct(array $modules, $disableDependents = false)
     {
-        $this->modules           = $modules;
+        $this->modules = $modules;
         $this->disableDependents = $disableDependents;
     }
 
@@ -38,7 +38,7 @@ class ModuleDisableAction extends AbstractAction
     public function getParameters()
     {
         return [
-            'modules'           => $this->modules,
+            'modules' => $this->modules,
             'disableDependents' => $this->disableDependents,
         ];
     }

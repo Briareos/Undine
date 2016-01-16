@@ -7,9 +7,12 @@
     <services>
 
         <service id="undine.command.capture_site_thumbnail_daemon" class="Undine\AppBundle\Command\CaptureSiteThumbnailDaemonCommand">
-            <argument>%kernel.root_dir%/../bin</argument>
-            <argument type="service" id="event_loop"/>
-            <argument type="service" id="doctrine.dbal.default_connection"/>
+            <argument>%kernel.root_dir%/../bin/phantomjs-capture.js</argument>
+            <argument type="service" id="undine.loop_handler"/>
+            <argument type="service" id="doctrine.repository.site"/>
+            <argument>%kernel.root_dir%/../web/site-thumbnail</argument>
+            <argument type="service" id="logger"/>
+            <tag name="monolog.logger" channel="daemon"/>
             <tag name="console.command"/>
         </service>
 

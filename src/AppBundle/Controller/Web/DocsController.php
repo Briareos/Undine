@@ -26,30 +26,30 @@ class DocsController extends AppController
         }
 
         $tokenManager = $this->get('undine.security.api_token_manager');
-        $formAction   = $this->generateUrl('web-docs_api');
+        $formAction = $this->generateUrl('web-docs_api');
 
         if ($user->hasApiToken()) {
             $regenerateForm = $this->createNamedForm('regenerateToken', FormType::class, null, ['method' => 'POST', 'action' => $formAction]);
-            $deleteForm     = $this->createNamedForm('deleteToken', FormType::class, null, ['method' => 'POST', 'action' => $formAction]);
+            $deleteForm = $this->createNamedForm('deleteToken', FormType::class, null, ['method' => 'POST', 'action' => $formAction]);
             $regenerateForm->handleRequest($request);
             $deleteForm->handleRequest($request);
 
             if ($regenerateForm->isValid()) {
                 $tokenManager->issueToken($user);
-                $this->addFlash('success', "Token regenerated.");
+                $this->addFlash('success', 'Token regenerated.');
 
                 return $this->redirectToRoute('web-docs_api');
             } elseif ($deleteForm->isValid()) {
                 $tokenManager->deleteToken($user);
-                $this->addFlash('success', "Token deleted.");
+                $this->addFlash('success', 'Token deleted.');
 
                 return $this->redirectToRoute('web-docs_api');
             }
 
             return [
-                'token'          => $tokenManager->getToken($user),
+                'token' => $tokenManager->getToken($user),
                 'regenerateForm' => $regenerateForm->createView(),
-                'deleteForm'     => $deleteForm->createView(),
+                'deleteForm' => $deleteForm->createView(),
             ];
         } else {
             $createForm = $this->createNamedForm('createToken', FormType::class, null, ['method' => 'POST', 'action' => $formAction]);
@@ -57,7 +57,7 @@ class DocsController extends AppController
 
             if ($createForm->isValid()) {
                 $tokenManager->issueToken($user);
-                $this->addFlash('success', "Token created.");
+                $this->addFlash('success', 'Token created.');
 
                 return $this->redirectToRoute('web-docs_api');
             }

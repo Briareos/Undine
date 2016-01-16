@@ -7,7 +7,7 @@
             <index columns="email"/>
         </indexes>
 
-        <id name="id" type="uuid1_binary_optimized"/>
+        <id name="id" type="uuid_binary"/>
 
         <field name="name" type="string" length="255"/>
         <field name="email" type="string" length="255"/>

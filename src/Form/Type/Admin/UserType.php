@@ -25,7 +25,6 @@ class UserType extends AbstractType
 
     public function __construct(UserPasswordEncoderInterface $passwordEncoder)
     {
-
         $this->passwordEncoder = $passwordEncoder;
     }
 
@@ -49,7 +48,7 @@ class UserType extends AbstractType
                     'max' => 72,
                 ]),
             ],
-            'required'    => false,
+            'required' => false,
         ]);
 
         $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {

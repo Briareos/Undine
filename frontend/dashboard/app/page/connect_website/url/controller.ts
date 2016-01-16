@@ -2,7 +2,7 @@ import {Component} from 'angular2/core';
 import {ControlGroup, FormBuilder, CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angular2/common';
 import {Router} from 'angular2/router';
 
-import * as Constraint from '../../../api/constraint';
+import * as ApiError from '../../../api/errors';
 import * as Result from '../../../api/result';
 import {Api} from '../../../service/Api';
 import {ConnectWebsiteSession} from '../../../service/ConnectWebsiteSession';
@@ -47,12 +47,12 @@ import {ConnectWebsiteSession} from '../../../service/ConnectWebsiteSession';
         `
 })
 export class ConnectWebsiteUrlController {
-    private form:ControlGroup;
-    private errors:Errors;
-    private loading:boolean = false;
-    private httpAuthenticationRequired:boolean = false;
+    private form: ControlGroup;
+    private errors: Errors;
+    private loading: boolean = false;
+    private httpAuthenticationRequired: boolean = false;
 
-    constructor(private api:Api, private session:ConnectWebsiteSession, private router:Router, fb:FormBuilder) {
+    constructor(private api: Api, private session: ConnectWebsiteSession, private router: Router, fb: FormBuilder) {
         this.form = fb.group({
             url: [''],
             httpUsername: [''],
@@ -61,7 +61,7 @@ export class ConnectWebsiteUrlController {
         this.errors = new Errors();
     }
 
-    public submit(formData:IFormData):boolean {
+    public submit(formData: IFormData): boolean {
         if (!this.form.valid) {
             return;
         }
@@ -69,27 +69,27 @@ export class ConnectWebsiteUrlController {
         this.session.httpPassword = formData.httpPassword;
         this.errors.reset();
 
-        let siteUrl:string = formData.url;
+        let siteUrl: string = formData.url;
         if (!siteUrl.match(/^https?:\/\//)) {
             // Make sure the URL starts with a scheme.
             siteUrl = 'http://' + siteUrl.replace(/^:?\/+/, '');
         }
         this.loading = true;
-        let _finally = ():void => {
+        let _finally = (): void => {
             this.loading = false;
         };
         let response = this.api.siteConnect(siteUrl, true, formData.httpUsername, formData.httpPassword);
-        response.progress.subscribe((progress:Object):void => {
+        response.progress.subscribe((progress: Object): void => {
         });
         response.result.subscribe(
-            (result:Result.ISiteConnect):void => {
+            (result: Result.ISiteConnect): void => {
                 _finally();
                 this.session.clearAll();
                 this.router.navigate(['/SiteDashboard', {id: result.site.id}]);
             },
-            (constraint:Constraint.IConstraint):void => {
+            (constraint: ApiError.IError): void => {
                 _finally();
-                if (constraint instanceof Constraint.ResponseUnauthorized) {
+                if (constraint instanceof ApiError.ResponseUnauthorized) {
                     if (constraint.hasCredentials) {
                         this.session.clearHttp();
                         this.errors.httpAuthenticationFailed = true;
@@ -97,24 +97,24 @@ export class ConnectWebsiteUrlController {
                         this.httpAuthenticationRequired = true;
                     }
                     return;
-                } else if (constraint instanceof Constraint.SiteUrlInvalid) {
+                } else if (constraint instanceof ApiError.SiteUrlInvalid) {
                     this.errors.invalidUrl = true;
                     return;
-                } else if (constraint instanceof Constraint.SiteConnectAlreadyConnected) {
+                } else if (constraint instanceof ApiError.SiteConnectAlreadyConnected) {
                     this.router.navigate(['../ConnectSiteReconnect', {
                         url: encodeURIComponent(siteUrl),
                         lookedForLoginForm: constraint.lookedForLoginForm ? 'yes' : 'no',
                         loginFormFound: constraint.loginFormFound ? 'yes' : 'no'
                     }]);
                     return;
-                } else if (constraint instanceof Constraint.SiteConnectOxygenNotFound) {
+                } else if (constraint instanceof ApiError.SiteConnectOxygenNotFound) {
                     this.router.navigate(['../ConnectSiteNew', {
                         url: encodeURIComponent(siteUrl),
                         lookedForLoginForm: constraint.lookedForLoginForm ? 'yes' : 'no',
                         loginFormFound: constraint.loginFormFound ? 'yes' : 'no'
                     }]);
                     return;
-                } else if (constraint instanceof Constraint.NetworkCanNotResolveHost) {
+                } else if (constraint instanceof ApiError.NetworkCanNotResolveHost) {
                     this.errors.canNotResolveHost = true;
                     return;
                 }
@@ -129,11 +129,11 @@ interface IFormData {
 }
 
 class Errors {
-    public httpAuthenticationFailed:boolean = false;
-    public canNotResolveHost:boolean = false;
-    public invalidUrl:boolean = false;
+    public httpAuthenticationFailed: boolean = false;
+    public canNotResolveHost: boolean = false;
+    public invalidUrl: boolean = false;
 
-    public reset():void {
+    public reset(): void {
         this.httpAuthenticationFailed = false;
         this.canNotResolveHost = false;
         this.invalidUrl = false;

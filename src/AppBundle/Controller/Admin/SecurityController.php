@@ -33,12 +33,12 @@ class SecurityController extends AppController
 
         // last username entered by the user
         $lastUsername = (null === $session) ? '' : $session->get(Security::LAST_USERNAME);
-        $csrfToken    = $this->get('security.csrf.token_manager')->getToken('authenticate')->getValue();
+        $csrfToken = $this->get('security.csrf.token_manager')->getToken('authenticate')->getValue();
 
         return [
             'lastUsername' => $lastUsername,
-            'error'        => $error,
-            'csrfToken'    => $csrfToken,
+            'error' => $error,
+            'csrfToken' => $csrfToken,
         ];
     }
 

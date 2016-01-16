@@ -47,7 +47,7 @@ class RegistrationType extends AbstractType
             ],
         ]);
         $builder->add('plainPassword', PasswordType::class, [
-            'label'       => 'Password',
+            'label' => 'Password',
             'constraints' => [
                 new Type(['type' => 'string']),
                 new NotBlank(),
@@ -63,7 +63,7 @@ class RegistrationType extends AbstractType
 
             /** @var RegistrationCommand $command */
             $command = $event->getData();
-            $email   = $command->getEmail();
+            $email = $command->getEmail();
 
             $users = $this->userRepository->findOneByEmail($email);
             if (!$users) {

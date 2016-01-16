@@ -24,7 +24,7 @@ class SiteStateResultEvent extends Event
      */
     public function __construct(Site $site, SiteStateResult $stateResult)
     {
-        $this->site        = $site;
+        $this->site = $site;
         $this->stateResult = $stateResult;
     }
 

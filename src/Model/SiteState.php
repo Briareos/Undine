@@ -3,7 +3,6 @@
 namespace Undine\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Ramsey\Uuid\Uuid;
 
 class SiteState
 {
@@ -29,11 +28,6 @@ class SiteState
      * @var string
      */
     private $id;
-
-    /**
-     * @var Site
-     */
-    private $site;
 
     /**
      * @see PHP_VERSION
@@ -227,12 +221,11 @@ class SiteState
      */
     private $siteUpdates;
 
-    public function __construct(Site $site)
+    public function __construct()
     {
-        $this->id             = \Undine\Functions\generate_uuid1();
-        $this->site           = $site;
+        $this->id = \Undine\Functions\generate_uuid();
         $this->siteExtensions = new ArrayCollection();
-        $this->siteUpdates    = new ArrayCollection();
+        $this->siteUpdates = new ArrayCollection();
     }
 
     /**
@@ -755,13 +748,13 @@ class SiteState
     public function markSuccessfulContactAt(\DateTime $lastSuccessfulContactAt)
     {
         if ($this->status !== self::STATUS_CONNECTED) {
-            $this->status           = self::STATUS_CONNECTED;
-            $this->statusChangedAt  = $lastSuccessfulContactAt;
-            $this->lastErrorType    = null;
-            $this->lastErrorCode    = null;
+            $this->status = self::STATUS_CONNECTED;
+            $this->statusChangedAt = $lastSuccessfulContactAt;
+            $this->lastErrorType = null;
+            $this->lastErrorCode = null;
             $this->lastErrorContext = null;
         }
-        $this->lastContactedAt         = $lastSuccessfulContactAt;
+        $this->lastContactedAt = $lastSuccessfulContactAt;
         $this->lastSuccessfulContactAt = $lastSuccessfulContactAt;
 
         return $this;
@@ -785,7 +778,6 @@ class SiteState
 
     /**
      * @param \DateTime  $lastFailedContactAt
-     *
      * @param string     $errorType
      * @param int        $errorCode
      * @param array|null $errorContext
@@ -795,7 +787,7 @@ class SiteState
     public function markLastFailedContactAt(\DateTime $lastFailedContactAt, $errorType, $errorCode, array $errorContext = null)
     {
         if ($this->status !== self::STATUS_DISCONNECTED) {
-            $this->status          = self::STATUS_DISCONNECTED;
+            $this->status = self::STATUS_DISCONNECTED;
             $this->statusChangedAt = $lastFailedContactAt;
 
             $this->lastErrorType = $errorType;
@@ -805,7 +797,7 @@ class SiteState
             }
             $this->lastErrorContext = $errorContext;
         }
-        $this->lastContactedAt     = $lastFailedContactAt;
+        $this->lastContactedAt = $lastFailedContactAt;
         $this->lastFailedContactAt = $lastFailedContactAt;
 
         return $this;
@@ -874,6 +866,4 @@ class SiteState
 
         return $this;
     }
-
-
 }

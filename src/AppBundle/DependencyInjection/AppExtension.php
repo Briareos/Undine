@@ -11,7 +11,8 @@ class AppExtension extends Extension
 {
     public function load(array $config, ContainerBuilder $container)
     {
-        $loader = new XmlFileLoader($container, new FileLocator($container->getParameter('kernel.root_dir') . '/Resources/config/services'));
+        $loader = new XmlFileLoader($container, new FileLocator($container->getParameter('kernel.root_dir').'/Resources/config/services'));
+        $loader->load('api.xml');
         $loader->load('services.xml');
         $loader->load('listeners.xml');
         $loader->load('api_types.xml');
@@ -27,5 +28,7 @@ class AppExtension extends Extension
         $loader->load('menu.xml');
         $loader->load('oxygen.xml');
         $loader->load('framework.xml');
+        $loader->load('commands.xml');
+        $loader->load('types.xml');
     }
 }

@@ -26,8 +26,8 @@ class DatabaseRunMigrationAction extends AbstractAction
      */
     public function __construct($module, $number, array $dependencyMap)
     {
-        $this->module        = $module;
-        $this->number        = $number;
+        $this->module = $module;
+        $this->number = $number;
         $this->dependencyMap = $dependencyMap;
     }
 
@@ -45,8 +45,8 @@ class DatabaseRunMigrationAction extends AbstractAction
     public function getParameters()
     {
         return [
-            'module'        => $this->module,
-            'number'        => $this->number,
+            'module' => $this->module,
+            'number' => $this->number,
             'dependencyMap' => $this->dependencyMap,
         ];
     }

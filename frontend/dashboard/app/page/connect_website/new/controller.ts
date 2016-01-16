@@ -2,7 +2,7 @@ import {Component, Inject} from 'angular2/core';
 import {CORE_DIRECTIVES, FORM_DIRECTIVES, FormBuilder, ControlGroup} from 'angular2/common';
 import {Router, RouteParams} from 'angular2/router'
 
-import * as Constraint from "../../../api/constraint";
+import * as ApiError from "../../../api/errors";
 import * as Result from "../../../api/result";
 import {ConnectWebsiteSession} from "../../../service/ConnectWebsiteSession";
 import {Api} from "../../../service/Api";
@@ -179,17 +179,17 @@ export class ConnectWebsiteNewController {
                 this.session.clearAll();
                 this.router.navigate(['/SiteDashboard', {id: result.site.id}]);
             },
-            (constraint): void => {
+            (error): void => {
                 _finally();
-                if (constraint instanceof Constraint.SiteInvalidCredentials) {
+                if (error instanceof ApiError.DrupalClientInvalidCredentials) {
                     this.errors.invalidCredentials = true;
                     return;
-                } else if (constraint instanceof Constraint.FtpCredentialsRequired) {
+                } else if (error instanceof ApiError.FtpCredentialsRequired) {
                     this.ftpFormFound = true;
                     return;
-                } else if (constraint instanceof Constraint.FtpCredentialsError) {
+                } else if (error instanceof ApiError.FtpCredentialsError) {
                     this.errors.ftpError = true;
-                    this.errors.ftpErrorMessage = constraint.ftpError;
+                    this.errors.ftpErrorMessage = error.ftpError;
                     return;
                 }
             }
@@ -213,10 +213,10 @@ export class ConnectWebsiteNewController {
             },
             (constraint): void => {
                 _finally();
-                if (constraint instanceof Constraint.SiteConnectOxygenNotFound) {
+                if (constraint instanceof ApiError.SiteConnectOxygenNotFound) {
                     this.errors.stillDisabled = true;
                     return;
-                } else if (constraint instanceof Constraint.SiteConnectAlreadyConnected) {
+                } else if (constraint instanceof ApiError.SiteConnectAlreadyConnected) {
                     // ISite got connected to another account in the meantime? It's possible...
                     this.router.navigate(['../ConnectSiteReconnect', {
                         url: encodeURIComponent(this.url),

@@ -9,7 +9,7 @@ class ReceiveError extends AbstractError
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public static function getName()
     {
         return 'network.receive_error';
     }

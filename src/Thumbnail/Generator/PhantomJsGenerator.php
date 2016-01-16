@@ -3,7 +3,6 @@
 namespace Undine\Thumbnail\Generator;
 
 use Undine\Thumbnail\CaptureConfiguration;
-use Undine\Thumbnail\ThumbnailConfiguration;
 
 class PhantomJsGenerator implements GeneratorInterface
 {
@@ -14,7 +13,7 @@ class PhantomJsGenerator implements GeneratorInterface
     {
         $options = [
             'height' => $configuration->getCaptureHeight(),
-            'width'  => $configuration->getCaptureWidth(),
+            'width' => $configuration->getCaptureWidth(),
         ];
 
         $js = <<<JS
@@ -94,6 +93,5 @@ if (system.args.length < 3 || system.args.length > 6) {
     });
 }
 JS;
-
     }
 }

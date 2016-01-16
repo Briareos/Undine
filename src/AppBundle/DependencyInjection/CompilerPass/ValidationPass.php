@@ -42,7 +42,7 @@ class ValidationPass implements CompilerPassInterface
     private function getValidatorMappingFiles(ContainerBuilder $container)
     {
         $files = [[], []];
-        if (is_dir($dir = $container->getParameter('kernel.root_dir') . '/Resources/config/validation')) {
+        if (is_dir($dir = $container->getParameter('kernel.root_dir').'/Resources/config/validation')) {
             /** @var SplFileInfo $file */
             foreach (Finder::create()->files()->in($dir)->name('*.xml') as $file) {
                 $files[0][] = $file->getRealpath();

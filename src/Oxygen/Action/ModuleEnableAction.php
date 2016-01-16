@@ -20,7 +20,7 @@ class ModuleEnableAction extends AbstractAction
      */
     public function __construct(array $modules, $enableDependencies = false)
     {
-        $this->modules            = $modules;
+        $this->modules = $modules;
         $this->enableDependencies = $enableDependencies;
     }
 
@@ -38,7 +38,7 @@ class ModuleEnableAction extends AbstractAction
     public function getParameters()
     {
         return [
-            'modules'            => $this->modules,
+            'modules' => $this->modules,
             'enableDependencies' => $this->enableDependencies,
         ];
     }

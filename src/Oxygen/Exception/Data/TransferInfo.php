@@ -35,37 +35,37 @@ namespace Undine\Oxygen\Exception\Data;
 class TransferInfo
 {
     private static $defaultTransferInfo = [
-        'url'                     => null,
-        'content_type'            => null,
-        'http_code'               => null,
-        'header_size'             => null,
-        'request_size'            => null,
-        'filetime'                => null,
-        'ssl_verify_result'       => null,
-        'redirect_count'          => null,
-        'total_time'              => null,
-        'namelookup_time'         => null,
-        'connect_time'            => null,
-        'pretransfer_time'        => null,
-        'size_upload'             => null,
-        'size_download'           => null,
-        'speed_download'          => null,
-        'speed_upload'            => null,
+        'url' => null,
+        'content_type' => null,
+        'http_code' => null,
+        'header_size' => null,
+        'request_size' => null,
+        'filetime' => null,
+        'ssl_verify_result' => null,
+        'redirect_count' => null,
+        'total_time' => null,
+        'namelookup_time' => null,
+        'connect_time' => null,
+        'pretransfer_time' => null,
+        'size_upload' => null,
+        'size_download' => null,
+        'speed_download' => null,
+        'speed_upload' => null,
         'download_content_length' => null,
-        'upload_content_length'   => null,
-        'starttransfer_time'      => null,
-        'redirect_time'           => null,
-        'redirect_url'            => null,
-        'primary_ip'              => null,
-        'certinfo'                => [],
-        'primary_port'            => null,
-        'local_ip'                => null,
-        'local_port'              => null,
+        'upload_content_length' => null,
+        'starttransfer_time' => null,
+        'redirect_time' => null,
+        'redirect_url' => null,
+        'primary_ip' => null,
+        'certinfo' => [],
+        'primary_port' => null,
+        'local_ip' => null,
+        'local_port' => null,
         // Error info.
         // Result of calling curl_errno() on the handle.
-        'errno'                   => null,
+        'errno' => null,
         // Result of calling curl_error() on the handle.
-        'error'                   => null,
+        'error' => null,
     ];
 
     /**
@@ -81,7 +81,7 @@ class TransferInfo
     /**
      * {@inheritdoc}
      */
-    function __get($name)
+    public function __get($name)
     {
         if (isset($this->transferInfo[$name])) {
             return $this->transferInfo[$name];

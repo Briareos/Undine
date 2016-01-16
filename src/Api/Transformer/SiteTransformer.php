@@ -16,7 +16,7 @@ class SiteTransformer extends AbstractTransformer
     public function transform(Site $site)
     {
         return [
-            'id'  => $site->getId(),
+            'id' => $site->getId(),
             'url' => (string)$site->getUrl(),
         ];
     }

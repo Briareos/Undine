@@ -3,24 +3,10 @@
 namespace Undine\Oxygen;
 
 use Psr\Http\Message\UriInterface;
-use Symfony\Component\Security\Core\Util\SecureRandomInterface;
 use Undine\Model\Site;
 
 class LoginUrlGenerator
 {
-    /**
-     * @var \DateTime
-     */
-    private $currentTime;
-
-    /**
-     * @param \DateTime $currentTime
-     */
-    public function __construct(\DateTime $currentTime)
-    {
-        $this->currentTime = $currentTime;
-    }
-
     /**
      * @param Site   $site
      * @param string $userId   ID of the user that initiates the session. It is used to track individual sessions so they can be destroyed
@@ -32,16 +18,16 @@ class LoginUrlGenerator
      */
     public function generateUrl(Site $site, $userId, $userName = null)
     {
-        $requestId        = bin2hex(random_bytes(16));
-        $requestExpiresAt = $this->currentTime->getTimestamp() + 86400;
+        $requestId = bin2hex(random_bytes(16));
+        $requestExpiresAt = time() + 86400;
 
         $query = [
-            'oxygenRequestId'  => $requestId,
+            'oxygenRequestId' => $requestId,
             'requestExpiresAt' => $requestExpiresAt,
-            'actionName'       => 'site.login',
-            'signature'        => \Undine\Functions\openssl_sign_data($site->getPrivateKey(), sprintf('%s|%d|%s|%s', $requestId, $requestExpiresAt, $userId, (string)$userName)),
-            'userName'         => $userName,
-            'userId'           => $userId,
+            'actionName' => 'site.login',
+            'signature' => \Undine\Functions\openssl_sign_data($site->getPrivateKey(), sprintf('%s|%d|%s|%s', $requestId, $requestExpiresAt, $userId, (string)$userName)),
+            'userName' => $userName,
+            'userId' => $userId,
         ];
 
         $url = $site->getUrl();

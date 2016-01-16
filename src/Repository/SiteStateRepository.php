@@ -21,7 +21,7 @@ class SiteStateRepository
 
     public function __construct(EntityManager $em, ClassMetadata $metadata)
     {
-        $this->em       = $em;
+        $this->em = $em;
         $this->metadata = $metadata;
     }
 
@@ -32,8 +32,8 @@ class SiteStateRepository
      */
     public function find($id)
     {
-        if (!\Undine\Functions\valid_uuid1($id)) {
-            return null;
+        if (!\Undine\Functions\valid_uuid($id)) {
+            return;
         }
 
         return $this->em->find(SiteState::class, (string)$id);

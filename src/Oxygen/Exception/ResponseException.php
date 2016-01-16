@@ -4,85 +4,137 @@ namespace Undine\Oxygen\Exception;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\OptionsResolver\Exception\ExceptionInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Undine\Oxygen\Exception\Data\ExceptionData;
 use Undine\Oxygen\Exception\Data\TransferInfo;
 
 class ResponseException extends ProtocolException
 {
+    const BODY_TOO_LARGE = 20001;
+    const RESPONSE_NOT_FOUND = 20002;
+    const RESPONSE_INVALID_JSON = 20003;
+    const RESPONSE_MALFORMED = 20004;
+    const RESPONSE_NOT_AN_ARRAY = 20005;
+    const ACTION_RESULT_NOT_ARRAY = 20006;
+    const STATE_NOT_ARRAY = 20007;
+    const EXCEPTION_NOT_ARRAY = 20008;
+    const RESULT_NOT_FOUND = 20009;
+    const MALFORMED_EXCEPTION = 20010;
+    const STATE_EMPTY = 20011;
+    const STATE_MALFORMED = 20012;
+    const ACTION_RESULT_MALFORMED = 20013;
+
     /**
-     * @var ExceptionData
+     * @var string
      */
-    private $exceptionData;
+    private $type;
+
+    /**
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
+     * @var array
+     */
+    private $requestOptions;
+
+    /**
+     * @var ResponseInterface
+     */
+    private $response;
+
+    /**
+     * @var TransferInfo
+     */
+    private $transferInfo;
+
+    private static $codes;
 
     /**
      * @param int               $code
-     * @param ExceptionData     $exceptionData
      * @param RequestInterface  $request
      * @param array             $requestOptions
      * @param ResponseInterface $response
      * @param TransferInfo      $transferInfo
-     */
-    public function __construct($code, ExceptionData $exceptionData, RequestInterface $request, array $requestOptions, ResponseInterface $response, TransferInfo $transferInfo)
-    {
-        $this->exceptionData = $exceptionData;
-        parent::__construct(sprintf('An error occurred in the Oxygen module: [%s] - %s'), $code);
-        parent::__construct($exceptionData->getCode(), $request, $response, $transferInfo);
-    }
-
-    /**
-     * @return ExceptionData
-     */
-    public function getExceptionData()
-    {
-        return $this->exceptionData;
-    }
-
-    /**
-     * @param array             $data
-     * @param RequestInterface  $request
-     * @param array             $requestOptions
-     * @param ResponseInterface $response
-     * @param array             $transferInfo
+     * @param \Exception|null   $previous
      *
-     * @return ResponseException
+     * @throws \OutOfRangeException If the code is not recognized.
      */
-    public static function createFromData(array $data, RequestInterface $request, array $requestOptions, ResponseInterface $response, array $transferInfo)
+    public function __construct($code, RequestInterface $request, array $requestOptions, ResponseInterface $response, TransferInfo $transferInfo, \Exception $previous = null)
     {
-        $cleanData = self::getResolver()->resolve($data);
-        $previous  = null;
-
-        if ($cleanData['previous']) {
-            $previous = self::getResolver()->resolve($data['previous']);
-        }
-
-        $exceptionData = new ExceptionData($data['class'], $data['message'], $data['code'], $data['type'], $data['file'], $data['line'], $data['traceString'], $data['context'], $previous);
-
-        return new self($exceptionData, $request, $response, $transferInfo);
+        $this->type = self::getTypeForCode($code);
+        $this->request = $request;
+        $this->requestOptions = $requestOptions;
+        $this->response = $response;
+        $this->transferInfo = $transferInfo;
+        parent::__construct(sprintf('An error occurred while parsing the response: %s', $this->type), $code, $previous);
     }
 
     /**
-     * @return OptionsResolver
+     * {@inheritdoc}
      */
-    private static function getResolver()
+    public function getLevel()
     {
-        static $resolver;
+        return self::LEVEL_RESPONSE;
+    }
 
-        if ($resolver === null) {
-            $resolver = (new OptionsResolver())
-                ->setRequired(['class', 'message', 'context', 'file', 'line', 'code', 'type', 'traceString', 'previous'])
-                ->setAllowedTypes('class', 'string')
-                ->setAllowedTypes('message', 'string')
-                ->setAllowedTypes('context', 'array')
-                ->setAllowedTypes('file', 'string')
-                ->setAllowedTypes('line', 'int')
-                ->setAllowedTypes('code', 'int')
-                ->setAllowedTypes('type', ['null', 'string'])
-                ->setAllowedTypes('traceString', 'string')
-                ->setAllowedTypes('previous', ['null', 'array']);
+    /**
+     * {@inheritdoc}
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @return RequestInterface
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRequestOptions()
+    {
+        return $this->requestOptions;
+    }
+
+    /**
+     * @return ResponseInterface
+     */
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
+    /**
+     * @return TransferInfo
+     */
+    public function getTransferInfo()
+    {
+        return $this->transferInfo;
+    }
+
+    /**
+     * @param int $code
+     *
+     * @return string
+     *
+     * @throws \OutOfRangeException If the code is not recognized.
+     */
+    private static function getTypeForCode($code)
+    {
+        if (!isset(self::$codes)) {
+            $reflectionClass = new \ReflectionClass(__CLASS__);
+            self::$codes = array_flip($reflectionClass->getConstants());
         }
 
-        return $resolver;
+        if (array_key_exists($code, self::$codes)) {
+            return self::$codes[$code];
+        }
+
+        throw new \OutOfRangeException(sprintf('The error code %d is not registered.', $code));
     }
 }

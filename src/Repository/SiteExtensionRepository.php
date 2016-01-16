@@ -19,7 +19,7 @@ class SiteExtensionRepository
 
     public function __construct(EntityManager $em, ClassMetadata $metadata)
     {
-        $this->em       = $em;
+        $this->em = $em;
         $this->metadata = $metadata;
     }
 }

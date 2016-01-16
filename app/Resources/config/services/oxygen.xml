@@ -50,15 +50,8 @@ rwIDAQAB
 
     <services>
 
-        <service id="undine.oxygen.http_handler" class="Undine\Loop\LoopHandler" public="false">
-        </service>
-
         <service id="undine.oxygen.handler_stack" class="GuzzleHttp\HandlerStack">
-            <argument type="service" id="undine.oxygen.http_handler"/>
-            <call method="push">
-                <argument type="service" id="undine.oxygen.client_constraint_middleware"/>
-                <argument>protocol</argument>
-            </call>
+            <argument type="service" id="undine.loop_handler"/>
             <call method="push">
                 <argument type="service" id="undine.oxygen.protocol_middleware"/>
                 <argument>protocol</argument>
@@ -88,18 +81,12 @@ rwIDAQAB
         <service id="undine.oxygen.protocol_middleware" class="Closure" public="false">
             <factory class="Undine\Oxygen\Middleware\OxygenProtocolMiddleware" method="create"/>
             <argument>%oxygen_module_version%</argument>
-            <argument type="service" id="current_time"/>
             <argument>%oxygen_private_key_name%</argument>
             <argument>%oxygen_private_key_value%</argument>
             <argument type="service" id="undine.oxygen.site_state_result_tracker"/>
         </service>
 
-        <service id="undine.oxygen.client_constraint_middleware" class="Closure" public="false">
-            <factory class="Undine\Oxygen\Middleware\ClientConstraintMiddleware" method="create"/>
-        </service>
-
         <service id="undine.oxygen.login_url_generator" class="Undine\Oxygen\LoginUrlGenerator">
-            <argument type="service" id="current_time"/>
         </service>
 
         <service id="undine.oxygen.site_state_result_tracker" class="Undine\Oxygen\State\SiteStateResultTracker">

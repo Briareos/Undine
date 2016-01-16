@@ -3,7 +3,6 @@
 namespace Undine\Twig\TokenParser;
 
 use Symfony\Component\Finder\Iterator\RecursiveDirectoryIterator;
-use Twig_Error_Syntax;
 use Twig_Token;
 use Undine\Twig\Node\GlobNode;
 
@@ -18,7 +17,6 @@ class Glob extends \Twig_TokenParser
     {
         $this->baseDir = $baseDir;
     }
-
 
     /**
      * {@inheritdoc}

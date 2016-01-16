@@ -11,11 +11,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\DomCrawler\Form;
 use Undine\Api\Command\SiteConnectCommand;
 use Undine\Api\Command\SitePingCommand;
-use Undine\Api\Error\DrupalClient;
-use Undine\Api\Error\Ftp;
-use Undine\Api\Error\Oxygen;
-use Undine\Api\Error\Response;
-use Undine\Api\Error\SiteConnect;
+use Undine\Api\Error as E;
 use Undine\Api\Exception\ConstraintViolationException;
 use Undine\Api\Result\SiteConnectResult;
 use Undine\Api\Result\SiteLoginResult;
@@ -29,10 +25,12 @@ use Undine\Event\Events;
 use Undine\Event\SiteConnectEvent;
 use Undine\Event\SiteDisconnectEvent;
 use Undine\Model\Site;
+use Undine\Model\SiteState;
 use Undine\Oxygen\Action\ModuleDisableAction;
 use Undine\Oxygen\Action\SiteLogoutAction;
 use Undine\Oxygen\Action\SitePingAction;
-use Undine\Oxygen\Exception\OxygenErrorCode;
+use Undine\Oxygen\Exception\OxygenException;
+use Undine\Oxygen\Exception\ProtocolException;
 use Undine\Oxygen\Exception\ResponseException;
 use Undine\Oxygen\Reaction\SiteLogoutReaction;
 use Undine\Oxygen\Reaction\SitePingReaction;
@@ -43,15 +41,22 @@ class SiteController extends AppController
      * @Method("GET|POST")
      * @Route("site.connect", name="api-site.connect")
      * @Api("Undine\Form\Type\Api\SiteConnectType", streamable=true)
+     *
+     * @param SiteConnectCommand $command
+     * @param callable           $stream
+     *
+     * @throws ConstraintViolationException
+     *
+     * @return SiteConnectResult
      */
     public function connectAction(SiteConnectCommand $command, callable $stream)
     {
         list($privateKey, $publicKey) = \Undine\Functions\openssl_generate_rsa_key_pair();
-        $site = (new Site($command->getUrl(), $this->getUser(), $privateKey, $publicKey))
+        $site = (new Site($command->getUrl(), new SiteState(), $this->getUser(), $privateKey, $publicKey))
             ->setHttpCredentials($command->getHttpCredentials())
             ->setFtpCredentials($command->getFtpCredentials());
 
-        $drupalClient  = $this->get('undine.drupal_client');
+        $drupalClient = $this->get('undine.drupal_client');
         $drupalSession = new Session(new CookieJar(), $command->getHttpCredentials(), $command->getFtpCredentials());
         // This promise can be present or not, we create a reference here so we can cancel it if it proves to be unnecessary (ie. we're already connected).
         $findLoginForm = null;
@@ -84,39 +89,33 @@ class SiteController extends AppController
             return new SiteConnectResult($site);
         }
 
-        // If we got here, we didn't get a successful handshake.
+        /** @var ProtocolException $exception */
+        $exception = $result[0]['reason'];
 
-        if ($result[0]['reason'] instanceof \Exception) {
-            throw $result[0]['reason'];
-        }
-
-        // Oxygen client always resolves
-        $constraint = $result[0]['reason'];
-
-        if ($constraint instanceof Response\OxygenNotFound && $findLoginForm) {
+        if ($findLoginForm && $exception->is(ResponseException::RESPONSE_NOT_FOUND)) {
             // The Oxygen module is not enabled and we did look for a login form.
             if ($result[1]['state'] === Promise::FULFILLED) {
                 // We got a login form!
                 /** @var Form $form */
                 $form = $result[1]['value'];
                 if (!$command->hasAdminCredentials()) {
-                    throw new ConstraintViolationException(new SiteConnect\OxygenNotFound(true, true));
+                    throw new ConstraintViolationException(new E\SiteConnect\OxygenNotFound(true, true));
                 }
                 // We got admin credentials provided; log in and install the Oxygen module.
                 try {
                     $drupalClient->login($form, $command->getAdminCredentials()->getUsername(), $command->getAdminCredentials()->getPassword(), $drupalSession);
                 } catch (DCE\InvalidCredentialsException $e) {
-                    throw new ConstraintViolationException(new DrupalClient\InvalidCredentials());
+                    throw new ConstraintViolationException(new E\DrupalClient\InvalidCredentials());
                 }
                 try {
                     $modulesForm = $drupalClient->getModulesForm($command->getUrl(), $drupalSession);
                 } catch (DCE\ModulesFormNotFoundException $e) {
-                    throw new ConstraintViolationException(new DrupalClient\CanNotInstallOxygen(DrupalClient\CanNotInstallOxygen::STEP_LIST_MODULES));
+                    throw new ConstraintViolationException(new E\DrupalClient\CanNotInstallOxygen(E\DrupalClient\CanNotInstallOxygen::STEP_LIST_MODULES));
                 }
-                $moduleList   = ModuleList::createFromForm($modulesForm);
+                $moduleList = ModuleList::createFromForm($modulesForm);
                 $updateModule = $moduleList->find('update', 'Core');
                 if ($updateModule === null) {
-                    throw new ConstraintViolationException(new DrupalClient\CanNotInstallOxygen(DrupalClient\CanNotInstallOxygen::STEP_SEARCH_UPDATE_MODULE));
+                    throw new ConstraintViolationException(new E\DrupalClient\CanNotInstallOxygen(E\DrupalClient\CanNotInstallOxygen::STEP_SEARCH_UPDATE_MODULE));
                 }
                 if (!$updateModule->isEnabled()) {
                     $drupalClient->enableModule($modulesForm, $updateModule->getPackage(), $updateModule->getSlug(), $drupalSession);
@@ -127,15 +126,15 @@ class SiteController extends AppController
                     try {
                         $drupalClient->installExtensionFromUrl($command->getUrl(), $this->getParameter('oxygen_zip_url'), $drupalSession);
                     } catch (DCE\FtpCredentialsRequiredException $e) {
-                        throw new ConstraintViolationException(new Ftp\CredentialsRequired());
+                        throw new ConstraintViolationException(new E\Ftp\CredentialsRequired());
                     } catch (DCE\FtpCredentialsErrorException $e) {
-                        throw new ConstraintViolationException(new Ftp\CredentialsError($e->getClientMessage()));
+                        throw new ConstraintViolationException(new E\Ftp\CredentialsError($e->getClientMessage()));
                     }
-                    $modulesForm   = $drupalClient->getModulesForm($command->getUrl(), $drupalSession);
+                    $modulesForm = $drupalClient->getModulesForm($command->getUrl(), $drupalSession);
                     $newModuleList = ModuleList::createFromForm($modulesForm);
-                    $oxygenModule  = $newModuleList->find('oxygen');
+                    $oxygenModule = $newModuleList->find('oxygen');
                     if ($oxygenModule === null) {
-                        throw new ConstraintViolationException(new DrupalClient\CanNotInstallOxygen(DrupalClient\CanNotInstallOxygen::STEP_SEARCH_OXYGEN_MODULE));
+                        throw new ConstraintViolationException(new E\DrupalClient\CanNotInstallOxygen(E\DrupalClient\CanNotInstallOxygen::STEP_SEARCH_OXYGEN_MODULE));
                     }
                 }
                 if (!$oxygenModule->isEnabled()) {
@@ -145,13 +144,13 @@ class SiteController extends AppController
                     // The module might have already been connected to an account - clear its key.
                     $drupalClient->disconnectOxygen($command->getUrl(), $drupalSession);
                 } catch (DCE\OxygenPageNotFoundException $e) {
-                    throw new ConstraintViolationException(new DrupalClient\OxygenPageNotFound());
+                    throw new ConstraintViolationException(new E\DrupalClient\OxygenPageNotFound());
                 }
                 // @todo: Make sure the module is at the latest version.
                 try {
-                $this->oxygenClient->send($site, new SitePingAction());
+                    $this->oxygenClient->send($site, new SitePingAction());
                 } catch (RejectionException $e) {
-//                    $e->get
+                    //                    $e->get
                 }
                 // Site connection was fully successful.
                 $this->persistSite($site);
@@ -159,32 +158,32 @@ class SiteController extends AppController
                 return new SiteConnectResult($site);
             } elseif ($result[1]['reason'] instanceof DCE\LoginFormNotFoundException) {
                 // No login form found, is this even a Drupal website?
-                throw new ConstraintViolationException(new SiteConnect\OxygenNotFound(true, false));
+                throw new ConstraintViolationException(new E\SiteConnect\OxygenNotFound(true, false));
             }
-        } elseif ($constraint instanceof Oxygen\ExceptionConstraint && $constraint->getCode() === OxygenErrorCode::HANDSHAKE_VERIFY_FAILED) {
+        } elseif ($exception->is(OxygenException::HANDSHAKE_VERIFY_FAILED)) {
             // The site is connected to another dashboard, but we can reclaim it here if the admin credentials are provided.
-            /** @var ResponseException $oxygenException */
+            /* @var ResponseException $oxygenException */
             if ($findLoginForm === null) {
                 // We did not look for a login form.
-                throw new ConstraintViolationException(new SiteConnect\OxygenAlreadyConnected(false, false));
+                throw new ConstraintViolationException(new E\SiteConnect\AlreadyConnected(false, false));
             }
             // We looked for the login form.
             if ($result[1]['state'] === Promise::FULFILLED) {
                 // We have a login form.
-                /** @var Form $form */
+                /* @var Form $form */
                 $loginForm = $result[1]['value'];
                 if (!$command->hasAdminCredentials()) {
-                    throw new ConstraintViolationException(new SiteConnect\OxygenAlreadyConnected(true, true));
+                    throw new ConstraintViolationException(new E\SiteConnect\AlreadyConnected(true, true));
                 }
                 try {
                     $drupalClient->login($loginForm, $command->getAdminCredentials()->getUsername(), $command->getAdminCredentials()->getPassword(), $drupalSession);
                 } catch (DCE\InvalidCredentialsException $e) {
-                    throw new ConstraintViolationException(new DrupalClient\InvalidCredentials());
+                    throw new ConstraintViolationException(new E\DrupalClient\InvalidCredentials());
                 }
                 try {
                     $drupalClient->disconnectOxygen($command->getUrl(), $drupalSession);
                 } catch (DCE\OxygenPageNotFoundException $e) {
-                    throw new ConstraintViolationException(new DrupalClient\OxygenPageNotFound());
+                    throw new ConstraintViolationException(new E\DrupalClient\OxygenPageNotFound());
                 }
                 // @todo: Make sure the module is at the latest version.
                 $this->oxygenClient->send($site, new SitePingAction());
@@ -194,10 +193,10 @@ class SiteController extends AppController
                 return new SiteConnectResult($site);
             }
             // We did not find a login form.
-            throw new ConstraintViolationException(new SiteConnect\OxygenAlreadyConnected(true, false));
+            throw new ConstraintViolationException(new E\SiteConnect\AlreadyConnected(true, false));
         }
 
-        throw new ConstraintViolationException($result[0]['reason']);
+        throw $result[0]['reason'];
     }
 
     private function persistSite(Site $site)

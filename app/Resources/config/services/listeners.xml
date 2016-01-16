@@ -13,7 +13,6 @@
         <service id="undine.listener.user_activity" class="Undine\EventListener\UserActivityListener">
             <argument type="service" id="security.token_storage"/>
             <argument type="service" id="doctrine.orm.default_entity_manager"/>
-            <argument type="service" id="current_time"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
@@ -31,7 +30,7 @@
         <service id="undine.listener.api_result" class="Undine\EventListener\ApiResultListener">
             <argument type="service" id="undine.normalizer"/>
             <argument type="service" id="undine.request_matcher.api"/>
-            <argument type="service" id="security.token_storage"/>
+            <argument type="service" id="undine.api.error_factory"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 

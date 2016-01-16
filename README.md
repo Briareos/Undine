@@ -49,6 +49,24 @@ Add this to Nginx configuration for development environment:
         root /home/vagrant/www/undine;
     }
 
+Or for apache:
+
+    Alias "/tmp/" "C:/Users/Gray/Workspace/undine/var/tmp/"
+    <Directory "C:/Users/Gray/Workspace/undine/var/tmp/">
+        Require all granted
+    </Directory>
+    
+    Alias "/node_modules/" "C:/Users/Gray/Workspace/undine/node_modules/"
+    <Directory "C:/Users/Gray/Workspace/undine/node_modules/">
+        Require all granted
+    </Directory>
+    
+    Alias "/tmp/images/" "C:/Users/Gray/Workspace/undine/frontend/images/"
+    <Directory "C:/Users/Gray/Workspace/undine/frontend/images/">
+        Require all granted
+    </Directory>
+
+
 To bootstrap the application, run `composer install --no-scripts --no-autoloader --ignore-platform-reqs` on the host machine.
 That should be all the host should run in order to provide smooth development experience.
 

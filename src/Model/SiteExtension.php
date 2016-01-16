@@ -2,8 +2,6 @@
 
 namespace Undine\Model;
 
-use Ramsey\Uuid\Uuid;
-
 class SiteExtension
 {
     const TYPE_MODULE = 'module';
@@ -88,10 +86,10 @@ class SiteExtension
      */
     public function __construct(SiteState $siteState, $slug)
     {
-        $this->id        = \Undine\Functions\generate_uuid1();
+        $this->id = \Undine\Functions\generate_uuid();
         $this->siteState = $siteState;
         $this->siteState = $siteState;
-        $this->slug      = $slug;
+        $this->slug = $slug;
     }
 
     /**
