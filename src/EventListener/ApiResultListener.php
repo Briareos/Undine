@@ -7,6 +7,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestMatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -45,9 +46,25 @@ class ApiResultListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
+            KernelEvents::REQUEST => ['onKernelRequest', -255],
             KernelEvents::VIEW => ['onKernelView', -255],
             KernelEvents::EXCEPTION => ['onKernelException', 1],
         ];
+    }
+
+    public function onKernelRequest(GetResponseEvent $event)
+    {
+        if (!$event->isMasterRequest()) {
+            return;
+        }
+
+        $request = $event->getRequest();
+
+        // Move the 'include' query parameter to attributes, so it's not visible to the rest of the application.
+        if ($include = $request->query->get('include')) {
+            $request->attributes->set('include', $include);
+            $request->query->remove('include');
+        }
     }
 
     public function onKernelView(GetResponseForControllerResultEvent $event)
@@ -68,7 +85,7 @@ class ApiResultListener implements EventSubscriberInterface
             ));
         }
 
-        $includes = $request->get('include', null);
+        $includes = $request->attributes->get('include', null);
         $context = new Context(is_scalar($includes) ? $includes : '');
 
         // Make the 'ok' property first.
@@ -105,7 +122,7 @@ class ApiResultListener implements EventSubscriberInterface
     }
 
     /**
-     * @param array          $data
+     * @param array $data
      * @param ErrorInterface $constraint
      */
     private function mergeConstraintData(array &$data, ErrorInterface $constraint)

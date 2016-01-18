@@ -236,8 +236,8 @@ export class Api {
         );
     }
 
-    public sitePing(id: string): IProgressAwareApiResponse<Result.ISiteConnect, Progress.ISiteConnect> {
-        return this.command('site.ping', {site: id});
+    public sitePing(id: string): IProgressAwareApiResponse<Result.ISitePing> {
+        return this.command('site.ping?include=modules,themes,coreUpdates,moduleUpdates,themeUpdates', {site: id});
     }
 
     private command(command: string, parameters?: Object): ApiResponse<Progress.IProgress, Result.IResult> {

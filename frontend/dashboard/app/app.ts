@@ -6,7 +6,6 @@ import {RouteConfig, ROUTER_PROVIDERS, ROUTER_DIRECTIVES} from 'angular2/router'
 import {DashboardController} from './page/dashboard/controller';
 import {Navigation} from './dashboard/navigation';
 import {SitePickerDirective} from './component/sitePicker/sitePickerDirective';
-import {Dashboard} from './dashboard/Dashboard';
 import {Api} from './service/Api';
 import {SitePicker} from './dashboard/SitePicker';
 import {StripUrlPipe} from './filters/strip_url';
@@ -19,6 +18,7 @@ import {ConnectWebsiteNewController} from "./page/connect_website/new/controller
 import {ConnectWebsiteReconnectController} from "./page/connect_website/reconnect/controller";
 import {IUser} from "./api/model/user";
 import {ConnectWebsiteController} from "./page/connect_website/controller";
+import {State} from "./dashboard/state";
 
 @Component({
     selector: 'dashboard-app',
@@ -91,10 +91,9 @@ let appData = new AppData(window['appData']);
 bootstrap(DashboardComponent, [
     FORM_PROVIDERS,
     ROUTER_PROVIDERS,
-    Dashboard,
     Api,
+    provide(State, {useValue: new State(appData.currentUser)}),
     provide('API_URL', {useValue: appData.apiUrl}),
-    provide('CURRENT_USER', {useValue: appData.currentUser}),
     provide('LOGOUT_URL', {useValue: appData.logoutUrl}),
     provide('OXYGEN_ZIP_URL', {useValue: appData.oxygenZipUrl}),
     provide('BRAND', {useValue: appData.brand}),

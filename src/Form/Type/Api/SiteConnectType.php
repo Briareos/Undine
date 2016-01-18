@@ -52,8 +52,8 @@ class SiteConnectType extends AbstractType
         $builder->add('adminPassword', TextType::class);
         $builder->add('ftpMethod', ChoiceType::class, [
             'choices' => [
-                FtpCredentials::METHOD_FTP => 'FTP',
-                FtpCredentials::METHOD_SSH => 'SSH',
+                'FTP' => FtpCredentials::METHOD_FTP,
+                'SSH' => FtpCredentials::METHOD_SSH,
             ],
         ]);
         $builder->add('ftpUsername', TextType::class);

@@ -3,9 +3,9 @@ import {RouterLink} from 'angular2/router';
 
 import {SitePickerSiteList} from './sitePickerSiteListDirective';
 import {SitePicker} from '../../dashboard/SitePicker';
-import {Dashboard} from '../../dashboard/Dashboard';
 import {ISite} from '../../api/model/site';
 import {Api} from "../../service/Api";
+import {State} from "../../dashboard/state";
 
 @Component({
     selector: 'site-picker',
@@ -29,26 +29,26 @@ import {Api} from "../../service/Api";
 `
 })
 export class SitePickerDirective {
-    private _sites: ISite[] = [];
     private _api: Api;
+    private _state: State;
 
-    constructor(private _viewContainer: ViewContainerRef, dashboard: Dashboard, api: Api) {
+    constructor(private _viewContainer: ViewContainerRef, state: State, api: Api) {
         let element = <HTMLElement>_viewContainer.element.nativeElement;
         element.style.display = 'block';
-        this._sites = dashboard.sites;
+        this._state = state;
         this._api = api;
     }
 
-    refresh() {
-        if (this._sites.length === 0) {
+    public refresh() {
+        if (this._state.user.sites.length === 0) {
             return;
         }
         this._api.bulk(()=> {
-            this._sites.forEach((s) => {
+            this._state.user.sites.forEach((s) => {
                 this._api.sitePing(s.id)
                     .result.subscribe(
                     (result) => {
-                        console.log(result);
+                        this._state.updateSiteState(s, result.siteState);
                     },
                     (constraint) => {
                         console.log(constraint);

@@ -2,7 +2,7 @@ import {Component} from 'angular2/core';
 import {CORE_DIRECTIVES} from 'angular2/common';
 import {RouteParams} from 'angular2/router';
 import {ISite} from "../../api/model/site";
-import {Dashboard} from "../../dashboard/Dashboard";
+import {State} from "../../dashboard/state";
 
 @Component({
     selector: 'site-dashboard-controller',
@@ -16,7 +16,7 @@ import {Dashboard} from "../../dashboard/Dashboard";
 <h4>Modules</h4>
 <ul>
     <li *ngFor="#module of site.state.modules">
-        <strong>{{ module.name }}</strong>
+        <strong>{{ module.name }} <i [class]="module.enabled ? 'toggle off icon' : 'toggle on icon'"></i></strong>
         <blockquote>{{ module.description }}</blockquote>
     </li>
 </ul>
@@ -61,8 +61,9 @@ import {Dashboard} from "../../dashboard/Dashboard";
 })
 export class SiteDashboardController {
     private site: ISite;
-    constructor(routeParams: RouteParams, dashboard: Dashboard) {
+
+    constructor(routeParams: RouteParams, state: State) {
         let id: string = routeParams.get('id');
-        this.site = dashboard.sites.find(site => site.id === id);
+        this.site = state.user.sites.find(site => site.id === id);
     }
 }

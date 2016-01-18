@@ -10,7 +10,7 @@ import {ConnectWebsiteReconnectController} from "./reconnect/controller";
     template: `
         <div class="ui fluid container">
             <div class="ui padded grid">
-                <div class="six wide tablet five wide computer column">
+                <div class="sixteen wide tablet thirteen wide computer ten wide large screen column">
                         <router-outlet></router-outlet>
                 </div>
             </div>

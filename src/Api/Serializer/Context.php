@@ -43,7 +43,7 @@ class Context
     private $recursionLimit = 10;
 
     /**
-     * @param string|null $includes Ie. sites,user.sites,sites.comments:limit(5|1):order(created_at|desc).
+     * @param string|null $includes Ie. sites,user.sites,sites.comments:limit(5|1):order(createdAt|desc).
      */
     public function __construct($includes = null)
     {

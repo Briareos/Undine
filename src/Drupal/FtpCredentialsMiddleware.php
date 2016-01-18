@@ -53,6 +53,9 @@ class FtpCredentialsMiddleware
                 try {
                     // Try to find the form.
                     $formNode = $crawler->filter('form#authorize-filetransfer-form');
+                    if (!$formNode->count()) {
+                        return $response;
+                    }
                     // Form found - do we have the credentials?
                     if (!$credentials->present()) {
                         throw new FtpCredentialsRequiredException();

@@ -16,6 +16,7 @@ use Undine\Api\Exception\ConstraintViolationException;
 use Undine\Api\Result\SiteConnectResult;
 use Undine\Api\Result\SiteLoginResult;
 use Undine\Api\Result\SiteLogoutResult;
+use Undine\Api\Result\SitePingResult;
 use Undine\AppBundle\Controller\AppController;
 use Undine\Configuration\Api;
 use Undine\Drupal\Data\ModuleList;
@@ -220,7 +221,7 @@ class SiteController extends AppController
     {
         return $this->oxygenClient->sendAsync($command->getSite(), new SitePingAction())
             ->then(function (SitePingReaction $reaction) use ($command) {
-                return new SiteConnectResult($command->getSite());
+                return new SitePingResult($command->getSite()->getSiteState());
             });
     }
 

@@ -7,15 +7,9 @@ export enum DrupalClientCanNotInstallOxygenStep {
 }
 
 export class DrupalClientCanNotInstallOxygen extends AbstractError {
-    get step(): number {
-        return DrupalClientCanNotInstallOxygenStep[this.data.step.toUpperCase()];
+    get step(): DrupalClientCanNotInstallOxygenStep {
+        return <any>DrupalClientCanNotInstallOxygenStep[this.data.step.toUpperCase()];
     }
-}
-
-let a = new DrupalClientCanNotInstallOxygen({step: 'nema_ga'});
-
-if (a.step === DrupalClientCanNotInstallOxygenStep.STEP_LIST_MODULES) {
-    alert('majko moja');
 }
 
 export class DrupalClientInvalidCredentials extends AbstractError {
