@@ -3,12 +3,16 @@ import {CORE_DIRECTIVES} from 'angular2/common';
 import {RouteParams} from 'angular2/router';
 import {ISite} from "../../api/model/site";
 import {State} from "../../dashboard/state";
+import {Api} from "../../service/Api";
+import {Router} from "angular2/router";
 
 @Component({
     selector: 'site-dashboard-controller',
     directives: [CORE_DIRECTIVES],
     template: `
 <h2>Site <em>{{ site.url }}</em></h2>
+
+<button class="ui negative button" [class.loading]="removing" [class.disabled]="removing" type="button" (click)="remove()">Remove</button>
 
 <h4>Core</h4>
 <strong>Core v{{ site.state.drupalVersion }}</strong>
@@ -61,9 +65,25 @@ import {State} from "../../dashboard/state";
 })
 export class SiteDashboardController {
     private site: ISite;
+    private removing: boolean = false;
 
-    constructor(routeParams: RouteParams, state: State) {
+    constructor(routeParams: RouteParams, private state: State, private api: Api, private router: Router) {
         let id: string = routeParams.get('id');
         this.site = state.user.sites.find(site => site.id === id);
+    }
+
+    private remove() {
+        this.removing = true;
+        let a = this.api.siteDisconnect(this.site.id)
+            .result.subscribe(
+            ()=> {
+                this.state.removeSite(this.site);
+                this.router.navigate(['/Dashboard']);
+            },
+            null,
+            ()=> {
+                this.removing = false;
+            });
+        console.log(a)
     }
 }

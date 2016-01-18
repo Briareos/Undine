@@ -5,6 +5,7 @@ namespace Undine\Oxygen\State;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Undine\Event\Events;
+use Undine\Event\SiteStateExceptionEvent;
 use Undine\Event\SiteStateResultEvent;
 use Undine\Model\Site;
 use Undine\Model\SiteState;
@@ -48,7 +49,7 @@ class SiteStateResultTracker
     /**
      * Creates a new site state.
      *
-     * @param Site  $site
+     * @param Site $site
      * @param array $result The resulting state returned from the Oxygen module.
      */
     public function setResult(Site $site, array $result)
@@ -75,6 +76,12 @@ class SiteStateResultTracker
         $this->dispatcher->dispatch(Events::SITE_STATE_RESULT, $event);
     }
 
+    public function setException($site, \Exception $exception)
+    {
+        $event = new SiteStateExceptionEvent($site, $exception);
+        $this->dispatcher->dispatch(Events::SITE_STATE_EXCEPTION, $event);
+    }
+
     /**
      * @return OptionsResolver
      */
@@ -96,7 +103,7 @@ class SiteStateResultTracker
                 ->setAllowedTypes('cronKey', 'string')
                 ->setAllowedTypes('cronLastRunAt', 'int')
                 ->setNormalizer('cronLastRunAt', function (OptionsResolver $resolver, $timestamp) {
-                    return new \DateTime('@'.$timestamp);
+                    return new \DateTime('@' . $timestamp);
                 })
                 ->setAllowedTypes('siteMail', 'string')
                 ->setAllowedTypes('siteName', 'string')
@@ -106,7 +113,7 @@ class SiteStateResultTracker
                 ->setAllowedValues('drupalMajorVersion', [7, 8])
                 ->setAllowedTypes('updatesLastCheckAt', 'int')
                 ->setNormalizer('updatesLastCheckAt', function (OptionsResolver $resolver, $timestamp) {
-                    return new \DateTime('@'.$timestamp);
+                    return new \DateTime('@' . $timestamp);
                 })
                 ->setAllowedValues('timezone', $allowedTimezones)
                 ->setNormalizer('timezone', function (OptionsResolver $resolver, $timezone) {

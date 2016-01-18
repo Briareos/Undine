@@ -8,11 +8,11 @@ use Undine\Model\Site;
 class LoginUrlGenerator
 {
     /**
-     * @param Site   $site
-     * @param string $userId   ID of the user that initiates the session. It is used to track individual sessions so they can be destroyed
-     *                         on demand. This value is signed, so it cannot be intercepted.
-     * @param null   $userName User to log in as. Pass null to use the user with ID 1, which should always exist and have full privileges
-     *                         (hardcoded in Drupal). This value is signed, so it cannot be intercepted.
+     * @param Site        $site
+     * @param string      $userId   ID of the user that initiates the session. It is used to track individual sessions so they can be destroyed
+     *                              on demand. This value is signed, so it cannot be intercepted.
+     * @param string|null $userName User to log in as. Pass null to use the user with ID 1, which should always exist and have full privileges
+     *                              (hardcoded in Drupal). This value is signed, so it cannot be intercepted.
      *
      * @return UriInterface
      */

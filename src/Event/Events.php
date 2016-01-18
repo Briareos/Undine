@@ -43,6 +43,11 @@ final class Events
      */
     const SITE_STATE_RESULT = 'site.state_result';
 
+    /**
+     * A state was not returned by the site, an exception occurred.
+     */
+    const SITE_STATE_EXCEPTION = 'site.state_exception';
+
     private function __construct()
     {
     }

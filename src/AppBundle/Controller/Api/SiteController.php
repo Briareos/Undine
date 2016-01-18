@@ -14,6 +14,7 @@ use Undine\Api\Command\SitePingCommand;
 use Undine\Api\Error as E;
 use Undine\Api\Exception\ConstraintViolationException;
 use Undine\Api\Result\SiteConnectResult;
+use Undine\Api\Result\SiteDisconnectResult;
 use Undine\Api\Result\SiteLoginResult;
 use Undine\Api\Result\SiteLogoutResult;
 use Undine\Api\Result\SitePingResult;
@@ -93,7 +94,10 @@ class SiteController extends AppController
         /** @var ProtocolException $exception */
         $exception = $result[0]['reason'];
 
-        if ($findLoginForm && $exception->is(ResponseException::RESPONSE_NOT_FOUND)) {
+        if ($exception->is(ResponseException::RESPONSE_NOT_FOUND)) {
+            if (!$findLoginForm) {
+                throw new ConstraintViolationException(new E\SiteConnect\OxygenNotFound(false, false));
+            }
             // The Oxygen module is not enabled and we did look for a login form.
             if ($result[1]['state'] === Promise::FULFILLED) {
                 // We got a login form!
@@ -233,15 +237,24 @@ class SiteController extends AppController
      */
     public function disconnectAction(Site $site)
     {
-        $this->oxygenClient->send($site, new ModuleDisableAction(['oxygen']));
+        try {
+            $this->oxygenClient->send($site, new ModuleDisableAction(['oxygen']));
+            $oxygenDeactivated = true;
+        } catch (ProtocolException $e) {
+            // Ignore all exceptions when removing a website.
+            $oxygenDeactivated = false;
+        }
 
-        $this->dispatcher->dispatch(new SiteDisconnectEvent($site), Events::SITE_DISCONNECT);
+        $this->dispatcher->dispatch(Events::SITE_DISCONNECT, new SiteDisconnectEvent($site));
 
         // @todo: Chain extensions/updates/etc. removal.
+        array_map([$this->em, 'remove'], $site->getSiteState()->getSiteExtensions());
+        array_map([$this->em, 'remove'], $site->getSiteState()->getSiteUpdates());
+        $this->em->remove($site->getSiteState());
         $this->em->remove($site);
         $this->em->flush($site);
 
-        return new SiteConnectResult($site);
+        return new SiteDisconnectResult($oxygenDeactivated);
     }
 
     /**

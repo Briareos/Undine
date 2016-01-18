@@ -41,6 +41,7 @@
         <service id="undine.listener.site_state_result" class="Undine\EventListener\SiteStateResultListener">
             <argument type="service" id="doctrine.orm.default_entity_manager"/>
             <tag name="kernel.event_listener" event="site.state_result" method="onSiteStateResult" priority="-100"/>
+            <tag name="kernel.event_listener" event="site.state_exception" method="onSiteStateException" priority="-100"/>
         </service>
 
     </services>

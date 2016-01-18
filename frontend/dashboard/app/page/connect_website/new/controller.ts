@@ -1,11 +1,12 @@
 import {Component, Inject} from 'angular2/core';
-import {CORE_DIRECTIVES, FORM_DIRECTIVES, FormBuilder, ControlGroup} from 'angular2/common';
+import {CORE_DIRECTIVES, FORM_DIRECTIVES, ControlGroup, Control} from 'angular2/common';
 import {Router, RouteParams} from 'angular2/router'
 
 import * as ApiError from "../../../api/errors";
 import * as Result from "../../../api/result";
 import {ConnectWebsiteSession} from "../../../service/ConnectWebsiteSession";
 import {Api} from "../../../service/Api";
+import {State} from "../../../dashboard/state";
 
 @Component({
     selector: 'connect-website-new-controller',
@@ -141,27 +142,26 @@ export class ConnectWebsiteNewController {
     private connectWebsiteActive: boolean = false;
     private ftpFormFound: boolean = false;
     private errors: Errors = new Errors();
-    private form: ControlGroup;
+    private form: ControlGroup = new ControlGroup({
+        admin: new ControlGroup({
+            username: new Control(''),
+            password: new Control('')
+        }),
+        ftp: new ControlGroup({
+            method: new Control('ftp'),
+            username: new Control(''),
+            password: new Control(''),
+            host: new Control(''),
+            port: new Control(''),
+        })
+    });
 
-    constructor(private session: ConnectWebsiteSession, private router: Router, params: RouteParams, private api: Api, fb: FormBuilder, @Inject('OXYGEN_ZIP_URL') oxygenZipUrl) {
+    constructor(private session: ConnectWebsiteSession, private router: Router, params: RouteParams, private api: Api, @Inject('OXYGEN_ZIP_URL') oxygenZipUrl, private state: State) {
         this.url = decodeURIComponent(params.get('url'));
         this.updatesUrl = this.url.replace(/\/?$/, '/?q=admin/modules/install');
         this.oxygenZipUrl = oxygenZipUrl;
         this.lookedForLoginForm = params.get('lookedForLoginForm') === 'yes';
         this.loginFormFound = params.get('loginFormFound') === 'yes';
-        this.form = fb.group({
-            admin: fb.group({
-                username: [''],
-                password: ['']
-            }),
-            ftp: fb.group({
-                method: ['ftp'],
-                username: [''],
-                password: [''],
-                host: [''],
-                port: ['']
-            })
-        });
     }
 
     public submit(formData: IFormData): void {
@@ -177,6 +177,7 @@ export class ConnectWebsiteNewController {
             (result: Result.ISiteConnect): void => {
                 _finally();
                 this.session.clearAll();
+                this.state.addSite(result.site);
                 this.router.navigate(['/SiteDashboard', {id: result.site.id}]);
             },
             (error): void => {
@@ -209,6 +210,7 @@ export class ConnectWebsiteNewController {
             (result: Result.ISiteConnect): void => {
                 _finally();
                 this.session.clearAll();
+                this.state.addSite(result.site);
                 this.router.navigate(['/SiteDashboard', {id: result.site.id}]);
             },
             (constraint): void => {

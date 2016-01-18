@@ -2,8 +2,8 @@ import {Component, Injectable} from 'angular2/core';
 import {CORE_DIRECTIVES} from 'angular2/common';
 import {RouterLink} from 'angular2/router';
 import {ISite} from '../../api/model/site';
-import {SitePicker} from '../../dashboard/SitePicker';
 import {StripUrlPipe} from "../../filters/strip_url";
+import {State} from "../../dashboard/state";
 
 @Component({
     selector: 'site-picker-site-list',
@@ -19,6 +19,7 @@ import {StripUrlPipe} from "../../filters/strip_url";
                 </span>
 
                 <span class="name">
+                    <i [class]="site.state.connected ? 'check icon' : 'warning icon'"></i>
                     {{ site.url | stripUrl }}
                 </span>
             </a>
@@ -31,7 +32,13 @@ import {StripUrlPipe} from "../../filters/strip_url";
 export class SitePickerSiteList {
     private sites: ISite[];
 
-    constructor(sitePicker: SitePicker) {
-        this.sites = sitePicker.filteredSites;
+    constructor(private state: State) {
+        this.refreshList();
+        this.state.onAddSite.subscribe(() => this.refreshList());
+        this.state.onRemoveSite.subscribe(() => this.refreshList());
+    }
+
+    private refreshList() {
+        this.sites = this.state.user.sites.slice();
     }
 }

@@ -3,6 +3,7 @@
 namespace Undine\Oxygen\Middleware;
 
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Promise\RejectedPromise;
 use GuzzleHttp\TransferStats;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -49,11 +50,11 @@ class OxygenProtocolMiddleware
     private $nextHandler;
 
     /**
-     * @param string                 $moduleVersion
-     * @param string                 $handshakeKeyName
-     * @param string                 $handshakeKeyValue
+     * @param string $moduleVersion
+     * @param string $handshakeKeyName
+     * @param string $handshakeKeyValue
      * @param SiteStateResultTracker $stateTracker
-     * @param callable               $nextHandler
+     * @param callable $nextHandler
      */
     public function __construct($moduleVersion, $handshakeKeyName, $handshakeKeyValue, SiteStateResultTracker $stateTracker, callable $nextHandler)
     {
@@ -151,7 +152,7 @@ class OxygenProtocolMiddleware
             ->withBody(\GuzzleHttp\Psr7\stream_for(json_encode($requestData)));
 
         if ($site->hasHttpCredentials()) {
-            $oxygenRequest = $oxygenRequest->withHeader('Authorization', 'Basic '.base64_encode(sprintf('%s:%s', $site->getHttpCredentials()->getUsername(), $site->getHttpCredentials()->getPassword())));
+            $oxygenRequest = $oxygenRequest->withHeader('Authorization', 'Basic ' . base64_encode(sprintf('%s:%s', $site->getHttpCredentials()->getUsername(), $site->getHttpCredentials()->getPassword())));
         }
 
         return $fn($oxygenRequest, $options)
@@ -174,12 +175,18 @@ class OxygenProtocolMiddleware
                 function (RequestException $e) use ($options, &$transferInfo) {
                     throw new NetworkException($e->getHandlerContext()['errno'], $e->getRequest(), $options, $e->getResponse(), $transferInfo);
                 }
-            );
+            )
+            ->otherwise(
+                function (\Exception $exception) use ($site) {
+                    $this->stateTracker->setException($site, $exception);
+
+                    throw $exception;
+                });
     }
 
     /**
      * @param ActionInterface $action
-     * @param array           $data
+     * @param array $data
      *
      * @return ReactionInterface
      *
@@ -210,7 +217,7 @@ class OxygenProtocolMiddleware
      */
     private function getUrlSlug(UriInterface $url)
     {
-        return sprintf('%s%s%s', $url->getHost(), ($url->getPort() ? ':'.$url->getPort() : ''), rtrim($url->getPath(), '/'));
+        return sprintf('%s%s%s', $url->getHost(), ($url->getPort() ? ':' . $url->getPort() : ''), rtrim($url->getPath(), '/'));
     }
 
     /**
@@ -218,11 +225,11 @@ class OxygenProtocolMiddleware
      * Should handle edge-cases where the Oxygen module's output is polluted prematurely (by PHP errors)
      * or in the shutdown context (by register_shutdown_function output).
      *
-     * @param string            $responseId
-     * @param RequestInterface  $request
-     * @param array             $requestOptions
+     * @param string $responseId
+     * @param RequestInterface $request
+     * @param array $requestOptions
      * @param ResponseInterface $response
-     * @param TransferInfo      $transferInfo
+     * @param TransferInfo $transferInfo
      *
      * @return array
      *

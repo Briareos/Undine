@@ -217,29 +217,6 @@ export class Api {
         });
     }
 
-    public siteConnect(url: string, checkUrl: boolean = false, httpUsername?: string, httpPassword?: string, adminUsername?: string, adminPassword?: string, ftpMethod?: string, ftpUsername?: string, ftpPassword?: string, ftpHost?: string, ftpPort?: number): IProgressAwareApiResponse<Result.ISiteConnect, Progress.ISiteConnect> {
-        return this.command(
-            'site.connect',
-            {
-                url: url,
-                checkUrl: checkUrl,
-                httpUsername: httpUsername,
-                httpPassword: httpPassword,
-                adminUsername: adminUsername,
-                adminPassword: adminPassword,
-                ftpMethod: ftpMethod,
-                ftpUsername: ftpUsername,
-                ftpPassword: ftpPassword,
-                ftpHost: ftpHost,
-                ftpPort: ftpPort
-            }
-        );
-    }
-
-    public sitePing(id: string): IProgressAwareApiResponse<Result.ISitePing> {
-        return this.command('site.ping?include=modules,themes,coreUpdates,moduleUpdates,themeUpdates', {site: id});
-    }
-
     private command(command: string, parameters?: Object): ApiResponse<Progress.IProgress, Result.IResult> {
         if (this.transaction) {
             let observerContainer = new ObserverContainer();
@@ -257,6 +234,33 @@ export class Api {
             return response;
         }
         return this.xhrFactory.createApiXhr('POST', this.endpoint + command, parameters);
+    }
+
+    public siteConnect(url: string, checkUrl: boolean = false, httpUsername?: string, httpPassword?: string, adminUsername?: string, adminPassword?: string, ftpMethod?: string, ftpUsername?: string, ftpPassword?: string, ftpHost?: string, ftpPort?: number): IProgressAwareApiResponse<Result.ISiteConnect, Progress.ISiteConnect> {
+        return this.command(
+            'site.connect?include=state,state.modules,state.themes,state.coreUpdates,state.moduleUpdates,state.themeUpdates',
+            {
+                url: url,
+                checkUrl: checkUrl,
+                httpUsername: httpUsername,
+                httpPassword: httpPassword,
+                adminUsername: adminUsername,
+                adminPassword: adminPassword,
+                ftpMethod: ftpMethod,
+                ftpUsername: ftpUsername,
+                ftpPassword: ftpPassword,
+                ftpHost: ftpHost,
+                ftpPort: ftpPort
+            }
+        );
+    }
+
+    public sitePing(id: string): IApiResponse<Result.ISitePing> {
+        return this.command('site.ping?include=modules,themes,coreUpdates,moduleUpdates,themeUpdates', {site: id});
+    }
+
+    public siteDisconnect(id: string): IApiResponse<Result.ISiteDisconnect> {
+        return this.command('site.disconnect', {site: id});
     }
 }
 

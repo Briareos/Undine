@@ -4,11 +4,11 @@ namespace Undine\Oxygen\Exception;
 
 abstract class ProtocolException extends \Exception
 {
-    const LEVEL_NETWORK = 'NETWORK';
+    const LEVEL_NETWORK = 'network';
 
-    const LEVEL_RESPONSE = 'RESPONSE';
+    const LEVEL_RESPONSE = 'response';
 
-    const LEVEL_OXYGEN = 'OXYGEN';
+    const LEVEL_OXYGEN = 'oxygen';
 
     /**
      * @return string One of the LEVEL_* constants of this class.
@@ -30,5 +30,13 @@ abstract class ProtocolException extends \Exception
     public function is($code)
     {
         return $this->code === $code;
+    }
+
+    /**
+     * @return array
+     */
+    public function getContext()
+    {
+        return [];
     }
 }

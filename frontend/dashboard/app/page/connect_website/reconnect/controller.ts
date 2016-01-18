@@ -1,11 +1,13 @@
 import {Component} from 'angular2/core';
-import {FormBuilder, ControlGroup, CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angular2/common';
+import {ControlGroup, CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angular2/common';
 import {Router, RouteParams} from 'angular2/router';
 
 import * as Result from "../../../api/result";
 import * as ApiErrors from "../../../api/errors";
 import {ConnectWebsiteSession} from "../../../service/ConnectWebsiteSession";
 import {Api} from "../../../service/Api";
+import {State} from "../../../dashboard/state";
+import {Control} from "angular2/common";
 
 @Component({
     selector: 'connect-website-reconnect-controller',
@@ -83,17 +85,16 @@ export class ConnectWebsiteReconnectController {
     private autoConnectWebsiteLoading: boolean = false;
     private connectWebsiteActive: boolean = false;
     private errors: Errors = new Errors();
-    private form: ControlGroup;
+    private form: ControlGroup = new ControlGroup({
+        username: new Control(''),
+        password: new Control('')
+    });
 
-    constructor(private session: ConnectWebsiteSession, private api: Api, private router: Router, params: RouteParams, fb: FormBuilder) {
+    constructor(private session: ConnectWebsiteSession, private api: Api, private router: Router, params: RouteParams, private state: State) {
         this.url = decodeURIComponent(params.get('url'));
         this.disconnectUrl = this.url.replace(/\/?$/, '/?q=admin/config/oxygen/disconnect');
         this.lookedForLoginForm = params.get('lookedForLoginForm') === 'yes';
         this.loginFormFound = params.get('loginFormFound') === 'yes';
-        this.form = fb.group({
-            username: [''],
-            password: [''],
-        });
     }
 
     public click(): void {
@@ -109,6 +110,7 @@ export class ConnectWebsiteReconnectController {
             (result): void => {
                 _finally();
                 this.session.clearAll();
+                this.state.addSite(result.site);
                 this.router.navigate(['/SiteDashboard', {id: result.site.id}]);
             },
             (constraint: ApiErrors.IError): void => {
@@ -134,6 +136,7 @@ export class ConnectWebsiteReconnectController {
             (result: Result.ISiteConnect): void => {
                 _finally();
                 this.session.clearAll();
+                this.state.addSite(result.site);
                 this.router.navigate(['/SiteDashboard', {id: result.site.id}]);
             },
             (constraint: ApiErrors.IError): void => {

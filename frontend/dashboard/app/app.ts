@@ -7,7 +7,6 @@ import {DashboardController} from './page/dashboard/controller';
 import {Navigation} from './dashboard/navigation';
 import {SitePickerDirective} from './component/sitePicker/sitePickerDirective';
 import {Api} from './service/Api';
-import {SitePicker} from './dashboard/SitePicker';
 import {StripUrlPipe} from './filters/strip_url';
 import {AccountController} from './page/account/controller';
 import {SiteDashboardController} from './page/site/SiteDashboardController';
@@ -97,7 +96,6 @@ bootstrap(DashboardComponent, [
     provide('LOGOUT_URL', {useValue: appData.logoutUrl}),
     provide('OXYGEN_ZIP_URL', {useValue: appData.oxygenZipUrl}),
     provide('BRAND', {useValue: appData.brand}),
-    SitePicker,
     StripUrlPipe,
     ConnectWebsiteSession
 ]);

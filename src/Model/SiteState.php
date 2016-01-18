@@ -18,12 +18,6 @@ class SiteState
 
     const STATUS_CONNECTED = 1;
 
-    const ERROR_TYPE_RESPONSE = 'response';
-
-    const ERROR_TYPE_CURL = 'curl';
-
-    const ERROR_TYPE_OXYGEN = 'oxygen';
-
     /**
      * @var string
      */
@@ -195,6 +189,11 @@ class SiteState
      * @var \DateTime|null
      */
     private $lastFailedContactAt;
+
+    /**
+     * @var string|null
+     */
+    private $lastErrorLevel;
 
     /**
      * @var string|null
@@ -750,6 +749,7 @@ class SiteState
         if ($this->status !== self::STATUS_CONNECTED) {
             $this->status = self::STATUS_CONNECTED;
             $this->statusChangedAt = $lastSuccessfulContactAt;
+            $this->lastErrorLevel = null;
             $this->lastErrorType = null;
             $this->lastErrorCode = null;
             $this->lastErrorContext = null;
@@ -778,18 +778,20 @@ class SiteState
 
     /**
      * @param \DateTime  $lastFailedContactAt
+     * @param string     $errorLevel
      * @param string     $errorType
      * @param int        $errorCode
      * @param array|null $errorContext
      *
      * @return $this
      */
-    public function markLastFailedContactAt(\DateTime $lastFailedContactAt, $errorType, $errorCode, array $errorContext = null)
+    public function markLastFailedContactAt(\DateTime $lastFailedContactAt, $errorLevel, $errorType, $errorCode, array $errorContext = null)
     {
         if ($this->status !== self::STATUS_DISCONNECTED) {
             $this->status = self::STATUS_DISCONNECTED;
             $this->statusChangedAt = $lastFailedContactAt;
 
+            $this->lastErrorLevel = $errorLevel;
             $this->lastErrorType = $errorType;
             $this->lastErrorCode = $errorCode;
             if (is_array($errorContext) && count($errorContext) === 0) {
@@ -801,6 +803,14 @@ class SiteState
         $this->lastFailedContactAt = $lastFailedContactAt;
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLastErrorLevel()
+    {
+        return $this->lastErrorLevel;
     }
 
     /**

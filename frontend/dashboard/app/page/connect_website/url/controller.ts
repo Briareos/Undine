@@ -1,11 +1,12 @@
 import {Component} from 'angular2/core';
-import {ControlGroup, FormBuilder, CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angular2/common';
+import {ControlGroup, Control, CORE_DIRECTIVES, FORM_DIRECTIVES} from 'angular2/common';
 import {Router} from 'angular2/router';
 
 import * as ApiError from '../../../api/errors';
 import * as Result from '../../../api/result';
 import {Api} from '../../../service/Api';
 import {ConnectWebsiteSession} from '../../../service/ConnectWebsiteSession';
+import {State} from "../../../dashboard/state";
 
 @Component({
     selector: 'connect-website-url-controller',
@@ -47,18 +48,16 @@ import {ConnectWebsiteSession} from '../../../service/ConnectWebsiteSession';
         `
 })
 export class ConnectWebsiteUrlController {
-    private form: ControlGroup;
-    private errors: Errors;
+    private form: ControlGroup = new ControlGroup({
+        url: new Control(''),
+        httpUsername: new Control(''),
+        httpPassword: new Control('')
+    });
+    private errors: Errors = new Errors();
     private loading: boolean = false;
     private httpAuthenticationRequired: boolean = false;
 
-    constructor(private api: Api, private session: ConnectWebsiteSession, private router: Router, fb: FormBuilder) {
-        this.form = fb.group({
-            url: [''],
-            httpUsername: [''],
-            httpPassword: ['']
-        });
-        this.errors = new Errors();
+    constructor(private api: Api, private session: ConnectWebsiteSession, private router: Router, private state: State) {
     }
 
     public submit(formData: IFormData): boolean {
@@ -85,6 +84,7 @@ export class ConnectWebsiteUrlController {
             (result: Result.ISiteConnect): void => {
                 _finally();
                 this.session.clearAll();
+                this.state.addSite(result.site);
                 this.router.navigate(['/SiteDashboard', {id: result.site.id}]);
             },
             (constraint: ApiError.IError): void => {

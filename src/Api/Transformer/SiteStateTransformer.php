@@ -27,6 +27,7 @@ class SiteStateTransformer extends AbstractTransformer
     public function transform(SiteState $siteState)
     {
         return [
+            'connected' => $siteState->getStatus() === SiteState::STATUS_CONNECTED,
             'drupalVersion' => $siteState->getDrupalVersion(),
         ];
     }
@@ -58,7 +59,7 @@ class SiteStateTransformer extends AbstractTransformer
 
     /**
      * @param SiteExtension[] $extensions
-     * @param string          $type
+     * @param string $type
      *
      * @return SiteExtension[]
      */
@@ -71,7 +72,7 @@ class SiteStateTransformer extends AbstractTransformer
 
     /**
      * @param SiteUpdate[] $updates
-     * @param string       $type
+     * @param string $type
      *
      * @return SiteUpdate[]
      */

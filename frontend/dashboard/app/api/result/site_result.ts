@@ -9,3 +9,6 @@ export interface ISiteConnect extends IResult {
 export interface ISitePing extends IResult {
     siteState: ISiteState;
 }
+
+export interface ISiteDisconnect extends IResult {
+}

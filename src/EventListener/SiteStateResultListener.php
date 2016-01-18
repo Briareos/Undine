@@ -3,10 +3,15 @@
 namespace Undine\EventListener;
 
 use Doctrine\ORM\EntityManager;
+use Undine\Event\SiteStateExceptionEvent;
 use Undine\Event\SiteStateResultEvent;
 use Undine\Model\SiteState;
 use Undine\Model\SiteExtension;
 use Undine\Model\SiteUpdate;
+use Undine\Oxygen\Exception\NetworkException;
+use Undine\Oxygen\Exception\OxygenException;
+use Undine\Oxygen\Exception\ProtocolException;
+use Undine\Oxygen\Exception\ResponseException;
 use Undine\Oxygen\State\Result\SiteStateResult;
 
 class SiteStateResultListener
@@ -28,6 +33,7 @@ class SiteStateResultListener
     {
         $state = $event->getSite()->getSiteState();
         $result = $event->getSiteStateResult();
+        $state->markSuccessfulContactAt(new \DateTime());
 
         $state->setSiteKey($result->siteKey)
             ->setCronKey($result->cronKey)
@@ -74,6 +80,22 @@ class SiteStateResultListener
             array_walk($deletedExtensions, [$this->em, 'remove']);
             array_walk($siteUpdates, [$this->em, 'persist']);
             array_walk($deletedUpdates, [$this->em, 'remove']);
+            $this->em->persist($state);
+            $this->em->flush();
+        }
+    }
+
+    public function onSiteStateException(SiteStateExceptionEvent $event)
+    {
+        $state = $event->getSite()->getSiteState();
+        $exception = $event->getException();
+        if ($exception instanceof ProtocolException) {
+            $state->markLastFailedContactAt(new \DateTime(), $exception->getLevel(), $exception->getType(), $exception->getCode(), $exception->getContext());
+        } else {
+            return;
+        }
+
+        if ($this->em->getUnitOfWork()->isInIdentityMap($state) && !$this->em->getUnitOfWork()->isScheduledForInsert($state)) {
             $this->em->persist($state);
             $this->em->flush();
         }

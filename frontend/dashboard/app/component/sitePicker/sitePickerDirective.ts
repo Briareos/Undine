@@ -2,7 +2,6 @@ import {Component, ViewContainerRef} from 'angular2/core';
 import {RouterLink} from 'angular2/router';
 
 import {SitePickerSiteList} from './sitePickerSiteListDirective';
-import {SitePicker} from '../../dashboard/SitePicker';
 import {ISite} from '../../api/model/site';
 import {Api} from "../../service/Api";
 import {State} from "../../dashboard/state";
@@ -10,17 +9,20 @@ import {State} from "../../dashboard/state";
 @Component({
     selector: 'site-picker',
     directives: [SitePickerSiteList, RouterLink],
+    styles: [`
+
+    `],
     template: `
 <div class="site-picker">
-    <div class="ui fluid dark large icon input margin-bottom-20">
+    <div class="ui fluid large icon input">
         <input type="text" placeholder="Search sites">
         <i class="search icon"></i>
     </div>
-    <a [routerLink]="['/ConnectSite']" class="fluid large ui light gray button margin-bottom-20">
+    <a [routerLink]="['/ConnectSite']" class="ui fluid large button">
         <i class="plus icon"></i>
         Connect Website
     </a>
-    <a (click)="refresh()" class="fluid large ui light gray button margin-bottom-20">
+    <a (click)="refresh()" class="ui fluid large button">
         <i class="plus icon"></i>
         Refresh
     </a>
