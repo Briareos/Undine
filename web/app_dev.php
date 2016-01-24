@@ -3,15 +3,31 @@
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Debug\Debug;
 
-// This check prevents access to debug front controllers that are deployed by accident to production servers.
-// Feel free to remove this, extend it, or make something more sophisticated.
-if (isset($_SERVER['HTTP_CLIENT_IP'])
-    || isset($_SERVER['HTTP_X_FORWARDED_FOR'])
-    || !(in_array(@$_SERVER['REMOTE_ADDR'], ['127.0.0.1', 'fe80::1', '::1']) || php_sapi_name() === 'cli-server')
-) {
-    header('HTTP/1.0 403 Forbidden');
-    exit('You are not allowed to access this file. Check '.basename(__FILE__).' for more information.');
-}
+$httpAuth = function () {
+    $users = [
+        'fox' => '$2y$05$Jh0v7.l8p07C.DsERRuf9uiNNGloZ.3mihf3dw7huPaHIajFsigjS',
+    ];
+    if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW'])) {
+        goto auth;
+    }
+    if (!array_key_exists($_SERVER['PHP_AUTH_USER'], $users)) {
+        goto auth;
+    }
+    if (!password_verify($_SERVER['PHP_AUTH_PW'], $users[$_SERVER['PHP_AUTH_USER']])) {
+        goto auth;
+    }
+    return;
+    auth:
+    header('WWW-Authenticate: Basic realm="Undine Dev"');
+    header('HTTP/1.0 401 Unauthorized');
+    echo 'You are not allowed to access this file. Check ', basename(__FILE__), ' for more information.';
+    exit;
+};
+
+//if (!in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '10.0.2.2'])) {
+    $httpAuth();
+//}
+unset($httpAuth);
 
 /**
  * @var Composer\Autoload\ClassLoader $loader
