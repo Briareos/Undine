@@ -1,6 +1,7 @@
 import {Injectable, Inject} from 'angular2/core';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
+import 'rxjs/add/operator/finally';
 
 import * as Result from '../api/result';
 import * as Progress from '../api/progress';
@@ -113,7 +114,8 @@ interface IProgressAwareApiResponse<T, U> extends IApiResponse<T> {
 }
 
 interface ErrorAwareObservable<T, U> {
-    subscribe(observerOrNext?: Observer<T> | ((value: T) => void), error?: (error: U) => void, complete?: () => void): void;
+    subscribe(observerOrNext?: Observer<T> | ((value: T) => void), error?: (error: U) => void, complete?: () => void): ErrorAwareObservable<T, U>;
+    finally(finallySelector: () => void): ErrorAwareObservable<T, U>;
 }
 
 /**

@@ -15,8 +15,6 @@ class ScriptHandler
         'symfony-web-dir' => 'web',
     ];
 
-    private static $minimumPhantomJsVersion = '2.0.0';
-
     protected static function getOptions(Event $event)
     {
         return array_merge(static::$options, $event->getComposer()->getPackage()->getExtra());
@@ -24,7 +22,6 @@ class ScriptHandler
 
     public static function install(Event $event)
     {
-        //        self::installPhantomJsBinary($event);
         self::checkPrerequisites($event);
     }
 
@@ -40,7 +37,8 @@ class ScriptHandler
     public static function checkPrerequisites(Event $event)
     {
         self::verifyPhantomJsVersion();
-        self::verifyNpmExists();
+        self::verifyNpmVersion();
+        self::verifyNodeVersion();
     }
 
     public static function verifyPhantomJsVersion()
@@ -55,19 +53,42 @@ class ScriptHandler
 
         $version = trim($process->getOutput());
 
-        if (version_compare($version, self::$minimumPhantomJsVersion, '<')) {
-            throw new \RuntimeException(sprintf('The minimum phantomjs version is %s, found version %s.', self::$minimumPhantomJsVersion, $version));
+        if (!preg_match('{^2\.}', $version)) {
+            throw new \RuntimeException(sprintf('The required phantomjs version is 2.*.*, found version %s.', $version));
         }
     }
 
-    public static function verifyNpmExists()
+    public static function verifyNpmVersion()
     {
         $process = new Process('npm -v');
         $process->run();
 
         if (!$process->isSuccessful()) {
             $exception = new ProcessFailedException($process);
-            throw new \RuntimeException("Could not find the npm binary. Details:\n".$exception->getMessage());
+            throw new \RuntimeException("The npm binary could not be executed successfully. Details:\n".$exception->getMessage());
+        }
+
+        $version = trim($process->getOutput());
+
+        if (!preg_match('{^2\.}', $version)) {
+            throw new \RuntimeException(sprintf('The required npm version is 2.*.*, found version %s.', $version));
+        }
+    }
+
+    public static function verifyNodeVersion()
+    {
+        $process = new Process('node -v');
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            $exception = new ProcessFailedException($process);
+            throw new \RuntimeException("The npm binary could not be executed successfully. Details:\n".$exception->getMessage());
+        }
+
+        $version = ltrim(trim($process->getOutput()), 'v');
+
+        if (!preg_match('{^4\.}', $version)) {
+            throw new \RuntimeException(sprintf('The required npm version is 4.*.*, found version %s.', $version));
         }
     }
 }

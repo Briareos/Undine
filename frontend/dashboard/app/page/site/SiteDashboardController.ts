@@ -74,16 +74,15 @@ export class SiteDashboardController {
 
     private remove() {
         this.removing = true;
-        let a = this.api.siteDisconnect(this.site.id)
+        this.state.removeSite(this.site);
+        this.router.navigate(['/Dashboard']);
+        this.api.siteDisconnect(this.site.id)
             .result.subscribe(
-            ()=> {
-                this.state.removeSite(this.site);
-                this.router.navigate(['/Dashboard']);
-            },
             null,
             ()=> {
-                this.removing = false;
-            });
-        console.log(a)
+                // The removal failed; return it to the list.
+                this.state.addSite(this.site);
+            })
+            .finally(()=>this.removing = false);
     }
 }

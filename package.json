@@ -33,8 +33,8 @@
         "gulp-build-dev": "gulp build-dev"
     },
     "engines": {
-        "node": ">=4.2.1 <5",
-        "npm": ">=2.1.7"
+        "node": "=4",
+        "npm": "=2"
     },
     "engine-strict": true
 }

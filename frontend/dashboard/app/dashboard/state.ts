@@ -4,8 +4,17 @@ import {ISite} from "../api/model/site";
 import {ISiteState} from "../api/model/site_state";
 
 export class State {
+    /**
+     * A new website has been added to the account.
+     */
     public onAddSite: EventEmitter<ISite> = new EventEmitter();
+    /**
+     * A website has been removed from the account.
+     */
     public onRemoveSite: EventEmitter<ISite> = new EventEmitter();
+    /**
+     * A new website state has been fetched.
+     */
     public onUpdateSiteState: EventEmitter<ISite> = new EventEmitter();
 
     public constructor(public user: IUser) {
