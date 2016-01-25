@@ -25,7 +25,7 @@ class StaffCreateCommand extends ContainerAwareCommand
         $name = $input->getArgument('name');
         $email = $input->getArgument('email');
 
-        $dialog = $this->getHelper('dialog');
+        $dialog = $this->getHelper('question');
         $password = $dialog->askHiddenResponse($output, sprintf('<info>Password to use for [<comment>%s</comment>]</info>: ', $email), false);
 
         $encoder = $this->getContainer()->get('security.encoder_factory')->getEncoder(Staff::class);
