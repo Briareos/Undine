@@ -200,11 +200,13 @@ class LoopHandlerTest extends \PHPUnit_Framework_TestCase
         $handler->push(ThrottleMiddleware::create());
         $client = new \GuzzleHttp\Client([
             'handler' => $handler,
-            'base_uri' => Server::$url
+            'base_uri' => Server::$url,
+            'timeout' => 10,
         ]);
         $queueEnd = $promises = $responses = $expectedStart = [];
+        Server::start();
+        Server::enqueue(array_fill(0, count($queueData), new Response()));
         foreach ($queueData as $queueItem) {
-            $responses[] = new Response();
             list($queueId, $requestDuration, $expectedStartTime) = $queueItem;
             $options = [
                 RequestOptions::HTTP_ERRORS => false,
@@ -223,9 +225,8 @@ class LoopHandlerTest extends \PHPUnit_Framework_TestCase
                     $queueEnd[$queueId] = microtime(true);
                 });
         }
-        Server::start();
-        Server::enqueue($responses);
         $start = microtime(true);
+        $GLOBALS['s'] = microtime(1);
         \GuzzleHttp\Promise\all($promises)->wait();
         $duration = microtime(true) - $start;
 

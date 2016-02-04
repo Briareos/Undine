@@ -33,11 +33,6 @@ class LoopHandler
     private $activeHttp = 0;
 
     /**
-     * @var int
-     */
-    private $activeProcess = 0;
-
-    /**
      * @var resource|null
      */
     private $multiHandle;
@@ -155,29 +150,24 @@ class LoopHandler
 
     private function addRequest(array $entry)
     {
-        /** @var int $id */
-        $id = $entry['id'];
-        /** @var LoopHandle $easy */
-        $easy = $entry['easy'];
-
         switch ($entry['type']) {
             case self::TYPE_HTTP:
-                $this->httpHandles[$id] = $entry;
                 // This will get overridden in curl_multi_exec(), but fill it here so we don't treat the first tick
                 // like it doesn't have any ongoing requests and hence wait for delayed requests.
-                ++$this->activeHttp;
-                \GuzzleHttp\Promise\queue()->add(function () use ($easy) {
+                \GuzzleHttp\Promise\queue()->add(function () use ($entry) {
                     if ($this->multiHandle === null) {
                         $this->multiHandle = curl_multi_init();
                     }
                     $this->httpNeedsExec = true;
-                    curl_multi_add_handle($this->multiHandle, $easy->handle);
+                    curl_multi_add_handle($this->multiHandle, $entry['easy']->handle);
+                    $this->httpHandles[$entry['id']] = $entry;
                 });
                 break;
             case self::TYPE_PROCESS:
-                $this->processHandles[$id] = $entry;
-                ++$this->activeProcess;
-                \GuzzleHttp\Promise\queue()->add([$easy->handle, 'start']);
+                \GuzzleHttp\Promise\queue()->add(function () use ($entry) {
+                    $this->processHandles[$entry['id']] = $entry;
+                    $entry['easy']->handle->start();
+                });
                 break;
             case self::TYPE_CALLABLE:
                 \GuzzleHttp\Promise\queue()->add(function () use ($entry) {
@@ -250,7 +240,6 @@ class LoopHandler
         $process->stop($timeout / 1000, $signal);
 
         unset($this->delays[$id], $this->processHandles[$id]);
-        $this->activeProcess--;
 
         return true;
     }
@@ -261,7 +250,7 @@ class LoopHandler
 
         while ($this->httpHandles || $this->processHandles || $this->delays) {
             // If there are no transfers, then sleep for the next delay
-            if (!$this->activeHttp && !$this->activeProcess && $this->delays) {
+            if (!$this->httpHandles && !$this->processHandles && $this->delays) {
                 usleep($this->uTimeToNext());
             }
             $this->tick();
@@ -290,10 +279,10 @@ class LoopHandler
     {
         $this->addDelays();
 
-        while ($this->activeProcess) {
+        while ($this->processHandles) {
             // Less performant loop that uses sleep() instead of select() to be compatible with cURL.
             $processed = $this->processProcessMessages();
-            if ($this->activeHttp) {
+            if ($this->httpHandles) {
                 while (curl_multi_exec($this->multiHandle, $this->activeHttp) === CURLM_CALL_MULTI_PERFORM) ;
                 $processed |= $this->processHttpMessages();
             }
@@ -306,7 +295,7 @@ class LoopHandler
             $this->addDelays();
         }
 
-        if (!$this->activeHttp) {
+        if (!$this->httpHandles) {
             return;
         }
 
@@ -388,7 +377,6 @@ class LoopHandler
             } else {
                 $deferred->reject(new ProcessFailedException($easy->handle));
             }
-            --$this->activeProcess;
             $clean = false;
         }
 
