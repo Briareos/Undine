@@ -9,7 +9,7 @@ use Imagine\Gd\Imagine;
 use Imagine\Image\Box;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -20,7 +20,7 @@ use Symfony\Component\Process\ProcessBuilder;
 use Undine\Loop\CallbackOptions;
 use Undine\Repository\SiteRepository;
 
-class CaptureSiteThumbnailDaemonCommand extends ContainerAwareCommand
+class CaptureSiteThumbnailDaemonCommand extends Command
 {
     /**
      * @var string
@@ -86,7 +86,7 @@ class CaptureSiteThumbnailDaemonCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this->setName('app:capture-site-thumbnail-daemon')
-            ->setDescription('Run a daemon that polls the database for websites without or with stale thumbnails.')
+            ->setDescription('Run a daemon that polls the database for websites without any or with stale thumbnails.')
             ->addOption('children', 'c', InputOption::VALUE_REQUIRED, 'How many asynchronous processes to keep.', 1)
             ->addOption('max-age', 'a', InputOption::VALUE_REQUIRED, '', '-1 day');
     }

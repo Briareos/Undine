@@ -168,67 +168,69 @@ export class ConnectWebsiteNewController {
         this.errors.reset();
         this.connectWebsiteActive = true;
         this.autoConnectWebsiteLoading = true;
-        let _finally = (): void => {
-            this.connectWebsiteActive = false;
-            this.autoConnectWebsiteLoading = false;
-        };
         let response = this.api.siteConnect(this.url, true, this.session.httpUsername, this.session.httpPassword, formData.admin.username, formData.admin.password, formData.ftp.method, formData.ftp.username, formData.ftp.password, formData.ftp.host, parseInt(formData.ftp.port, 10));
-        response.result.subscribe(
-            (result: Result.ISiteConnect): void => {
-                _finally();
-                this.session.clearAll();
-                this.state.addSite(result.site);
-                this.router.navigate(['/SiteDashboard', {id: result.site.id}]);
-            },
-            (error): void => {
-                _finally();
-                if (error instanceof ApiError.DrupalClientInvalidCredentials) {
-                    this.errors.invalidCredentials = true;
-                    return;
-                } else if (error instanceof ApiError.FtpCredentialsRequired) {
-                    this.ftpFormFound = true;
-                    return;
-                } else if (error instanceof ApiError.FtpCredentialsError) {
-                    this.errors.ftpError = true;
-                    this.errors.ftpErrorMessage = error.ftpError;
-                    return;
+        response.result
+            .finally(
+                (): void => {
+                    this.connectWebsiteActive = false;
+                    this.autoConnectWebsiteLoading = false;
                 }
-            }
-        );
+            )
+            .subscribe(
+                (result: Result.ISiteConnect): void => {
+                    this.session.clearAll();
+                    this.state.addSite(result.site);
+                    this.router.navigate(['/SiteDashboard', {id: result.site.id}]);
+                },
+                (error): void => {
+                    if (error instanceof ApiError.DrupalClientInvalidCredentials) {
+                        this.errors.invalidCredentials = true;
+                        return;
+                    } else if (error instanceof ApiError.FtpCredentialsRequired) {
+                        this.ftpFormFound = true;
+                        return;
+                    } else if (error instanceof ApiError.FtpCredentialsError) {
+                        this.errors.ftpError = true;
+                        this.errors.ftpErrorMessage = error.ftpError;
+                        return;
+                    }
+                }
+            );
     };
 
     public click(): void {
         this.errors.reset();
         this.connectWebsiteActive = true;
         this.connectWebsiteLoading = true;
-        let _finally = (): void => {
-            this.connectWebsiteActive = false;
-            this.connectWebsiteLoading = false;
-        };
         let response = this.api.siteConnect(this.url, false, this.session.httpUsername, this.session.httpPassword);
-        response.result.subscribe(
-            (result: Result.ISiteConnect): void => {
-                _finally();
-                this.session.clearAll();
-                this.state.addSite(result.site);
-                this.router.navigate(['/SiteDashboard', {id: result.site.id}]);
-            },
-            (constraint): void => {
-                _finally();
-                if (constraint instanceof ApiError.SiteConnectOxygenNotFound) {
-                    this.errors.stillDisabled = true;
-                    return;
-                } else if (constraint instanceof ApiError.SiteConnectAlreadyConnected) {
-                    // ISite got connected to another account in the meantime? It's possible...
-                    this.router.navigate(['../ConnectSiteReconnect', {
-                        url: encodeURIComponent(this.url),
-                        lookedForLoginForm: this.lookedForLoginForm ? 'yes' : 'no',
-                        loginFormFound: this.loginFormFound ? 'yes' : 'no'
-                    }]);
-                    return;
+        response.result
+            .finally(
+                (): void => {
+                    this.connectWebsiteActive = false;
+                    this.connectWebsiteLoading = false;
                 }
-            }
-        );
+            )
+            .subscribe(
+                (result: Result.ISiteConnect): void => {
+                    this.session.clearAll();
+                    this.state.addSite(result.site);
+                    this.router.navigate(['/SiteDashboard', {id: result.site.id}]);
+                },
+                (constraint): void => {
+                    if (constraint instanceof ApiError.SiteConnectOxygenNotFound) {
+                        this.errors.stillDisabled = true;
+                        return;
+                    } else if (constraint instanceof ApiError.SiteConnectAlreadyConnected) {
+                        // ISite got connected to another account in the meantime? It's possible...
+                        this.router.navigate(['../ConnectSiteReconnect', {
+                            url: encodeURIComponent(this.url),
+                            lookedForLoginForm: this.lookedForLoginForm ? 'yes' : 'no',
+                            loginFormFound: this.loginFormFound ? 'yes' : 'no'
+                        }]);
+                        return;
+                    }
+                }
+            );
     };
 }
 

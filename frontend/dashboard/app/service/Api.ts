@@ -106,16 +106,16 @@ class ApiXhrFactory {
 }
 
 interface IApiResponse<T> {
-    result: ErrorAwareObservable<T, ApiError.IError>;
+    result: IErrorAwareObservable<T, ApiError.IError>;
 }
 
 interface IProgressAwareApiResponse<T, U> extends IApiResponse<T> {
     progress: Observable<U>;
 }
 
-interface ErrorAwareObservable<T, U> {
-    subscribe(observerOrNext?: Observer<T> | ((value: T) => void), error?: (error: U) => void, complete?: () => void): ErrorAwareObservable<T, U>;
-    finally(finallySelector: () => void): ErrorAwareObservable<T, U>;
+interface IErrorAwareObservable<T, U> {
+    subscribe(observerOrNext?: Observer<T> | ((value: T) => void), error?: (error: U) => void, complete?: () => void): IErrorAwareObservable<T, U>;
+    finally(finallySelector: () => void): IErrorAwareObservable<T, U>;
 }
 
 /**
@@ -130,16 +130,16 @@ class ApiResponse<T, U> implements IProgressAwareApiResponse<T, U> {
         return this._progress;
     }
 
-    get result(): ErrorAwareObservable<T, ApiError.IError> {
+    get result(): IErrorAwareObservable<T, ApiError.IError> {
         return this._result;
     }
 }
 
 class ApiTransaction {
+    public progress: boolean = false;
     private _action: string;
     private _parameters: any[] = [];
     private _observers: ObserverContainer[] = [];
-    public progress: boolean = false;
 
     get action(): string {
         return this._action;
@@ -219,7 +219,7 @@ export class Api {
         });
     }
 
-    private command(command: string, parameters?: Object): ApiResponse<Progress.IProgress, Result.IResult> {
+    private command(command: string, parameters?: Object): IProgressAwareApiResponse<Result.IResult, Progress.IProgress> {
         if (this.transaction) {
             let observerContainer = new ObserverContainer();
             let progressObserver = new Observable<Progress.IProgress>((observer: Observer<Progress.IProgress>): void => {
@@ -272,14 +272,14 @@ class ObserverContainer {
 }
 
 class MockObserver<T> implements Observer<T> {
-    isUnsubscribed: boolean = true;
+    public isUnsubscribed: boolean = true;
 
-    next(value: T): void {
+    public next(value: T): void {
     }
 
-    error(err: any): void {
+    public error(err: any): void {
     }
 
-    complete(): void {
+    public complete(): void {
     }
 }

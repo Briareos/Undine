@@ -5,7 +5,7 @@ namespace Undine\Loop;
 use GuzzleHttp\Handler\CurlFactory;
 use GuzzleHttp\Handler\CurlFactoryInterface;
 use GuzzleHttp\Promise\Promise;
-use GuzzleHttp\Promise\TaskQueue;
+use GuzzleHttp\Promise\RejectedPromise;
 use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\RequestInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -86,10 +86,11 @@ class LoopHandler
     {
         if ($this->multiHandle !== null) {
             curl_multi_close($this->multiHandle);
+            $this->multiHandle = null;
         }
         foreach ($this->processHandles as $entry) {
             /** @var Promise $promise */
-            $promise = $entry['deferred'];
+            $promise = $entry['promise'];
             $promise->cancel();
         }
         $this->delays = [];
@@ -139,7 +140,7 @@ class LoopHandler
         $entry = [
             'id' => $id,
             'easy' => $easy,
-            'deferred' => $promise,
+            'promise' => $promise,
             'type' => $type,
         ];
 
@@ -179,9 +180,9 @@ class LoopHandler
                 \GuzzleHttp\Promise\queue()->add([$easy->handle, 'start']);
                 break;
             case self::TYPE_CALLABLE:
-                \GuzzleHttp\Promise\queue()->add(static function () use ($entry) {
-                    /** @var Promise $deferred */
-                    $deferred = $entry['deferred'];
+                \GuzzleHttp\Promise\queue()->add(function () use ($entry) {
+                    /** @var Promise $promise */
+                    $promise = $entry['promise'];
                     /** @var callable $fn */
                     $fn = $entry['easy']->handle;
                     try {
@@ -191,11 +192,9 @@ class LoopHandler
                             $value = $fn();
                         }
                     } catch (\Exception $e) {
-                        $deferred->reject($e);
-
-                        return;
+                        $value = new RejectedPromise($e);
                     }
-                    $deferred->resolve($value);
+                    $promise->resolve($value);
                 });
                 break;
         }
@@ -251,24 +250,25 @@ class LoopHandler
         $process->stop($timeout / 1000, $signal);
 
         unset($this->delays[$id], $this->processHandles[$id]);
+        $this->activeProcess--;
 
         return true;
     }
 
     public function execute()
     {
-        /** @var TaskQueue $queue */
-        $queue = \GuzzleHttp\Promise\queue();
+        \GuzzleHttp\Promise\queue()->run();
 
-        // There may be immediate callbacks, so we can execute them here.
-        $queue->run();
-
-        while ($this->httpHandles || $this->processHandles || !$queue->isEmpty() || $this->delays) {
+        while ($this->httpHandles || $this->processHandles || $this->delays) {
             // If there are no transfers, then sleep for the next delay
             if (!$this->activeHttp && !$this->activeProcess && $this->delays) {
-                usleep($this->timeToNext());
+                usleep($this->uTimeToNext());
             }
             $this->tick();
+        }
+        if ($this->multiHandle !== null) {
+            curl_multi_close($this->multiHandle);
+            $this->multiHandle = null;
         }
     }
 
@@ -290,19 +290,19 @@ class LoopHandler
     {
         $this->addDelays();
 
-        \GuzzleHttp\Promise\queue()->run();
-
         while ($this->activeProcess) {
             // Less performant loop that uses sleep() instead of select() to be compatible with cURL.
-            $this->processProcessMessages();
+            $processed = $this->processProcessMessages();
             if ($this->activeHttp) {
-                do {
-                    while (curl_multi_exec($this->multiHandle, $this->activeHttp) === CURLM_CALL_MULTI_PERFORM) {
-                    }
-                } while ($this->processHttpMessages());
+                while (curl_multi_exec($this->multiHandle, $this->activeHttp) === CURLM_CALL_MULTI_PERFORM) ;
+                $processed |= $this->processHttpMessages();
             }
 
-            usleep(100000);
+            if (!$processed) {
+                // Only sleep if there were no processed messages.
+                // Sleep for maximum of [poll_time] microseconds.
+                usleep($this->delays ? min(100000, $this->uTimeToNext()) : 100000);
+            }
             $this->addDelays();
         }
 
@@ -311,22 +311,10 @@ class LoopHandler
         }
 
         // If we get here that means our loop is pure HTTP.
-
-        do {
-            // Step through the task queue which may add additional requests.
-            \GuzzleHttp\Promise\queue()->run();
-
-            $queueClean = true;
-
-            if ($this->httpNeedsExec) {
-                $queueClean = false;
-                do {
-                    while (curl_multi_exec($this->multiHandle, $this->activeHttp) === CURLM_CALL_MULTI_PERFORM) {
-                    }
-                    $this->processHttpMessages();
-                } while ($this->processHttpMessages());
-            }
-        } while (!$queueClean);
+        if ($this->httpNeedsExec) {
+            while (curl_multi_exec($this->multiHandle, $this->activeHttp) === CURLM_CALL_MULTI_PERFORM) ;
+            $this->httpNeedsExec = false;
+        }
 
         if ($this->activeHttp && curl_multi_select($this->multiHandle, $this->selectTimeout) === -1) {
             // Perform a usleep if a select returns -1.
@@ -335,14 +323,13 @@ class LoopHandler
         }
 
         do {
-            while (curl_multi_exec($this->multiHandle, $this->activeHttp) === CURLM_CALL_MULTI_PERFORM) {
-            }
+            while (curl_multi_exec($this->multiHandle, $this->activeHttp) === CURLM_CALL_MULTI_PERFORM) ;
         } while ($this->processHttpMessages());
     }
 
     private function processHttpMessages()
     {
-        $this->httpNeedsExec = false;
+        $clean = true;
         while ($done = curl_multi_info_read($this->multiHandle)) {
             $id = (int)$done['handle'];
             curl_multi_remove_handle($this->multiHandle, $done['handle']);
@@ -354,7 +341,7 @@ class LoopHandler
             unset($this->httpHandles[$id], $this->delays[$id]);
             $entry['easy']->errno = $done['result'];
             /** @var Promise $deferred */
-            $deferred = $entry['deferred'];
+            $deferred = $entry['promise'];
             /** @var CurlFactoryInterface $factory */
             $factory = $this->factory[self::TYPE_HTTP];
             $deferred->resolve(CurlFactory::finish(
@@ -362,34 +349,58 @@ class LoopHandler
                 $entry['easy'],
                 $factory
             ));
+            $clean = false;
         }
 
-        return $this->httpNeedsExec;
+        if (!$clean) {
+            \GuzzleHttp\Promise\queue()->run();
+            return true;
+        }
+
+        return false;
     }
 
     private function processProcessMessages()
     {
+        $clean = true;
         reset($this->processHandles);
+        $now = time();
+        $checkTimeout = $this->processTimeoutChecker !== $now;
+        $this->processTimeoutChecker = $now;
         while ($entry = current($this->processHandles)) {
             next($this->processHandles);
             /** @var LoopHandle $easy */
             $easy = $entry['easy'];
+            if ($checkTimeout) {
+                try {
+                    $easy->handle->checkTimeout();
+                } catch (ProcessFailedException $timeoutException) {
+                }
+            }
             if ($easy->handle->isRunning()) {
                 continue;
             }
             /** @var Promise $deferred */
-            $deferred = $entry['deferred'];
+            $deferred = $entry['promise'];
             unset($this->processHandles[$entry['id']]);
             if ($easy->handle->isSuccessful()) {
-                $deferred->resolve($easy->handle);
+                $deferred->resolve(isset($timeoutException) ? new RejectedPromise($timeoutException) : $easy->handle);
             } else {
                 $deferred->reject(new ProcessFailedException($easy->handle));
             }
             --$this->activeProcess;
+            $clean = false;
         }
+
+        if (!$clean) {
+            \GuzzleHttp\Promise\queue()->run();
+            return true;
+        }
+
+        return false;
     }
 
-    private function timeToNext()
+    private function uTimeToNext()
     {
         $currentTime = microtime(true);
         $nextTime = PHP_INT_MAX;

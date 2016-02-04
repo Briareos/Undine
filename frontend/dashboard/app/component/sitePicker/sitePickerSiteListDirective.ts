@@ -36,6 +36,9 @@ export class SitePickerSiteList {
         this.refreshList();
         this.state.onAddSite.subscribe(() => this.refreshList());
         this.state.onRemoveSite.subscribe(() => this.refreshList());
+        this.state.onUpdateSiteState.subscribe((site: ISite): void => {
+            Object.assign(this.sites.find((localSite: ISite) => localSite.id === site.id).state, site.state);
+        });
     }
 
     private refreshList() {

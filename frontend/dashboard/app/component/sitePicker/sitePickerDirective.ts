@@ -2,9 +2,11 @@ import {Component, ViewContainerRef} from 'angular2/core';
 import {RouterLink} from 'angular2/router';
 
 import {SitePickerSiteList} from './sitePickerSiteListDirective';
-import {ISite} from '../../api/model/site';
 import {Api} from "../../service/Api";
 import {State} from "../../dashboard/state";
+import {IError} from "../../api/error/abstract_error";
+import * as Result from "../../api/result";
+import {ISite} from "../../api/model/site";
 
 @Component({
     selector: 'site-picker',
@@ -35,30 +37,30 @@ export class SitePickerDirective {
     private _state: State;
 
     constructor(private _viewContainer: ViewContainerRef, state: State, api: Api) {
-        let element = <HTMLElement>_viewContainer.element.nativeElement;
+        let element: HTMLElement = <HTMLElement>_viewContainer.element.nativeElement;
         element.style.display = 'block';
         this._state = state;
         this._api = api;
     }
 
-    public refresh() {
+    public refresh(): void {
         if (this._state.user.sites.length === 0) {
             return;
         }
-        this._api.bulk(()=> {
-            this._state.user.sites.forEach((s) => {
+        this._api.bulk((): void => {
+            this._state.user.sites.forEach((s: ISite) => {
                 this._api.sitePing(s.id)
                     .result.subscribe(
-                    (result) => {
+                    (result: Result.ISitePing) => {
                         this._state.updateSiteState(s, result.siteState);
                     },
-                    (constraint) => {
-                        console.log(constraint);
+                    (error: IError) => {
+                        console.log(error);
                     }
                 );
             });
-        }).subscribe(null, null, ()=> {
-            console.log('bulk call completed')
+        }).subscribe(null, null, (): void => {
+            console.log('bulk call completed');
         });
     }
 }

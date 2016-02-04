@@ -134,7 +134,7 @@ class NetworkException extends ProtocolException
      */
     public function getType()
     {
-        return self::$errors[$this->code];
+        return self::$errors[$this->code - self::SHIFT_ERROR_CODE];
     }
 
     /**

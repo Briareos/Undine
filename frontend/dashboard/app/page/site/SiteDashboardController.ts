@@ -76,13 +76,14 @@ export class SiteDashboardController {
         this.removing = true;
         this.state.removeSite(this.site);
         this.router.navigate(['/Dashboard']);
-        this.api.siteDisconnect(this.site.id)
-            .result.subscribe(
-            null,
-            ()=> {
-                // The removal failed; return it to the list.
-                this.state.addSite(this.site);
-            })
-            .finally(()=>this.removing = false);
+        this.api.siteDisconnect(this.site.id).result
+            .finally(()=>this.removing = false)
+            .subscribe(
+                null,
+                ()=> {
+                    // The removal failed; return it to the list.
+                    this.state.addSite(this.site);
+                }
+            )
     }
 }

@@ -29,10 +29,6 @@ import {State} from "./dashboard/state";
         <site-picker class="site-picker"></site-picker>
         <div class="content">
             <div>
-                <div class="ui huge breadcrumb">
-                breadcrumb
-                </div>
-
                 <div class="ui secondary icon action menu">
                     <a class="item" [routerLink]="['/Account']">
                         <i class="setting icon"></i>

@@ -4,6 +4,9 @@ namespace Undine\Loop;
 
 use Symfony\Component\Process\Process;
 
+/**
+ * This class must be compatible with GuzzleHttp\Handle\EasyHandle
+ */
 class LoopHandle
 {
     /**

@@ -12,7 +12,9 @@
         ]
     },
     "autoload-dev": {
-        "Undine\\Tests\\": "tests/"
+        "psr-4": {
+            "Undine\\Tests\\": "tests/"
+        }
     },
     "require": {
         "php-64bit": ">=7.0.1",
@@ -84,7 +86,12 @@
         "build-parameters": "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters"
     },
     "config": {
-        "bin-dir": "bin"
+        "bin-dir": "bin",
+        "prestissimo": {
+            "maxConnections": 6,
+            "minConnections": 3,
+            "pipeline": true
+        }
     },
     "extra": {
         "symfony-app-dir": "app",
